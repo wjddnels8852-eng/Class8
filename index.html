@@ -444,6 +444,31 @@ const surveyDot = new THREE.Sprite(new THREE.SpriteMaterial({ map:new THREE.Canv
 surveyDot.scale.set(0.3, 0.3, 1); surveyDot.position.set(0.85, 0.66, 0.15); surveyDot.visible = false; surveyGroup.add(surveyDot);
 surveyGroup.traverse(o => { o.userData.survey = true; });
 
+// 명예의 전당 (칠판 오른쪽 벽): 오늘 1등과 이번 주 공부왕을 보여줘요
+const fameGroup = new THREE.Group(); fameGroup.position.set(5.3, 1.72, -D/2); scene.add(fameGroup);
+const fameCv = document.createElement('canvas'); fameCv.width = 512; fameCv.height = 384;
+const fameTex = new THREE.CanvasTexture(fameCv);
+let fameKey = '';
+function drawFame(todayName, weekName){
+  const x = fameCv.getContext('2d');
+  x.fillStyle = '#1B1630'; x.fillRect(0, 0, 512, 384);
+  x.strokeStyle = '#E5B93C'; x.lineWidth = 6; x.strokeRect(12, 12, 488, 360);
+  x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.fillStyle = '#E5B93C'; x.font = '46px Jua, "Noto Sans KR", sans-serif'; x.fillText('명예의 전당', 256, 58);
+  const block = (y, title, name, reward) => {
+    x.fillStyle = 'rgba(229,185,60,.12)'; x.fillRect(36, y, 440, 128);
+    x.fillStyle = '#C9C6F0'; x.font = '700 22px "Noto Sans KR", sans-serif'; x.fillText(title, 256, y + 24);
+    x.fillStyle = name ? '#FFFFFF' : '#8C93D9'; x.font = (name ? '44px' : '30px') + ' Jua, "Noto Sans KR", sans-serif'; x.fillText(name || '아직 없어요', 256, y + 66);
+    x.fillStyle = '#E5B93C'; x.font = '700 20px "Noto Sans KR", sans-serif'; x.fillText(reward, 256, y + 106);
+  };
+  block(100, '오늘 공부시간 1등', todayName, '보상: 새로운 행동');
+  block(240, '이번 주 공부왕 (지난주 1등)', weekName, '보상: 공부왕 전용 책상');
+  fameTex.needsUpdate = true;
+}
+drawFame('', '');
+{ const fr = new THREE.Mesh(new THREE.BoxGeometry(1.8, 1.36, 0.06), mat('#8A6A2E')); fr.position.z = 0.04; fr.castShadow = true; fameGroup.add(fr);
+  const pn = new THREE.Mesh(new THREE.PlaneGeometry(1.66, 1.24), new THREE.MeshBasicMaterial({ map:fameTex })); pn.position.z = 0.075; fameGroup.add(pn); }
+
 // 창문 (오른쪽 벽), 문 (뒤쪽 벽), 시계
 [-3.5, 0.5, 4.2].forEach(z => {
   const win = new THREE.Mesh(new THREE.PlaneGeometry(2.4, 1.5), new THREE.MeshBasicMaterial({ color:'#A9D3FF' }));
@@ -1538,6 +1563,8 @@ function updateUI(){
   const land = window.innerWidth > window.innerHeight && window.innerHeight <= 520;   // 가로 화면인지
   joyEl.style.bottom = land ? 'calc(env(safe-area-inset-bottom, 0px) + 14px)' : (ph + 14) + 'px'; $('#toast').style.bottom = (ph + 150) + 'px';
   const rk = ranking(); topAv = rk[0] && rk[0].total > 0 ? rk[0] : null;
+  { const tn = topAv && topAv.total >= 60 ? topAv.name : '', key = tn + '|' + kingName;   // 명예의 전당 바뀌면 다시 그리기
+    if(key !== fameKey){ fameKey = key; drawFame(tn, kingName); } }
   syncFlyBtns();
   if(!$('#rankSheet').hidden) renderRankList();
   if(me){
@@ -1603,7 +1630,7 @@ function loop(){
 requestAnimationFrame(loop);
 
 // 글꼴이 늦게 도착하면 칠판과 이름표를 다시 그려요
-if(document.fonts && document.fonts.ready) document.fonts.ready.then(() => { drawBoard(); drawPlate(); drawCork(); allAvatars.forEach(a => a.drawLabel(true)); });
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(() => { drawBoard(); drawPlate(); drawCork(); fameKey = ''; allAvatars.forEach(a => a.drawLabel(true)); });
 })();
 </script>
 </body>
