@@ -119,6 +119,37 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline
   .rank{max-height:40vh}
   .toast{bottom:calc(env(safe-area-inset-bottom,0px) + 20px)!important;left:40%}
 }
+.ptoggle{align-self:flex-end;min-height:30px;padding:0 12px;border-radius:999px;border:1.5px solid var(--line);background:transparent;color:var(--muted);font-size:12px;font-weight:700;margin-bottom:-4px}
+/* 접힌 메뉴: 점프·칠판·자리 버튼만 남기기 */
+.panel.min .scroller,.panel.min .test,.panel.min #subjects,.panel.min .timer .row{display:none}
+.panel.min{gap:6px}
+@media (orientation: landscape) and (max-height: 520px){
+  .panel{width:min(300px,40vw);padding:8px 10px}
+  .panel .btn{min-height:36px}
+  .btns3{gap:6px}
+  .btns3 .btn{font-size:12px}
+  .btns3 .btn.primary{font-size:13px}
+  .ptoggle{min-height:28px}
+}
+/* 가로 화면 최종: 조이스틱 오른쪽 맨 아래에 버튼을 한 줄로 깔기 (옆으로 밀면 더 보여요) */
+@media (orientation: landscape) and (max-height: 520px){
+  .panel{left:calc(max(18px,env(safe-area-inset-left,0px)) + 124px);right:max(12px,env(safe-area-inset-right,0px));bottom:max(10px,env(safe-area-inset-bottom,0px));
+    width:auto;max-width:none;max-height:none;margin:0;flex-direction:row;align-items:center;gap:6px;padding:6px 8px;border-radius:16px;
+    overflow-x:auto;overflow-y:hidden;background:var(--chip);box-shadow:none;scrollbar-width:none}
+  .panel::-webkit-scrollbar{display:none}
+  #walkUI,#sitUI{flex-direction:row!important;align-items:center!important;flex-wrap:nowrap;gap:6px!important;flex:none}
+  .panel .scroller{overflow:visible;flex:none}
+  .btns3,.btns{display:flex;gap:6px;flex:none}
+  .btns3{order:-1}
+  .timer{order:-2;flex:none;align-items:center;gap:8px}
+  .panel .btn{min-height:38px;padding:0 12px;white-space:nowrap;flex:none;font-size:13px}
+  .panel .btn.primary,.panel .btn.warm{font-size:14px}
+  .timer .sub,.timer .row,.label,.test{display:none}
+  .timer .big{font-size:22px}
+  #subjects{flex-wrap:nowrap;flex:none}
+  .cheer,.pose,.subj{min-height:38px}
+  .toast{bottom:calc(env(safe-area-inset-bottom,0px) + 70px)!important}
+}
 @media (prefers-reduced-motion: reduce){.hint{transition:none}}
 </style>
 </head>
@@ -148,6 +179,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline
     </div>
     <div class="scroller" aria-label="포즈">
       <button class="pose flybtn" data-fly="1">공중부양 · 1등 보상</button>
+      <button class="pose flybtn" data-blast="1">장풍 · 1등 보상</button>
       <button class="pose" data-pose="wave">손 흔들기</button>
       <button class="pose" data-pose="hooray">만세</button>
       <button class="pose" data-pose="clap">박수</button>
@@ -242,7 +274,6 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline
     </div>
     <ol class="rank" id="rankList"></ol>
     <div class="reward" id="reward"></div>
-    <button class="tool" id="btnTest">+10분 공부한 걸로 하기 (테스트용)</button>
   </div>
 </div>
 
@@ -585,6 +616,7 @@ class Avatar {
       else if(this.pose === 'hooray'){ L.rotation.x = 0; R.rotation.x = 0; L.rotation.z = -2.8; R.rotation.z = 2.8; this.body.position.y = Math.abs(Math.sin(t*8))*0.12; }
       else if(this.pose === 'clap'){ const c = Math.abs(Math.sin(t*13)); L.rotation.x = -1.25; R.rotation.x = -1.25; R.rotation.z = -0.7 + 0.45*c; L.rotation.z = 0.7 - 0.45*c; }
       else if(this.pose === 'dance'){ const s = Math.sin(t*6); this.body.rotation.y = s*0.5; L.rotation.x = 0; R.rotation.x = 0; L.rotation.z = -1.4 - s*0.7; R.rotation.z = 1.4 - s*0.7; this.body.position.y = Math.abs(Math.sin(t*12))*0.08; if(this.mode !== 'sit'){ this.legs[0].rotation.x = Math.sin(t*12)*0.3; this.legs[1].rotation.x = -Math.sin(t*12)*0.3; } }
+      else if(this.pose === 'blast'){ L.rotation.x = -1.5; R.rotation.x = -1.5; L.rotation.z = 0.25; R.rotation.z = -0.25; this.body.rotation.x = 0.15; }
       else if(this.pose === 'bow'){ const b = t < 0.5 ? t/0.5 : (t > 1.9 ? Math.max(0, 1 - (t-1.9)/0.5) : 1); this.body.rotation.x = 0.55*b; L.rotation.x = 0; R.rotation.x = 0; L.rotation.z += (0 - L.rotation.z)*k; R.rotation.z += (0 - R.rotation.z)*k; }
       if(t > this.poseDur) this.pose = null;
     } else {
@@ -605,6 +637,14 @@ class Avatar {
       this.auraRing.position.y = -(this.flyH + this.bob) + 0.03; this.auraRing.material.opacity = 0.2 + 0.35*Math.min(1, this.flyH/1.7);
       this.sparks.forEach((s, i) => { const a = tt*1.8 + i*Math.PI/3; s.position.set(Math.cos(a)*0.62, 0.7 + Math.sin(tt*3 + i)*0.35, Math.sin(a)*0.62); });
     }
+    // 장풍에 맞으면 빙글빙글 돌면서 날아가요
+    if(!this.remote && (this.kvx || this.kvz)){
+      this.pos.x = clamp(this.pos.x + this.kvx*dt, -W/2 + 0.6, W/2 - 0.6);
+      this.pos.z = clamp(this.pos.z + this.kvz*dt, -D/2 + 0.6, D/2 - 0.6);
+      const f = Math.exp(-2.2*dt); this.kvx *= f; this.kvz *= f;
+      if(Math.hypot(this.kvx, this.kvz) < 0.2){ this.kvx = 0; this.kvz = 0; }
+    }
+    if(this.spinT > 0){ this.spinT -= dt; this.ry += dt*14; this.targetRy = this.ry; }
     // 점프 (위로 튀었다가 중력으로 떨어짐)
     if(!this.remote && (this.vy !== 0 || this.jumpY > 0)){ this.jumpY += this.vy*dt; this.vy -= 14*dt; if(this.jumpY <= 0){ this.jumpY = 0; this.vy = 0; } }
     if(this.jumpY > 0.03){ this.legs[0].rotation.x = -0.5; this.legs[1].rotation.x = 0.3; }
@@ -646,6 +686,18 @@ function botBrain(b, dt){
 let cheerT = rand(4, 9);
 function botCheer(dt){
   cheerT -= dt; if(cheerT > 0) return; cheerT = rand(7, 14);
+  const top = bots.find(x => x === topAv);
+  if(top && top.mode !== 'sit' && Math.random() < 0.45){
+    const targets = allAvatars.filter(a => a !== top && a.group.visible);
+    if(targets.length){
+      const tg = targets.reduce((m, a) => Math.hypot(a.pos.x - top.pos.x, a.pos.z - top.pos.z) < Math.hypot(m.pos.x - top.pos.x, m.pos.z - top.pos.z) ? a : m);
+      let dx = tg.pos.x - top.pos.x, dz = tg.pos.z - top.pos.z; const l = Math.hypot(dx, dz) || 1; dx /= l; dz /= l;
+      top.path = []; top.mode = 'idle'; top.ry = top.targetRy = Math.atan2(dx, dz);
+      top.pose = 'blast'; top.poseT = 0; top.poseDur = 0.6; top.say('장풍!');
+      spawnBlast(top, top.pos.x + dx*0.6, top.pos.z + dz*0.6, dx, dz);
+      return;
+    }
+  }
   const b = pick(bots);
   b.say(pick(['파이팅!','같이 하자','조금만 더!','나 수학 끝!','쉬는 시간~']));
   if(Math.random() < 0.5) b.doPose(pick(['wave','hooray','clap','dance'])); else b.jump();
@@ -708,7 +760,7 @@ function handlePlayers(){
     if(!r){
       const name = (typeof s.name === 'string' && s.name.trim() ? s.name.trim() : '친구').slice(0, 8);
       r = { av:new Avatar({ name, hair:okColor(s.hair) ? s.hair : '#3B2A24', shirt:okColor(s.shirt) ? s.shirt : '#2C6FD1', x:num(s.x, -W/2, W/2, 0), z:num(s.z, -D/2, D/2, 0), remote:true }),
-            say:s.say && s.say.n, pose:s.pose && s.pose.n, tx:0, tz:0 };
+            say:s.say && s.say.n, pose:s.pose && s.pose.n, blast:s.blast && s.blast.n, tx:0, tz:0 };
       remotes.set(uid, r); if(me) toast(name + '님이 들어왔어요');
     }
     const av = r.av;
@@ -724,6 +776,15 @@ function handlePlayers(){
       av.seat = seat; if(seat >= 0 && !(seats[seat].occ && seats[seat].occ.isMe)) seats[seat].occ = av;
     }
     if(s.say && s.say.n !== r.say){ r.say = s.say.n; if(SAY_OK.indexOf(s.say.text) >= 0) av.say(s.say.text); }
+    if(s.blast && s.blast.n !== r.blast){
+      r.blast = s.blast.n; const bl = s.blast;
+      // 1등인 친구가 15초 안에 쏜 장풍만 받아요
+      if(av === topAv && Math.abs(now - num(bl.n, 0, 9e15, 0)) < 15000){
+        let dx = num(bl.dx, -1, 1, 0), dz = num(bl.dz, -1, 1, 1); const l = Math.hypot(dx, dz) || 1; dx /= l; dz /= l;
+        av.pose = 'blast'; av.poseT = 0; av.poseDur = 0.6;
+        spawnBlast(av, num(bl.x, -W/2, W/2, av.pos.x), num(bl.z, -D/2, D/2, av.pos.z), dx, dz);
+      }
+    }
     if(s.pose && s.pose.n !== r.pose){ r.pose = s.pose.n; if(POSES.indexOf(s.pose.name) >= 0){ av.pose = s.pose.name; av.poseT = 0; av.poseDur = s.pose.name === 'dance' ? 4 : 2.6; } }
   });
   [...remotes.keys()].forEach(k => { if(!seen.has(k)) dropRemote(k); });
@@ -854,12 +915,14 @@ joyEl.addEventListener('pointercancel', joyEnd);
 window.addEventListener('keydown', e => {
   if(e.target && e.target.tagName === 'INPUT') return;
   if(e.key === ' ' && me && $('#boardEd').hidden){ e.preventDefault(); doJump(); return; }
+  if((e.key === 'f' || e.key === 'F') && me){ doBlast(); return; }
   keys[e.key.toLowerCase()] = true;
 });
 window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
 const freeAt = (x, z) => { const c = toCell(x, z); return !blocked[c[1]*GW + c[0]]; };
 const flyFree = (x, z) => Math.abs(x) < W/2 - 0.5 && Math.abs(z) < D/2 - 0.5;   // 날 때는 벽만 막혀요
 function steer(dt){
+  if(me.spinT > 0) return;   // 장풍 맞고 날아가는 중
   let ix = joy.x, iy = joy.y;
   if(keys['a'] || keys['arrowleft']) ix -= 1;
   if(keys['d'] || keys['arrowright']) ix += 1;
@@ -1016,7 +1079,7 @@ $('#btnBoard').addEventListener('click', openBoard);
 
 /* 오늘 공부시간 랭킹 + 1등 보상(공중부양 포즈) */
 const todayStr = new Date().toDateString();
-let flyUnlocked = (store.get('class8-fly', null) || {}).date === todayStr;
+let flyUnlocked = false;   // 지금 1등일 때만 true (1등을 뺏기면 다시 잠겨요)
 let saveT = 5;
 function ranking(){ const arr = (botsOn ? bots : []).concat([...remotes.values()].map(r => r.av)); if(me) arr.push(me); return arr.sort((a, b) => b.total - a.total); }
 const mins = s => Math.floor(s/60) + '분';
@@ -1032,18 +1095,17 @@ function renderRank(){
   });
   const r = $('#reward'); r.textContent = '';
   const b = document.createElement('b'), s = document.createElement('span');
-  if(flyUnlocked){ b.textContent = '공중부양 포즈를 얻었어요'; s.textContent = '포즈 줄의 \'공중부양\'을 누르면 떠올라서 날아다닐 수 있어요. 날 때는 책상 위로도 지나갈 수 있어요.'; }
+  if(flyUnlocked){ b.textContent = '지금 1등! 공중부양 + 장풍 사용 가능'; s.textContent = '공중부양으로 책상 위를 날아다니고, 장풍으로 친구를 날려보낼 수 있어요. 1등을 뺏기면 다시 잠겨요.'; }
   else {
-    b.textContent = '1등 보상 · 공중부양 포즈';
+    b.textContent = '1등 보상 · 공중부양 + 장풍';
     const gap = me ? Math.ceil((rk[0].total - me.total)/60) + 1 : 0;
-    s.textContent = '오늘 공부시간 1등을 하면 공중에 떠서 날아다닐 수 있어요. ' + (me ? (rk[0] === me ? '곧 보상을 받아요!' : '1등까지 ' + gap + '분 더 공부하면 돼요.') : '');
+    s.textContent = '오늘 공부시간 1등만 쓸 수 있어요. ' + (me ? (rk[0] === me ? '곧 보상을 받아요!' : '1등까지 ' + gap + '분 더 공부하면 돼요.') : '');
   }
   r.append(b, s);
 }
 function openRank(){ renderRank(); $('#rankSheet').hidden = false; }
 $('#btnRank').addEventListener('click', openRank);
 $('#rankClose').addEventListener('click', () => { $('#rankSheet').hidden = true; });
-$('#btnTest').addEventListener('click', () => { if(!me) return; me.total += 600; renderRank(); toast('테스트: 공부시간 +10분'); });
 function setFly(on){
   if(!me) return;
   if(on && me.mode === 'sit') me.standUp();
@@ -1051,10 +1113,10 @@ function setFly(on){
   if(on) toast('조이스틱으로 하늘을 날아요. 책상 위로도 지나갈 수 있어요');
 }
 function unlockFly(){
-  flyUnlocked = true; store.set('class8-fly', { date:todayStr });
+  flyUnlocked = true;
   $('#rankSheet').hidden = true;
   setFly(true); me.say('1등이다!');
-  setTimeout(() => toast('공부시간 1등! 공중부양 포즈를 얻었어요'), 2300);
+  setTimeout(() => toast('공부시간 1등! 공중부양이랑 장풍을 쓸 수 있어요'), 2300);
   bots.forEach(b => { if(b.mode !== 'walk') b.doPose('clap'); });
 }
 document.querySelectorAll('[data-fly]').forEach(b => b.addEventListener('click', () => {
@@ -1062,7 +1124,65 @@ document.querySelectorAll('[data-fly]').forEach(b => b.addEventListener('click',
   if(!flyUnlocked){ toast('오늘 공부시간 1등을 하면 얻을 수 있어요'); openRank(); return; }
   setFly(!me.flying);
 }));
+/* 장풍 (1등 보상): 앞으로 기 덩어리를 쏘고, 맞은 친구는 날아가요.
+   친구 폰에서는 '내가 맞았는지'를 각자 계산해서 스스로 날아가요 (자기 위치는 자기만 바꿀 수 있어서). */
+const blasts = [], bursts = [];
+const blastGeo = new THREE.SphereGeometry(0.26, 16, 12), glowGeo = new THREE.SphereGeometry(0.5, 16, 12), ringGeo = new THREE.TorusGeometry(0.42, 0.05, 8, 24);
+function spawnBlast(owner, x, z, dx, dz){
+  const g = new THREE.Group();
+  g.add(new THREE.Mesh(blastGeo, new THREE.MeshBasicMaterial({ color:'#E6FDFF' })));
+  g.add(new THREE.Mesh(glowGeo, new THREE.MeshBasicMaterial({ color:'#5CE1E6', transparent:true, opacity:0.35, depthWrite:false })));
+  const ring = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({ color:'#FFFFFF', transparent:true, opacity:0.75 })); g.add(ring);
+  g.position.set(x, 1.1, z); scene.add(g);
+  blasts.push({ g, ring, owner, dx, dz, dist:0 });
+}
+function knock(av, dx, dz){
+  if(av.mode === 'sit') av.standUp();
+  av.path = []; av.goSeat = null; av.flying = false; av.mode = 'idle'; av.pose = null;
+  av.kvx = dx*8; av.kvz = dz*8; av.vy = 6; av.jumpY = Math.max(av.jumpY, 0.01); av.spinT = 1.1;
+  av.say('으악!');
+  if(av === me) toast('장풍에 맞았어요!');
+}
+function updateBlasts(dt){
+  for(let i = blasts.length - 1; i >= 0; i--){
+    const b = blasts[i], step = 10*dt;
+    b.g.position.x += b.dx*step; b.g.position.z += b.dz*step; b.dist += step;
+    b.ring.rotation.y += dt*8; b.ring.rotation.x += dt*5; b.g.scale.setScalar(1 + Math.sin(b.dist*6)*0.08);
+    let hit = null;
+    for(const a of allAvatars){ if(a !== b.owner && a.group.visible && Math.hypot(a.pos.x - b.g.position.x, a.pos.z - b.g.position.z) < 0.7){ hit = a; break; } }
+    if(hit || b.dist > 11 || Math.abs(b.g.position.x) > W/2 || Math.abs(b.g.position.z) > D/2){
+      if(hit){
+        if(!hit.remote) knock(hit, b.dx, b.dz);   // 친구는 친구 폰에서 날아가요
+        const fx = new THREE.Mesh(new THREE.RingGeometry(0.2, 0.32, 32), new THREE.MeshBasicMaterial({ color:'#BFF8FF', transparent:true, opacity:0.9, side:THREE.DoubleSide, depthWrite:false }));
+        fx.position.copy(b.g.position); fx.lookAt(camera.position); scene.add(fx); bursts.push({ fx, t:0 });
+      }
+      scene.remove(b.g); blasts.splice(i, 1);
+    }
+  }
+  for(let i = bursts.length - 1; i >= 0; i--){
+    const e = bursts[i]; e.t += dt; e.fx.scale.setScalar(1 + e.t*10); e.fx.material.opacity = Math.max(0, 0.9 - e.t*2.2);
+    if(e.t > 0.45){ scene.remove(e.fx); bursts.splice(i, 1); }
+  }
+}
+let blastCd = 0;
+function doBlast(){
+  if(!me) return;
+  if(!flyUnlocked){ toast('오늘 공부시간 1등만 장풍을 쏠 수 있어요'); openRank(); return; }
+  if(me.mode === 'sit'){ toast('일어난 다음에 쏠 수 있어요'); return; }
+  const now = Date.now(); if(now < blastCd){ toast('장풍 모으는 중…'); return; }
+  blastCd = now + 2500;
+  const dx = Math.sin(me.ry), dz = Math.cos(me.ry), x = me.pos.x + dx*0.6, z = me.pos.z + dz*0.6;
+  me.pose = 'blast'; me.poseT = 0; me.poseDur = 0.6; me.say('장풍!');
+  spawnBlast(me, x, z, dx, dz);
+  if(myRef) myRef.update({ blast:{ n:now, x:+x.toFixed(2), z:+z.toFixed(2), dx:+dx.toFixed(3), dz:+dz.toFixed(3) } }).catch(netErr);
+}
+document.querySelectorAll('[data-blast]').forEach(b => b.addEventListener('click', doBlast));
 function syncFlyBtns(){
+  document.querySelectorAll('[data-blast]').forEach(b => {
+    const label = flyUnlocked ? '장풍 쏘기' : '장풍 · 1등 보상';
+    if(b.textContent !== label) b.textContent = label;
+    b.setAttribute('aria-disabled', String(!flyUnlocked));
+  });
   document.querySelectorAll('[data-fly]').forEach(b => {
     const label = !flyUnlocked ? '공중부양 · 1등 보상' : (me && me.flying ? '착지하기' : '공중부양');
     if(b.textContent !== label) b.textContent = label;
@@ -1089,7 +1209,9 @@ function updateUI(){
   if(!$('#rankSheet').hidden) renderRank();
   if(me){
     $('#rankTxt').textContent = '내 순위 ' + (rk.indexOf(me) + 1) + '위 · ' + mins(me.total);
-    if(!flyUnlocked && rk[0] === me && me.total >= 60) unlockFly();
+    const isTop = rk[0] === me && me.total >= 60;
+    if(isTop && !flyUnlocked) unlockFly();
+    else if(!isTop && flyUnlocked){ flyUnlocked = false; if(me.flying) setFly(false); toast('1등을 뺏겼어요! 1등 보상이 잠겼어요'); }
     saveT -= 0.25; if(saveT <= 0){ saveT = 5; store.set('class8-today', { date:todayStr, total:me.total }); }
   }
   if(!me) return;
@@ -1115,6 +1237,7 @@ const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: 
 function loop(){
   const dt = Math.min(clock3.getDelta(), 0.05);
   if(botsOn){ bots.forEach(b => { botBrain(b, dt); b.update(dt); }); botCheer(dt); }
+  updateBlasts(dt);
   const now = Date.now();
   remotes.forEach((r, id) => {
     const k = 1 - Math.exp(-dt*10); r.av.pos.x += (r.tx - r.av.pos.x)*k; r.av.pos.z += (r.tz - r.av.pos.z)*k; r.av.update(dt);
