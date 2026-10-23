@@ -196,8 +196,8 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline
       <button type="button" class="pose flybtn" id="btnSurvey">설문하기</button>
     </div>
     <div class="scroller" aria-label="포즈">
-      <button class="pose flybtn" data-fly="1">공중부양 · 1등 보상</button>
-      <button class="pose flybtn" data-blast="1">장풍 · 1등 보상</button>
+      <button class="pose flybtn" data-fly="1">새로운 행동 ? · 1등 보상</button>
+      <button class="pose flybtn" data-blast="1">새로운 행동 ? · 1등 보상</button>
       <button class="pose" data-pose="wave">손 흔들기</button>
       <button class="pose" data-pose="hooray">만세</button>
       <button class="pose" data-pose="clap">박수</button>
@@ -223,7 +223,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline
     </div>
     <div class="row" id="subjects"></div>
     <div class="scroller" aria-label="포즈">
-      <button class="pose flybtn" data-fly="1">공중부양 · 1등 보상</button>
+      <button class="pose flybtn" data-fly="1">새로운 행동 ? · 1등 보상</button>
       <button class="pose" data-pose="wave">손 흔들기</button>
       <button class="pose" data-pose="hooray">만세</button>
       <button class="pose" data-pose="clap">박수</button>
@@ -1309,7 +1309,7 @@ function renderRankList(){
   const b = document.createElement('b'), s = document.createElement('span');
   if(flyUnlocked){ b.textContent = '오늘 1등 보상 · 공중부양 + 장풍 사용 중'; s.textContent = '공중부양으로 책상 위를 날아다니고, 장풍으로 친구를 날려보낼 수 있어요. 1등을 뺏기면 다시 잠겨요.'; }
   else {
-    b.textContent = '오늘 1등 보상 · 공중부양 + 장풍';
+    b.textContent = '오늘 1등 보상 · 새로운 행동 2가지';
     const gap = me ? Math.ceil((rk[0].total - me.total)/60) + 1 : 0;
     s.textContent = '오늘 공부시간 1등만 쓸 수 있어요. ' + (me ? (rk[0] === me ? '곧 보상을 받아요!' : '1등까지 ' + gap + '분 더 공부하면 돼요.') : '');
   }
@@ -1525,7 +1525,7 @@ function updateBlasts(dt){
 let blastCd = 0;
 function doBlast(){
   if(!me) return;
-  if(!flyUnlocked){ toast('오늘 공부시간 1등만 장풍을 쏠 수 있어요'); openRank(); return; }
+  if(!flyUnlocked){ toast('오늘 공부시간 1등만 쓸 수 있는 새로운 행동이에요'); openRank(); return; }
   if(me.mode === 'sit'){ toast('일어난 다음에 쏠 수 있어요'); return; }
   const now = Date.now(); if(now < blastCd){ toast('장풍 모으는 중…'); return; }
   blastCd = now + 2500;
@@ -1537,12 +1537,12 @@ function doBlast(){
 document.querySelectorAll('[data-blast]').forEach(b => b.addEventListener('click', doBlast));
 function syncFlyBtns(){
   document.querySelectorAll('[data-blast]').forEach(b => {
-    const label = flyUnlocked ? '장풍 쏘기' : '장풍 · 1등 보상';
+    const label = flyUnlocked ? '장풍 쏘기' : '새로운 행동 ? · 1등 보상';   // 1등이 되기 전엔 무슨 행동인지 비밀
     if(b.textContent !== label) b.textContent = label;
     b.setAttribute('aria-disabled', String(!flyUnlocked));
   });
   document.querySelectorAll('[data-fly]').forEach(b => {
-    const label = !flyUnlocked ? '공중부양 · 1등 보상' : (me && me.flying ? '착지하기' : '공중부양');
+    const label = !flyUnlocked ? '새로운 행동 ? · 1등 보상' : (me && me.flying ? '착지하기' : '공중부양');
     if(b.textContent !== label) b.textContent = label;
     b.setAttribute('aria-disabled', String(!flyUnlocked)); b.classList.toggle('on', !!(me && me.flying));
   });
