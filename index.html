@@ -102,6 +102,23 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline
   background:var(--chip);border:2px solid var(--line);touch-action:none}
 .joy .knob{position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:50%;background:var(--accent);box-shadow:0 4px 12px rgba(0,0,0,.4)}
 .joy .arrows{position:absolute;inset:8px;border-radius:50%;pointer-events:none}
+/* 가로 화면: 조작 패널은 오른쪽 아래, 조이스틱은 왼쪽 아래 */
+@media (orientation: landscape) and (max-height: 520px){
+  .panel{left:auto;right:max(12px,env(safe-area-inset-right,0px));bottom:max(8px,env(safe-area-inset-bottom,0px));margin:0;width:min(360px,46vw);max-height:calc(100% - 16px);overflow-y:auto;border-radius:18px;padding:10px 12px;gap:8px}
+  .panel .btn{min-height:40px}
+  .btns3 .btn.primary{font-size:14px}
+  .cheer,.pose,.subj{min-height:34px;padding:0 11px;font-size:12px}
+  .timer .big{font-size:30px}
+  .test{display:none}
+  .joy{left:max(18px,env(safe-area-inset-left,0px));width:112px;height:112px}
+  .hint{top:calc(env(safe-area-inset-top,0px) + 10px);font-size:11px;max-width:40%}
+  .setup{align-items:center}
+  .card{max-height:calc(100% - 16px);overflow-y:auto;margin:8px 0;padding:16px;gap:10px}
+  .card h1{font-size:22px}
+  .ed-card{max-height:calc(100% - 8px);overflow-y:auto;padding:12px;gap:8px}
+  .rank{max-height:40vh}
+  .toast{bottom:calc(env(safe-area-inset-bottom,0px) + 20px)!important;left:40%}
+}
 @media (prefers-reduced-motion: reduce){.hint{transition:none}}
 </style>
 </head>
@@ -176,6 +193,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline
     <div id="authIn" class="auth">
       <p>구글 계정으로 로그인하면 반 친구들과 같은 교실에 들어가요. 친구들에게는 내가 정한 닉네임만 보여요.</p>
       <button type="button" class="btn google" id="googleBtn"><svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.5l6.7-6.7C35.6 2.4 30.2 0 24 0 14.6 0 6.6 5.4 2.7 13.2l7.8 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17.5z"/><path fill="#FBBC05" d="M10.5 28.7c-.5-1.4-.8-3-.8-4.7s.3-3.2.8-4.7l-7.8-6.1C1 16.6 0 20.2 0 24s1 7.4 2.7 10.8l7.8-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.9 2.3-8.4 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.8 6.1C6.6 42.6 14.6 48 24 48z"/></svg>구글로 로그인</button>
+      <button type="button" class="btn" id="anonBtn" hidden>구글 로그인 없이 입장하기</button>
     </div>
     <div id="authInApp" class="auth" hidden>
       <p><b>카카오톡 같은 앱 안에서는 구글 로그인이 막혀 있어요.</b> 크롬이나 사파리로 열어주세요.</p>
@@ -666,8 +684,11 @@ function pushPresence(){
   if(key === lastSent && now - lastSentAt < 10000) return;
   lastSent = key; lastSentAt = now;
   s.online = true; s.at = now;
-  myRef.update(s).catch(() => {});
+  myRef.update(s).catch(netErr);
 }
+// 저장이나 읽기가 막히면 이유를 한 번 보여줘요 (규칙·로그인 문제 찾기용)
+let netErrShown = false;
+function netErr(e){ if(netErrShown) return; netErrShown = true; toast('서버 연결 오류: ' + ((e && (e.code || e.message)) || '알 수 없음')); }
 function send(msg){
   if(msg.t === 'ink'){ shareInk(); return; }
   if(!myRef) return;
@@ -733,7 +754,7 @@ function startNetwork(uid){
     netOn = s.val() === true;
     if(netOn){ myRef.onDisconnect().update({ online:false }); lastSent = ''; pushPresence(); }
   });
-  rtdb.ref('players').on('value', s => { allPlayers = s.val() || {}; handlePlayers(); });
+  rtdb.ref('players').on('value', s => { allPlayers = s.val() || {}; handlePlayers(); }, netErr);
   rtdb.ref('board/main').on('value', s => { const d = s.val(); if(d && typeof d.png === 'string' && d.png.indexOf('data:image/png;base64,') === 0) loadInk(d.png); });
 }
 window.addEventListener('pagehide', () => { if(myRef) myRef.update({ online:false }); });
@@ -759,10 +780,18 @@ $('#copyLink').addEventListener('click', () => {
 $('#googleBtn').addEventListener('click', () => {
   if(!fbOk){ toast('연결 준비가 안 됐어요. 인터넷을 확인하고 새로고침해요'); return; }
   const prov = new firebase.auth.GoogleAuthProvider();
+  // 아이폰·아이패드 사파리는 다른 페이지로 넘어가는 방식(redirect)이 막혀서 팝업 방식만 써요
   auth.signInWithPopup(prov).catch(err => {
-    if(err && (err.code === 'auth/popup-blocked' || err.code === 'auth/operation-not-supported-in-this-environment')) auth.signInWithRedirect(prov);
-    else if(err && err.code !== 'auth/popup-closed-by-user' && err.code !== 'auth/cancelled-popup-request') toast('로그인하지 못했어요 (' + (err.code || '오류') + ')');
+    const c = err && err.code;
+    if(c === 'auth/popup-closed-by-user' || c === 'auth/cancelled-popup-request') return;
+    if(c === 'auth/popup-blocked') toast('팝업이 막혔어요. 브라우저에서 팝업 차단을 끄고 다시 눌러요');
+    else toast('구글 로그인이 안 됐어요 (' + (c || '오류') + ')');
+    $('#anonBtn').hidden = false;
   });
+});
+$('#anonBtn').addEventListener('click', () => {
+  if(!fbOk) return;
+  auth.signInAnonymously().catch(err => toast('입장하지 못했어요 (' + ((err && err.code) || '오류') + ')'));
 });
 $('#logoutBtn').addEventListener('click', () => { if(auth) auth.signOut(); });
 if(fbOk){
@@ -1053,7 +1082,8 @@ function updateUI(){
   $('#testNote').textContent = botsOn ? '친구가 들어오기 전까지는 가상 친구들이 함께 있어요' : '우리 반 친구 ' + remotes.size + '명과 같이 있어요';
   document.querySelector('.chip .dot').style.background = netOn ? '#6EE7A8' : '#A9B0D6';
   const ph = $('#panel').hidden ? 0 : $('#panel').getBoundingClientRect().height;
-  joyEl.style.bottom = (ph + 14) + 'px'; $('#toast').style.bottom = (ph + 150) + 'px';
+  const land = window.innerWidth > window.innerHeight && window.innerHeight <= 520;   // 가로 화면인지
+  joyEl.style.bottom = land ? 'calc(env(safe-area-inset-bottom, 0px) + 14px)' : (ph + 14) + 'px'; $('#toast').style.bottom = (ph + 150) + 'px';
   const rk = ranking(); topAv = rk[0] && rk[0].total > 0 ? rk[0] : null;
   syncFlyBtns();
   if(!$('#rankSheet').hidden) renderRank();
