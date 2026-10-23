@@ -269,11 +269,17 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline
 <div class="board-ed" id="rankSheet" hidden>
   <div class="ed-card" role="dialog" aria-label="오늘 공부시간 랭킹">
     <div class="ed-head">
-      <h2>오늘 공부시간 랭킹</h2>
+      <h2>공부시간 랭킹</h2>
       <button class="tool" id="rankClose">닫기</button>
+    </div>
+    <div class="row" id="rankTabs">
+      <button type="button" class="tool" data-tab="day" aria-pressed="true">오늘</button>
+      <button type="button" class="tool" data-tab="week" aria-pressed="false">이번 주</button>
     </div>
     <ol class="rank" id="rankList"></ol>
     <div class="reward" id="reward"></div>
+    <div class="reward" id="reward2"></div>
+    <button type="button" class="tool" id="btnTestMode" aria-pressed="false">테스트 모드: 꺼짐</button>
   </div>
 </div>
 
@@ -409,6 +415,80 @@ DESK_Z.forEach(dz => DESK_X.forEach(dx => {
   seats.push({ x:dx, z:dz + 0.85, occ:null });
 }));
 
+/* ---------- 2-2. 주간 공부왕 전용 책상 (창가 앞쪽, 교실을 바라보는 자리) ---------- */
+const VIP = { x:6.2, z:-4.0 };
+let kingUid = null, kingName = '', deskTheme = 'blackgold', testMode = false, localTheme = null;
+const vipGroup = new THREE.Group(); vipGroup.position.set(VIP.x, 0, VIP.z); scene.add(vipGroup);
+function canvasTex(draw){ const c = document.createElement('canvas'); c.width = c.height = 256; draw(c.getContext('2d'), 256, 256); return new THREE.CanvasTexture(c); }
+// 재질 무늬: 호두나무 결, 대리석 줄무늬, 검정 바탕의 금가루
+const woodTex = canvasTex((x, w, h) => { x.fillStyle = '#6B4226'; x.fillRect(0, 0, w, h); for(let i=0;i<40;i++){ x.strokeStyle = 'rgba(40,20,8,' + (0.15 + Math.random()*0.25) + ')'; x.lineWidth = 1 + Math.random()*2; const y = Math.random()*h; x.beginPath(); x.moveTo(0, y); x.bezierCurveTo(w*0.3, y + rand(-10,10), w*0.7, y + rand(-10,10), w, y + rand(-6,6)); x.stroke(); } });
+const marbleTex = canvasTex((x, w, h) => { x.fillStyle = '#F4F4F2'; x.fillRect(0, 0, w, h); for(let i=0;i<14;i++){ x.strokeStyle = 'rgba(120,125,135,' + (0.15 + Math.random()*0.3) + ')'; x.lineWidth = 0.6 + Math.random()*1.6; let px = Math.random()*w, py = 0; x.beginPath(); x.moveTo(px, py); for(let s=0;s<8;s++){ px += rand(-30,30); py += h/8; x.lineTo(px, py); } x.stroke(); } });
+const blackTex = canvasTex((x, w, h) => { x.fillStyle = '#17171C'; x.fillRect(0, 0, w, h); for(let i=0;i<300;i++){ x.fillStyle = 'rgba(255,215,120,' + Math.random()*0.1 + ')'; x.fillRect(Math.random()*w, Math.random()*h, 1, 1); } });
+const THEMES = {
+  classic:   { name:'클래식 원목', top:woodTex,   trim:'#D4AF37', leg:'#4A2C17', chair:'#7A4A2A', carpet:'#6E1F2E', plateBg:'#D4AF37', plateFg:'#2A1A0E' },
+  marble:    { name:'화이트 마블', top:marbleTex, trim:'#C9CED6', leg:'#DADDE2', chair:'#F2F2F2', carpet:'#B9BEC7', plateBg:'#E4E7EC', plateFg:'#2B2F3A' },
+  blackgold: { name:'블랙 골드',   top:blackTex,  trim:'#E5B93C', leg:'#111116', chair:'#1C1C22', carpet:'#1E2A55', plateBg:'#111116', plateFg:'#E5B93C' }
+};
+const vm = {
+  top:new THREE.MeshPhongMaterial({ shininess:60 }), trim:new THREE.MeshPhongMaterial({ shininess:110, specular:0x999999, side:THREE.DoubleSide }),
+  leg:new THREE.MeshPhongMaterial({ shininess:30 }), chair:new THREE.MeshPhongMaterial({ shininess:45 }), carpet:new THREE.MeshLambertMaterial({})
+};
+function vbox(w, h, d, m, x, y, z, parent){ const o = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); o.position.set(x, y, z); o.castShadow = true; o.receiveShadow = true; (parent || vipGroup).add(o); return o; }
+// 카펫 (테두리 + 바닥)
+const carpetTrim = new THREE.Mesh(new THREE.PlaneGeometry(2.95, 2.75), vm.trim); carpetTrim.rotation.x = -Math.PI/2; carpetTrim.position.set(0, 0.008, -0.35); vipGroup.add(carpetTrim);
+const carpet = new THREE.Mesh(new THREE.PlaneGeometry(2.8, 2.6), vm.carpet); carpet.rotation.x = -Math.PI/2; carpet.position.set(0, 0.012, -0.35); carpet.receiveShadow = true; vipGroup.add(carpet);
+// 책상: 상판 + 금테 + 양쪽 서랍장 + 앞판 + 손잡이
+vbox(1.8, 0.08, 0.9, vm.top, 0, 0.8, 0);
+vbox(1.86, 0.03, 0.96, vm.trim, 0, 0.755, 0);
+[-0.62, 0.62].forEach(sx => { vbox(0.5, 0.72, 0.8, vm.leg, sx, 0.38, 0); vbox(0.18, 0.03, 0.03, vm.trim, sx, 0.56, 0.41); vbox(0.18, 0.03, 0.03, vm.trim, sx, 0.3, 0.41); });
+vbox(0.74, 0.46, 0.04, vm.leg, 0, 0.52, 0.38);
+// 가죽 회전의자 (책상 뒤에 놓여서, 앉으면 교실 쪽을 바라봐요)
+const chairG = new THREE.Group(); chairG.position.set(0, 0, -0.9); vipGroup.add(chairG);
+vbox(0.6, 0.1, 0.56, vm.chair, 0, 0.5, 0, chairG);
+vbox(0.62, 1.0, 0.1, vm.chair, 0, 1.05, -0.3, chairG);
+vbox(0.64, 0.05, 0.12, vm.trim, 0, 1.56, -0.3, chairG);
+[-0.34, 0.34].forEach(sx => { vbox(0.08, 0.06, 0.5, vm.trim, sx, 0.74, 0, chairG); vbox(0.06, 0.2, 0.06, vm.leg, sx, 0.62, 0.18, chairG); });
+{ const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.42, 10), vm.trim); stem.position.y = 0.25; chairG.add(stem);
+  const base = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.32, 0.04, 5), vm.leg); base.position.y = 0.04; base.castShadow = true; chairG.add(base); }
+// 스탠드 조명
+const lampG = new THREE.Group(); lampG.position.set(-0.62, 0.84, -0.18); vipGroup.add(lampG);
+{ const b1 = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.13, 0.04, 20), vm.trim); b1.position.y = 0.02; lampG.add(b1);
+  const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.52, 8), vm.trim); pole.position.y = 0.28; lampG.add(pole);
+  const shade = new THREE.Mesh(new THREE.ConeGeometry(0.17, 0.2, 24, 1, true), vm.trim); shade.position.set(0.06, 0.56, 0.08); shade.rotation.x = 0.35; lampG.add(shade); }
+const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.055, 12, 10), new THREE.MeshBasicMaterial({ color:'#FFE7B0' })); bulb.position.set(0.06, 0.5, 0.1); lampG.add(bulb);
+const lampLight = new THREE.PointLight('#FFD9A0', 0.35, 4.5, 2); lampLight.position.set(0.06, 0.45, 0.12); lampG.add(lampLight);
+// 소품: 트로피, 화분, 쌓인 책
+{ vbox(0.14, 0.06, 0.14, vm.leg, 0.55, 0.87, -0.12);
+  const cup = new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.03, 0.16, 18), vm.trim); cup.position.set(0.55, 0.99, -0.12); cup.castShadow = true; vipGroup.add(cup);
+  const star = new THREE.Mesh(new THREE.OctahedronGeometry(0.04), vm.trim); star.position.set(0.55, 1.1, -0.12); vipGroup.add(star);
+  const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.07, 0.14, 14), mat('#C8B8A6')); pot.position.set(0.78, 0.91, 0.24); vipGroup.add(pot);
+  [[0.78, 1.04, 0.24, 0.1], [0.72, 1.1, 0.2, 0.07], [0.84, 1.09, 0.28, 0.07]].forEach(q => { const lf = new THREE.Mesh(new THREE.SphereGeometry(q[3], 12, 10), mat('#3E8E5A')); lf.position.set(q[0], q[1], q[2]); lf.castShadow = true; vipGroup.add(lf); });
+  ['#8B2E3C', '#2E4A8B', '#2E7A4F'].forEach((c, i) => vbox(0.32 - i*0.03, 0.05, 0.22, mat(c), 0.12, 0.865 + i*0.05, -0.2)); }
+// 명패 (책상 앞쪽, 교실을 향해)
+vbox(0.96, 0.25, 0.04, vm.trim, 0, 0.97, 0.4);
+const plateCv = document.createElement('canvas'); plateCv.width = 512; plateCv.height = 128;
+const plateTex = new THREE.CanvasTexture(plateCv);
+const plate = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.21), new THREE.MeshBasicMaterial({ map:plateTex })); plate.position.set(0, 0.97, 0.422); vipGroup.add(plate);
+function drawPlate(){
+  const th = THEMES[deskTheme], x = plateCv.getContext('2d');
+  x.fillStyle = th.plateBg; x.fillRect(0, 0, 512, 128);
+  x.strokeStyle = th.plateFg; x.lineWidth = 4; x.strokeRect(10, 10, 492, 108);
+  x.fillStyle = th.plateFg; x.textAlign = 'center'; x.textBaseline = 'middle';
+  if(kingName){ x.font = '700 26px "Noto Sans KR", sans-serif'; x.fillText('이번 주 공부왕', 256, 42); x.font = '52px Jua, "Noto Sans KR", sans-serif'; x.fillText(kingName, 256, 88); }
+  else { x.font = '700 32px "Noto Sans KR", sans-serif'; x.fillText('이번 주 공부왕을 기다려요', 256, 64); }
+  plateTex.needsUpdate = true;
+}
+function applyTheme(k){
+  const th = THEMES[k] || THEMES.blackgold; deskTheme = THEMES[k] ? k : 'blackgold';
+  vm.top.map = th.top; vm.top.needsUpdate = true;
+  vm.trim.color.set(th.trim); vm.leg.color.set(th.leg); vm.chair.color.set(th.chair); vm.carpet.color.set(th.carpet);
+  drawPlate();
+}
+applyTheme('blackgold');
+const VIP_SEAT = seats.length;
+seats.push({ x:VIP.x, z:VIP.z - 0.9, occ:null, vip:true, ry:0 });
+vipGroup.traverse(o => { if(o.isMesh) o.userData.seat = VIP_SEAT; });
+
 /* ---------- 3. 길찾기 (책상을 피해서 걸어가도록 A* 사용) ---------- */
 const CS = 0.5, GW = W/CS, GD = D/CS;
 const blocked = new Uint8Array(GW*GD);
@@ -417,6 +497,7 @@ for(let j=0;j<GD;j++) for(let i=0;i<GW;i++){
   const x = cellX(i), z = cellZ(j);
   let b = Math.abs(x) > W/2 - 0.5 || Math.abs(z) > D/2 - 0.5;
   if(Math.abs(x) < 1.45 && Math.abs(z + 4.6) < 0.8) b = true;             // 교탁
+  if(Math.abs(x - 6.2) < 1.05 && Math.abs(z + 4.0) < 0.6) b = true;        // 공부왕 책상
   DESK_Z.forEach(dz => DESK_X.forEach(dx => { if(Math.abs(x-dx) < 0.85 && Math.abs(z-dz) < 0.55) b = true; }));
   blocked[j*GW+i] = b ? 1 : 0;
 }
@@ -569,11 +650,11 @@ class Avatar {
   }
   sitAt(i, minutesAgo){
     const s = seats[i]; s.occ = this; this.seat = i; this.mode = 'sit'; this.path = []; this.flying = false;
-    this.pos.set(s.x, 0, s.z); this.targetRy = Math.PI;
+    this.pos.set(s.x, 0, s.z); this.targetRy = s.ry != null ? s.ry : Math.PI;
     this.studyStart = Date.now() - (minutesAgo || 0)*60000;
   }
   update(dt){
-    if(!this.remote && this.mode === 'sit') this.total += dt;   // 앉아 있는 동안 오늘 공부시간이 쌓여요
+    if(!this.remote && this.mode === 'sit'){ this.total += dt; this.week = (this.week || 0) + dt; }   // 앉아 있는 동안 오늘·이번 주 공부시간이 쌓여요
     if(!this.remote && this.mode === 'walk' && !this.manual && !this.path.length) this.mode = 'idle';
     if(!this.remote && this.mode === 'walk' && !this.manual){
       const t = this.path[0];
@@ -667,6 +748,7 @@ const BOT_DEF = [
 const bots = BOT_DEF.map(d => {
   const p = randomFreePoint();
   const b = new Avatar({ name:d.name, hair:d.hair, shirt:d.shirt, x:p.x, z:p.z, ry:rand(-3,3), total:d.today*60 });
+  b.week = d.today*60*4;
   if(d.seat != null){ b.subject = d.subject; b.sitAt(d.seat, d.min); b.pos.set(seats[d.seat].x, 0, seats[d.seat].z); b.ry = Math.PI; b.think = rand(60, 120); }
   else b.think = rand(0.5, 3);
   return b;
@@ -676,7 +758,7 @@ function botBrain(b, dt){
   b.think -= dt; if(b.think > 0) return;
   if(b.mode === 'sit'){ b.standUp(); b.rest = true; const p = randomFreePoint(); b.setPath(findPath(b.pos.x, b.pos.z, p.x, p.z)); b.rest = true; b.think = rand(3, 6); return; }
   if(Math.random() < 0.35){
-    const free = seats.map((s,i) => i).filter(i => !seats[i].occ);
+    const free = seats.map((s,i) => i).filter(i => !seats[i].occ && !seats[i].vip);
     if(free.length){ const i = pick(free); b.flying = false; b.subject = pick(SUBJECTS); b.goSeat = i; b.setPath(findPath(b.pos.x, b.pos.z, seats[i].x, seats[i].z)); b.think = rand(25, 60); return; }
   }
   b.flying = (b === topAv) && Math.random() < 0.6;   // 1등 친구는 가끔 날아다녀요
@@ -720,6 +802,30 @@ let fbOk = false, auth = null, rtdb = null, myUid = null, myRef = null, netOn = 
 try { firebase.initializeApp(firebaseConfig); auth = firebase.auth(); rtdb = firebase.database(); fbOk = true; } catch(e) { fbOk = false; }
 const remotes = new Map();
 let savedTotal = 0, nickTouched = false;
+// 한 주 = 월요일 0시 ~ 일요일 밤. 이번 주 기록은 weeks/<이번 주 월요일>/<uid> 에 저장
+function weekKeyOf(back){ const d = new Date(), day = (d.getDay() + 6) % 7; const m = new Date(d.getFullYear(), d.getMonth(), d.getDate() - day - 7*back);
+  return m.getFullYear() + '-' + String(m.getMonth() + 1).padStart(2, '0') + '-' + String(m.getDate()).padStart(2, '0'); }
+const thisWeek = weekKeyOf(0), lastWeek = weekKeyOf(1);
+let savedWeek = 0, myWeekRef = null, weekData = {}, deskData = null, lastWeekKing = null;
+function iAmKing(){ return !!(me && (testMode || (myUid && kingUid === myUid))); }
+// 지난주 1등 = 이번 주 공부왕. 테스트 모드에서는 내가 공부왕
+function refreshKing(){
+  let uid = null, name = '';
+  if(testMode && me){ uid = myUid || 'me'; name = me.name; }
+  else if(lastWeekKing){ uid = lastWeekKing.uid; name = (typeof lastWeekKing.name === 'string' && lastWeekKing.name.trim() ? lastWeekKing.name.trim() : '친구').slice(0, 8); }
+  kingUid = uid; kingName = name;
+  let th = 'blackgold';
+  if(deskData && deskData.by === uid && THEMES[deskData.theme]) th = deskData.theme;
+  if(testMode && localTheme) th = localTheme;
+  applyTheme(th);
+  if(me && me.seat === VIP_SEAT && !iAmKing()){ me.standUp(); toast('공부왕 자리에서 일어났어요'); }
+}
+function setDeskTheme(k){
+  if(!iAmKing() || !THEMES[k]) return;
+  localTheme = k;
+  if(rtdb && myUid && !testMode) rtdb.ref('desk').set({ theme:k, by:myUid, at:Date.now() }).catch(netErr);
+  refreshKing(); toast('책상을 ' + THEMES[k].name + '(으)로 바꿨어요');
+}
 let sayN = 0, poseN = 0, lastSent = '', lastSentAt = 0;
 const okColor = c => typeof c === 'string' && /^#[0-9A-Fa-f]{6}$/.test(c);
 const num = (v, a, b, d) => (typeof v === 'number' && isFinite(v)) ? clamp(v, a, b) : d;
@@ -816,6 +922,15 @@ function startNetwork(uid){
     if(netOn){ myRef.onDisconnect().update({ online:false }); lastSent = ''; pushPresence(); }
   });
   rtdb.ref('players').on('value', s => { allPlayers = s.val() || {}; handlePlayers(); }, netErr);
+  myWeekRef = rtdb.ref('weeks/' + thisWeek + '/' + uid);
+  myWeekRef.once('value').then(s => { const d = s.val(); if(d && typeof d.t === 'number') savedWeek = Math.max(savedWeek, d.t); }).catch(() => {});
+  rtdb.ref('weeks/' + thisWeek).on('value', s => { weekData = s.val() || {}; }, netErr);
+  rtdb.ref('weeks/' + lastWeek).on('value', s => {
+    const v = s.val() || {}; let best = null;
+    Object.keys(v).forEach(u => { const e = v[u]; if(e && typeof e.t === 'number' && (!best || e.t > best.t)) best = { uid:u, t:e.t, name:e.name }; });
+    lastWeekKing = best && best.t >= 60 ? best : null; refreshKing();
+  }, netErr);
+  rtdb.ref('desk').on('value', s => { deskData = s.val() || null; refreshKing(); }, netErr);
   rtdb.ref('board/main').on('value', s => { const d = s.val(); if(d && typeof d.png === 'string' && d.png.indexOf('data:image/png;base64,') === 0) loadInk(d.png); });
 }
 window.addEventListener('pagehide', () => { if(myRef) myRef.update({ online:false }); });
@@ -886,12 +1001,13 @@ function goTo(x, z, seat){
 function trySeat(i){
   const s = seats[i];
   if(s.occ === me) return;
+  if(s.vip && !iAmKing()){ toast('주간 공부왕 전용 자리예요'); return; }
   if(s.occ){ toast(s.occ.name + ' 자리예요. 다른 빈 자리를 골라요'); return; }
   goTo(s.x, s.z, i);
 }
 function nearestFreeSeat(){
   let best = -1, bd = 1e9;
-  seats.forEach((s,i) => { if(s.occ) return; const d = Math.hypot(s.x - me.pos.x, s.z - me.pos.z); if(d < bd){ bd = d; best = i; } });
+  seats.forEach((s,i) => { if(s.occ || s.vip) return; const d = Math.hypot(s.x - me.pos.x, s.z - me.pos.z); if(d < bd){ bd = d; best = i; } });
   return best;
 }
 
@@ -973,7 +1089,7 @@ canvas.addEventListener('pointercancel', endPointer);
 canvas.addEventListener('wheel', e => { e.preventDefault(); cam.dist = clamp(cam.dist * (1 + e.deltaY*0.001), 3.5, 13); }, { passive:false });
 
 const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
-const tapTargets = deskGroups.concat([board, floor]);
+const tapTargets = deskGroups.concat([vipGroup, board, floor]);
 function tap(x, y){
   if(!me) return;
   ndc.set(x / window.innerWidth * 2 - 1, -(y / window.innerHeight) * 2 + 1);
@@ -1010,7 +1126,8 @@ $('#setupForm').addEventListener('submit', e => {
   store.set('class8-avatar', { nick, hair:choice.hair, shirt:choice.shirt });
   me = new Avatar({ name:nick, hair:choice.hair, shirt:choice.shirt, x:-5.2, z:4.8, ry:Math.PI, isMe:true });
   cam.t.set(me.pos.x, 1, me.pos.z); resetView();
-  { const td = store.get('class8-today', null); me.total = Math.max(td && td.date === todayStr ? td.total : 0, savedTotal); lastSent = ''; }
+  { const td = store.get('class8-today', null); me.total = Math.max(td && td.date === todayStr ? td.total : 0, savedTotal); lastSent = '';
+    const tw = store.get('class8-week', null); me.week = Math.max(tw && tw.wk === thisWeek ? tw.t : 0, savedWeek); refreshKing(); }
   $('#setup').hidden = true; $('#panel').hidden = false; $('#joy').hidden = false; $('#btnRank').hidden = false;
   toast('8반 교실에 들어왔어요');
 });
@@ -1084,25 +1201,67 @@ let saveT = 5;
 function ranking(){ const arr = (botsOn ? bots : []).concat([...remotes.values()].map(r => r.av)); if(me) arr.push(me); return arr.sort((a, b) => b.total - a.total); }
 const mins = s => Math.floor(s/60) + '분';
 const CROWN = '<svg width="18" height="18" viewBox="0 0 24 24" aria-label="1등"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z" fill="#FFC93C"/></svg>';
-function renderRank(){
-  const rk = ranking(), list = $('#rankList'); list.textContent = '';
-  rk.forEach((a, i) => {
-    const li = document.createElement('li'); if(a === me) li.className = 'me';
+let rankTab = 'day';
+const fmtTime = s => s >= 3600 ? Math.floor(s/3600) + '시간 ' + Math.floor((s % 3600)/60) + '분' : Math.floor(s/60) + '분';
+function rankRows(){
+  if(rankTab === 'day') return ranking().map(a => ({ name:a.name, t:a.total, me:a === me }));
+  const rows = [];
+  Object.keys(weekData || {}).forEach(u => { if(u === myUid) return; const e = weekData[u];
+    if(e && typeof e.t === 'number') rows.push({ name:(typeof e.name === 'string' && e.name.trim() ? e.name.trim() : '친구').slice(0, 8), t:clamp(e.t, 0, 7*86400), me:false }); });
+  if(botsOn) bots.forEach(b => rows.push({ name:b.name, t:b.week || 0, me:false }));
+  if(me) rows.push({ name:me.name, t:me.week || 0, me:true });
+  return rows.sort((a, b) => b.t - a.t);
+}
+function renderRankList(){
+  const list = $('#rankList'); list.textContent = '';
+  rankRows().forEach((a, i) => {
+    const li = document.createElement('li'); if(a.me) li.className = 'me';
     const n = document.createElement('span'); n.className = 'n'; if(i === 0) n.innerHTML = CROWN; else n.textContent = String(i + 1);
-    const nm = document.createElement('span'); nm.textContent = a === me ? a.name + ' (나)' : a.name;
-    const t = document.createElement('span'); t.className = 't'; t.textContent = mins(a.total);
-    li.append(n, nm, t); list.appendChild(li);
+    const nm = document.createElement('span'); nm.textContent = a.me ? a.name + ' (나)' : a.name;
+    const tm = document.createElement('span'); tm.className = 't'; tm.textContent = fmtTime(a.t);
+    li.append(n, nm, tm); list.appendChild(li);
   });
-  const r = $('#reward'); r.textContent = '';
+  const rk = ranking(), r = $('#reward'); r.textContent = '';
   const b = document.createElement('b'), s = document.createElement('span');
-  if(flyUnlocked){ b.textContent = '지금 1등! 공중부양 + 장풍 사용 가능'; s.textContent = '공중부양으로 책상 위를 날아다니고, 장풍으로 친구를 날려보낼 수 있어요. 1등을 뺏기면 다시 잠겨요.'; }
+  if(flyUnlocked){ b.textContent = '오늘 1등 보상 · 공중부양 + 장풍 사용 중'; s.textContent = '공중부양으로 책상 위를 날아다니고, 장풍으로 친구를 날려보낼 수 있어요. 1등을 뺏기면 다시 잠겨요.'; }
   else {
-    b.textContent = '1등 보상 · 공중부양 + 장풍';
+    b.textContent = '오늘 1등 보상 · 공중부양 + 장풍';
     const gap = me ? Math.ceil((rk[0].total - me.total)/60) + 1 : 0;
     s.textContent = '오늘 공부시간 1등만 쓸 수 있어요. ' + (me ? (rk[0] === me ? '곧 보상을 받아요!' : '1등까지 ' + gap + '분 더 공부하면 돼요.') : '');
   }
   r.append(b, s);
+  document.querySelectorAll('#rankTabs [data-tab]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.tab === rankTab)));
 }
+function renderDeskReward(){
+  const r = $('#reward2'); r.textContent = '';
+  const b = document.createElement('b'), s = document.createElement('span');
+  b.textContent = '주간 보상 · 공부왕 전용 책상';
+  s.textContent = kingName
+    ? '이번 주 공부왕: ' + kingName + (testMode ? ' (테스트)' : ' (지난주 1등)') + '. 창가 앞쪽 전용 책상은 공부왕만 앉을 수 있어요.'
+    : '아직 공부왕이 없어요. 이번 주 공부시간 1등이 다음 주 일주일 동안 전용 책상을 써요.';
+  r.append(b, s);
+  if(iAmKing()){
+    const lab = document.createElement('span'); lab.textContent = '내 책상 테마 고르기'; r.appendChild(lab);
+    const row = document.createElement('div'); row.className = 'row';
+    Object.keys(THEMES).forEach(k => {
+      const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'tool'; btn.textContent = THEMES[k].name;
+      btn.setAttribute('aria-pressed', String(deskTheme === k));
+      btn.addEventListener('click', () => { setDeskTheme(k); renderDeskReward(); });
+      row.appendChild(btn);
+    });
+    r.appendChild(row);
+  }
+}
+function renderRank(){ renderRankList(); renderDeskReward(); }
+document.querySelectorAll('#rankTabs [data-tab]').forEach(x => x.addEventListener('click', () => { rankTab = x.dataset.tab; renderRankList(); }));
+// 테스트 모드: 공유하기 전에 지울 부분
+$('#btnTestMode').addEventListener('click', () => {
+  testMode = !testMode;
+  $('#btnTestMode').textContent = testMode ? '테스트 모드: 켜짐 (모든 보상 사용 가능)' : '테스트 모드: 꺼짐';
+  $('#btnTestMode').setAttribute('aria-pressed', String(testMode));
+  refreshKing(); renderRank();
+  toast(testMode ? '테스트 모드: 공중부양·장풍·공부왕 책상을 쓸 수 있어요' : '테스트 모드를 껐어요');
+});
 function openRank(){ renderRank(); $('#rankSheet').hidden = false; }
 $('#btnRank').addEventListener('click', openRank);
 $('#rankClose').addEventListener('click', () => { $('#rankSheet').hidden = true; });
@@ -1206,13 +1365,14 @@ function updateUI(){
   joyEl.style.bottom = land ? 'calc(env(safe-area-inset-bottom, 0px) + 14px)' : (ph + 14) + 'px'; $('#toast').style.bottom = (ph + 150) + 'px';
   const rk = ranking(); topAv = rk[0] && rk[0].total > 0 ? rk[0] : null;
   syncFlyBtns();
-  if(!$('#rankSheet').hidden) renderRank();
+  if(!$('#rankSheet').hidden) renderRankList();
   if(me){
     $('#rankTxt').textContent = '내 순위 ' + (rk.indexOf(me) + 1) + '위 · ' + mins(me.total);
-    const isTop = rk[0] === me && me.total >= 60;
+    const isTop = (rk[0] === me && me.total >= 60) || testMode;
     if(isTop && !flyUnlocked) unlockFly();
     else if(!isTop && flyUnlocked){ flyUnlocked = false; if(me.flying) setFly(false); toast('1등을 뺏겼어요! 1등 보상이 잠겼어요'); }
-    saveT -= 0.25; if(saveT <= 0){ saveT = 5; store.set('class8-today', { date:todayStr, total:me.total }); }
+    saveT -= 0.25; if(saveT <= 0){ saveT = 5; store.set('class8-today', { date:todayStr, total:me.total }); store.set('class8-week', { wk:thisWeek, t:me.week });
+      if(myWeekRef && me.week >= 1) myWeekRef.set({ t:Math.floor(me.week), name:me.name }).catch(netErr); }
   }
   if(!me) return;
   const sitting = me.mode === 'sit';
@@ -1238,6 +1398,7 @@ function loop(){
   const dt = Math.min(clock3.getDelta(), 0.05);
   if(botsOn){ bots.forEach(b => { botBrain(b, dt); b.update(dt); }); botCheer(dt); }
   updateBlasts(dt);
+  { const on = !!seats[VIP_SEAT].occ; lampLight.intensity += ((on ? 1.6 : 0.35) - lampLight.intensity)*Math.min(1, dt*4); bulb.material.color.set(on ? '#FFE7B0' : '#B8A27A'); }
   const now = Date.now();
   remotes.forEach((r, id) => {
     const k = 1 - Math.exp(-dt*10); r.av.pos.x += (r.tx - r.av.pos.x)*k; r.av.pos.z += (r.tz - r.av.pos.z)*k; r.av.update(dt);
@@ -1266,7 +1427,7 @@ function loop(){
 requestAnimationFrame(loop);
 
 // 글꼴이 늦게 도착하면 칠판과 이름표를 다시 그려요
-if(document.fonts && document.fonts.ready) document.fonts.ready.then(() => { drawBoard(); allAvatars.forEach(a => a.drawLabel(true)); });
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(() => { drawBoard(); drawPlate(); allAvatars.forEach(a => a.drawLabel(true)); });
 })();
 </script>
 </body>
