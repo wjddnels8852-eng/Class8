@@ -67,6 +67,23 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline
 .rank{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;max-height:42vh;overflow:auto}
 .rank li{display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;background:var(--panel-2);font-size:14px}
 .rank li.me{outline:2px solid var(--accent);outline-offset:-2px}
+.sv-card{max-height:calc(100% - 8px);overflow-y:auto}
+.sv-body{display:flex;flex-direction:column;gap:16px}
+.sv-note{margin:0;font-size:13px;line-height:1.55;color:var(--muted)}
+.q{display:flex;flex-direction:column;gap:8px}
+.q > p{margin:0;font-size:14px;font-weight:700;line-height:1.45;color:var(--fg)}
+.opts{display:flex;flex-wrap:wrap;gap:6px}
+.opts .tool{min-height:38px}
+.scale-hint{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+.sv-text{width:100%;box-sizing:border-box;min-height:72px;border-radius:12px;border:1.5px solid var(--line);background:var(--panel-2);color:var(--fg);padding:10px;font:14px var(--font-b);resize:vertical}
+.metric{display:flex;flex-direction:column;gap:6px}
+.metric > b{font-size:14px}
+.metric small{color:var(--muted);font-size:12px}
+.bar-row{display:grid;grid-template-columns:54px minmax(0,1fr) 64px;gap:8px;align-items:center;font-size:12px;color:var(--muted)}
+.bar{height:14px;border-radius:999px;background:var(--panel-2);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:999px;background:var(--muted)}
+.bar i.post{background:var(--accent)}
+.bar-row .v{text-align:right;color:var(--fg);font-weight:700;font-variant-numeric:tabular-nums}
 .rank .n{font-family:var(--font-d);font-size:18px;color:var(--muted);display:flex;align-items:center}
 .rank .t{font-variant-numeric:tabular-nums;font-weight:700}
 .reward{border-radius:16px;padding:14px;background:var(--reward-bg);border:1.5px solid var(--warm);display:flex;flex-direction:column;gap:4px}
@@ -176,6 +193,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline
       <button class="cheer" data-say="같이 하자">같이 하자</button>
       <button class="cheer" data-say="조금만 더!">조금만 더!</button>
       <button class="cheer" data-say="안녕!">안녕!</button>
+      <button type="button" class="pose flybtn" id="btnSurvey">설문하기</button>
     </div>
     <div class="scroller" aria-label="포즈">
       <button class="pose flybtn" data-fly="1">공중부양 · 1등 보상</button>
@@ -266,6 +284,21 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline
   </div>
 </div>
 
+<div class="board-ed" id="surveySheet" hidden>
+  <div class="ed-card sv-card" role="dialog" aria-label="우리 반 공부 설문">
+    <div class="ed-head">
+      <h2 id="svTitle">우리 반 공부 설문</h2>
+      <button class="tool" id="svClose">닫기</button>
+    </div>
+    <div class="row" id="svTabs">
+      <button type="button" class="tool" data-sv="pre" aria-pressed="true">사전 설문</button>
+      <button type="button" class="tool" data-sv="post" aria-pressed="false">사후 설문</button>
+      <button type="button" class="tool" data-sv="result" aria-pressed="false">결과 보기</button>
+    </div>
+    <div id="svBody" class="sv-body"></div>
+  </div>
+</div>
+
 <div class="board-ed" id="rankSheet" hidden>
   <div class="ed-card" role="dialog" aria-label="오늘 공부시간 랭킹">
     <div class="ed-head">
@@ -279,7 +312,6 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline
     <ol class="rank" id="rankList"></ol>
     <div class="reward" id="reward"></div>
     <div class="reward" id="reward2"></div>
-    <button type="button" class="tool" id="btnTestMode" aria-pressed="false">테스트 모드: 꺼짐</button>
   </div>
 </div>
 
@@ -327,7 +359,7 @@ scene.add(new THREE.HemisphereLight('#E4ECFF', '#5A4636', 0.85));
 const sun = new THREE.DirectionalLight('#FFF4E0', 0.75);
 sun.position.set(6, 10, 4); sun.castShadow = true;
 sun.shadow.mapSize.set(1024, 1024);
-Object.assign(sun.shadow.camera, { left:-10, right:10, top:10, bottom:-10, near:1, far:30 });
+Object.assign(sun.shadow.camera, { left:-13, right:13, top:13, bottom:-13, near:1, far:30 });
 scene.add(sun);
 
 const mat = (c, o) => new THREE.MeshLambertMaterial(Object.assign({ color:c }, o || {}));
@@ -338,14 +370,14 @@ function box(w,h,d,color,x,y,z,parent){
 }
 
 /* ---------- 2. 교실 만들기 (바닥, 벽, 칠판, 창문, 책상) ---------- */
-const W = 16, D = 12, H = 3.6;   // 교실 가로, 세로, 높이 (단위: m 느낌)
+const W = 20, D = 14, H = 3.6;   // 16명이 넉넉하게 들어가도록 넓힌 교실   // 교실 가로, 세로, 높이 (단위: m 느낌)
 
 // 나무 바닥 무늬를 캔버스로 그려서 텍스처로 사용
 const fc = document.createElement('canvas'); fc.width = fc.height = 256;
 const fx = fc.getContext('2d');
 for(let i=0;i<8;i++){ fx.fillStyle = i%2 ? '#8E6C4F' : '#86654A'; fx.fillRect(0, i*32, 256, 32); fx.fillStyle='#6F5139'; fx.fillRect(0, i*32+31, 256, 1); fx.fillRect((i*97)%256, i*32, 1, 32); }
 const floorTex = new THREE.CanvasTexture(fc);
-floorTex.wrapS = floorTex.wrapT = THREE.RepeatWrapping; floorTex.repeat.set(4, 3);
+floorTex.wrapS = floorTex.wrapT = THREE.RepeatWrapping; floorTex.repeat.set(5, 3.5);
 const floor = new THREE.Mesh(new THREE.PlaneGeometry(W, D), mat('#ffffff', { map:floorTex }));
 floor.rotation.x = -Math.PI/2; floor.receiveShadow = true; scene.add(floor);
 
@@ -384,6 +416,34 @@ box(6.4, 2.5, 0.06, '#8A6A4A', 0, 1.95, -D/2 + 0.04);
 const board = new THREE.Mesh(new THREE.PlaneGeometry(6, 2.3), new THREE.MeshBasicMaterial({ map:boardTex }));
 board.position.set(0, 1.95, -D/2 + 0.08); scene.add(board);
 
+// 설문 게시판 (칠판 왼쪽 벽): 탭하면 설문 창이 열려요
+const surveyGroup = new THREE.Group(); surveyGroup.position.set(-5.3, 1.95, -D/2); scene.add(surveyGroup);
+const corkCv = document.createElement('canvas'); corkCv.width = 512; corkCv.height = 384;
+const corkTex = new THREE.CanvasTexture(corkCv);
+function drawCork(){
+  const x = corkCv.getContext('2d');
+  x.fillStyle = '#B98A5A'; x.fillRect(0, 0, 512, 384);
+  for(let i=0;i<900;i++){ x.fillStyle = 'rgba(90,55,25,' + Math.random()*0.35 + ')'; x.fillRect(Math.random()*512, Math.random()*384, 2, 2); }
+  const paper = (px, py, w, h, rot, bg, lines) => {
+    x.save(); x.translate(px, py); x.rotate(rot); x.fillStyle = 'rgba(0,0,0,.25)'; x.fillRect(-w/2 + 4, -h/2 + 5, w, h);
+    x.fillStyle = bg; x.fillRect(-w/2, -h/2, w, h); x.fillStyle = '#D9534F'; x.beginPath(); x.arc(0, -h/2 + 12, 8, 0, Math.PI*2); x.fill();
+    x.fillStyle = '#2A2A33'; x.textAlign = 'center'; lines.forEach((l, i) => { x.font = l[1]; x.fillText(l[0], 0, -h/2 + 48 + i*36); }); x.restore();
+  };
+  paper(256, 120, 340, 150, -0.02, '#FFFDF5', [['우리 반 공부 설문', '40px Jua, "Noto Sans KR", sans-serif'], ['탭해서 참여해요', '700 24px "Noto Sans KR", sans-serif']]);
+  paper(150, 285, 190, 130, 0.05, '#FFF4B8', [['사전 설문', '32px Jua, "Noto Sans KR", sans-serif'], ['지금 참여', '700 22px "Noto Sans KR", sans-serif']]);
+  paper(370, 285, 190, 130, -0.04, '#D8F3FF', [['사후 설문', '32px Jua, "Noto Sans KR", sans-serif'], ['11월 10일부터', '700 22px "Noto Sans KR", sans-serif']]);
+  corkTex.needsUpdate = true;
+}
+drawCork();
+{ const fr = new THREE.Mesh(new THREE.BoxGeometry(1.8, 1.36, 0.06), mat('#6B4A2E')); fr.position.z = 0.04; fr.castShadow = true; surveyGroup.add(fr);
+  const ck = new THREE.Mesh(new THREE.PlaneGeometry(1.66, 1.24), new THREE.MeshBasicMaterial({ map:corkTex })); ck.position.z = 0.075; surveyGroup.add(ck); }
+// 아직 참여 안 한 설문이 있으면 빨간 점이 깜빡여요
+const dotCv = document.createElement('canvas'); dotCv.width = dotCv.height = 64;
+{ const x = dotCv.getContext('2d'); x.fillStyle = '#FF4D5E'; x.beginPath(); x.arc(32, 32, 26, 0, Math.PI*2); x.fill(); x.fillStyle = '#FFFFFF'; x.font = '700 38px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('!', 32, 34); }
+const surveyDot = new THREE.Sprite(new THREE.SpriteMaterial({ map:new THREE.CanvasTexture(dotCv), depthWrite:false }));
+surveyDot.scale.set(0.3, 0.3, 1); surveyDot.position.set(0.85, 0.66, 0.15); surveyDot.visible = false; surveyGroup.add(surveyDot);
+surveyGroup.traverse(o => { o.userData.survey = true; });
+
 // 창문 (오른쪽 벽), 문 (뒤쪽 벽), 시계
 [-3.5, 0.5, 4.2].forEach(z => {
   const win = new THREE.Mesh(new THREE.PlaneGeometry(2.4, 1.5), new THREE.MeshBasicMaterial({ color:'#A9D3FF' }));
@@ -397,10 +457,10 @@ box(0.03, 0.26, 0.02, '#15151C', 5.6, 3.0, -D/2 + 0.05);
 box(0.2, 0.03, 0.02, '#15151C', 5.68, 2.9, -D/2 + 0.05);
 
 // 교탁
-box(2.2, 0.95, 0.9, '#8A5A3C', 0, 0.475, -4.6);
+box(2.2, 0.95, 0.9, '#8A5A3C', 0, 0.475, -5.6);
 
-// 학생 책상 12개와 의자 (자리 정보는 seats 배열에 저장)
-const DESK_X = [-4.8, -1.6, 1.6, 4.8], DESK_Z = [-2.3, 0.3, 2.9];
+// 학생 책상 20개와 의자 (자리 정보는 seats 배열에 저장)
+const DESK_X = [-6.4, -3.2, 0, 3.2, 6.4], DESK_Z = [-3.0, -0.4, 2.2, 4.8];   // 5줄 × 4줄 = 20자리
 const seats = [], deskGroups = [];
 DESK_Z.forEach(dz => DESK_X.forEach(dx => {
   const i = seats.length;
@@ -416,7 +476,7 @@ DESK_Z.forEach(dz => DESK_X.forEach(dx => {
 }));
 
 /* ---------- 2-2. 주간 공부왕 전용 책상 (창가 앞쪽, 교실을 바라보는 자리) ---------- */
-const VIP = { x:6.2, z:-4.0 };
+const VIP = { x:8.4, z:-5.0 };
 let kingUid = null, kingName = '', deskTheme = 'blackgold', testMode = false, localTheme = null;
 const vipGroup = new THREE.Group(); vipGroup.position.set(VIP.x, 0, VIP.z); scene.add(vipGroup);
 function canvasTex(draw){ const c = document.createElement('canvas'); c.width = c.height = 256; draw(c.getContext('2d'), 256, 256); return new THREE.CanvasTexture(c); }
@@ -496,8 +556,8 @@ const cellX = i => -W/2 + (i+0.5)*CS, cellZ = j => -D/2 + (j+0.5)*CS;
 for(let j=0;j<GD;j++) for(let i=0;i<GW;i++){
   const x = cellX(i), z = cellZ(j);
   let b = Math.abs(x) > W/2 - 0.5 || Math.abs(z) > D/2 - 0.5;
-  if(Math.abs(x) < 1.45 && Math.abs(z + 4.6) < 0.8) b = true;             // 교탁
-  if(Math.abs(x - 6.2) < 1.05 && Math.abs(z + 4.0) < 0.6) b = true;        // 공부왕 책상
+  if(Math.abs(x) < 1.45 && Math.abs(z + 5.6) < 0.8) b = true;             // 교탁
+  if(Math.abs(x - 8.4) < 1.05 && Math.abs(z + 5.0) < 0.6) b = true;        // 공부왕 책상
   DESK_Z.forEach(dz => DESK_X.forEach(dx => { if(Math.abs(x-dx) < 0.85 && Math.abs(z-dz) < 0.55) b = true; }));
   blocked[j*GW+i] = b ? 1 : 0;
 }
@@ -831,9 +891,11 @@ const okColor = c => typeof c === 'string' && /^#[0-9A-Fa-f]{6}$/.test(c);
 const num = (v, a, b, d) => (typeof v === 'number' && isFinite(v)) ? clamp(v, a, b) : d;
 const SAY_OK = ['파이팅!','같이 하자','조금만 더!','안녕!'];
 const POSES = ['wave','hooray','clap','dance','bow'];
+// 공부시간 기록 버전: 테스트 때 쌓인 기록(버전 없음)은 랭킹에 안 들어가요
+const DATA_VER = 2;
 function myState(){
   return { name:me.name, hair:me.hair, shirt:me.shirt, x:+me.pos.x.toFixed(2), z:+me.pos.z.toFixed(2), ry:+me.ry.toFixed(2), jy:+me.jumpY.toFixed(2),
-    mode:me.mode, seat:me.seat, subject:me.subject, studyStart:me.studyStart, total:Math.floor(me.total), fly:me.flying, date:todayStr };
+    mode:me.mode, seat:me.seat, subject:me.subject, studyStart:me.studyStart, total:Math.floor(me.total), fly:me.flying, date:todayStr, v:DATA_VER };
 }
 // 바뀐 게 있을 때만 보내고(최대 1초 5번), 가만히 있으면 10초마다 '아직 있어요' 신호만 보내요
 function pushPresence(){
@@ -875,7 +937,7 @@ function handlePlayers(){
     av.mode = ['idle','walk','sit'].indexOf(s.mode) >= 0 ? s.mode : 'idle';
     av.subject = SUBJECTS.indexOf(s.subject) >= 0 ? s.subject : '수학';
     av.studyStart = num(s.studyStart, 0, now, now);
-    av.total = s.date === todayStr ? num(s.total, 0, 86400, 0) : 0; av.flying = s.fly === true;
+    av.total = (s.date === todayStr && s.v === DATA_VER) ? num(s.total, 0, 86400, 0) : 0; av.flying = s.fly === true;
     const seat = (Number.isInteger(s.seat) && s.seat >= 0 && s.seat < seats.length) ? s.seat : -1;
     if(seat !== av.seat){
       if(av.seat >= 0 && seats[av.seat].occ === av) seats[av.seat].occ = null;
@@ -916,6 +978,8 @@ function shareInk(){
 }
 // 로그인 뒤에 데이터베이스 연결 시작
 function startNetwork(uid){
+  rtdb.ref('surveys/pre/' + uid).once('value').then(s => { myPreDone = s.exists(); }).catch(() => {});
+  rtdb.ref('surveys/post/' + uid).once('value').then(s => { myPostDone = s.exists(); }).catch(() => {});
   myUid = uid; myRef = rtdb.ref('players/' + uid);
   rtdb.ref('.info/connected').on('value', s => {
     netOn = s.val() === true;
@@ -923,11 +987,11 @@ function startNetwork(uid){
   });
   rtdb.ref('players').on('value', s => { allPlayers = s.val() || {}; handlePlayers(); }, netErr);
   myWeekRef = rtdb.ref('weeks/' + thisWeek + '/' + uid);
-  myWeekRef.once('value').then(s => { const d = s.val(); if(d && typeof d.t === 'number') savedWeek = Math.max(savedWeek, d.t); }).catch(() => {});
+  myWeekRef.once('value').then(s => { const d = s.val(); if(d && d.v === DATA_VER && typeof d.t === 'number') savedWeek = Math.max(savedWeek, d.t); }).catch(() => {});
   rtdb.ref('weeks/' + thisWeek).on('value', s => { weekData = s.val() || {}; }, netErr);
   rtdb.ref('weeks/' + lastWeek).on('value', s => {
     const v = s.val() || {}; let best = null;
-    Object.keys(v).forEach(u => { const e = v[u]; if(e && typeof e.t === 'number' && (!best || e.t > best.t)) best = { uid:u, t:e.t, name:e.name }; });
+    Object.keys(v).forEach(u => { const e = v[u]; if(e && e.v === DATA_VER && typeof e.t === 'number' && (!best || e.t > best.t)) best = { uid:u, t:e.t, name:e.name }; });
     lastWeekKing = best && best.t >= 60 ? best : null; refreshKing();
   }, netErr);
   rtdb.ref('desk').on('value', s => { deskData = s.val() || null; refreshKing(); }, netErr);
@@ -978,7 +1042,7 @@ if(fbOk){
       if(myUid !== u.uid){
         startNetwork(u.uid);
         // 오늘 공부시간을 서버에서 이어받기 (다른 기기에서 공부한 것도 이어져요)
-        myRef.once('value').then(s => { const d = s.val(); if(d && d.date === todayStr && typeof d.total === 'number') savedTotal = Math.max(savedTotal, d.total);
+        myRef.once('value').then(s => { const d = s.val(); if(d && d.date === todayStr && d.v === DATA_VER && typeof d.total === 'number') savedTotal = Math.max(savedTotal, d.total);
           if(d && typeof d.name === 'string' && !nickTouched) $('#nick').value = d.name.slice(0, 8); }).catch(() => {});
       }
     } else if(!inApp) showAuth('authIn');
@@ -1089,13 +1153,14 @@ canvas.addEventListener('pointercancel', endPointer);
 canvas.addEventListener('wheel', e => { e.preventDefault(); cam.dist = clamp(cam.dist * (1 + e.deltaY*0.001), 3.5, 13); }, { passive:false });
 
 const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
-const tapTargets = deskGroups.concat([vipGroup, board, floor]);
+const tapTargets = deskGroups.concat([vipGroup, surveyGroup, board, floor]);
 function tap(x, y){
   if(!me) return;
   ndc.set(x / window.innerWidth * 2 - 1, -(y / window.innerHeight) * 2 + 1);
   ray.setFromCamera(ndc, camera);
   const hits = ray.intersectObjects(tapTargets, true);
   for(const h of hits){
+    if(h.object.userData.survey){ openSurvey(); return; }
     if(h.object === board){ openBoard(); return; }
     if(h.object.userData.seat != null){ trySeat(h.object.userData.seat); return; }
     if(h.object === floor){ goTo(clamp(h.point.x, -W/2+0.6, W/2-0.6), clamp(h.point.z, -D/2+0.6, D/2-0.6)); return; }
@@ -1124,10 +1189,10 @@ $('#setupForm').addEventListener('submit', e => {
   if(!myUid){ toast('먼저 구글로 로그인해요'); return; }
   const nick = ($('#nick').value || '').trim().slice(0, 8) || '익명';
   store.set('class8-avatar', { nick, hair:choice.hair, shirt:choice.shirt });
-  me = new Avatar({ name:nick, hair:choice.hair, shirt:choice.shirt, x:-5.2, z:4.8, ry:Math.PI, isMe:true });
+  me = new Avatar({ name:nick, hair:choice.hair, shirt:choice.shirt, x:-6, z:6.2, ry:Math.PI, isMe:true });
   cam.t.set(me.pos.x, 1, me.pos.z); resetView();
-  { const td = store.get('class8-today', null); me.total = Math.max(td && td.date === todayStr ? td.total : 0, savedTotal); lastSent = '';
-    const tw = store.get('class8-week', null); me.week = Math.max(tw && tw.wk === thisWeek ? tw.t : 0, savedWeek); refreshKing(); }
+  { const td = store.get('class8-today2', null); me.total = Math.max(td && td.date === todayStr ? td.total : 0, savedTotal); lastSent = '';
+    const tw = store.get('class8-week2', null); me.week = Math.max(tw && tw.wk === thisWeek ? tw.t : 0, savedWeek); refreshKing(); }
   $('#setup').hidden = true; $('#panel').hidden = false; $('#joy').hidden = false; $('#btnRank').hidden = false;
   toast('8반 교실에 들어왔어요');
 });
@@ -1207,7 +1272,7 @@ function rankRows(){
   if(rankTab === 'day') return ranking().map(a => ({ name:a.name, t:a.total, me:a === me }));
   const rows = [];
   Object.keys(weekData || {}).forEach(u => { if(u === myUid) return; const e = weekData[u];
-    if(e && typeof e.t === 'number') rows.push({ name:(typeof e.name === 'string' && e.name.trim() ? e.name.trim() : '친구').slice(0, 8), t:clamp(e.t, 0, 7*86400), me:false }); });
+    if(e && e.v === DATA_VER && typeof e.t === 'number') rows.push({ name:(typeof e.name === 'string' && e.name.trim() ? e.name.trim() : '친구').slice(0, 8), t:clamp(e.t, 0, 7*86400), me:false }); });
   if(botsOn) bots.forEach(b => rows.push({ name:b.name, t:b.week || 0, me:false }));
   if(me) rows.push({ name:me.name, t:me.week || 0, me:true });
   return rows.sort((a, b) => b.t - a.t);
@@ -1254,14 +1319,129 @@ function renderDeskReward(){
 }
 function renderRank(){ renderRankList(); renderDeskReward(); }
 document.querySelectorAll('#rankTabs [data-tab]').forEach(x => x.addEventListener('click', () => { rankTab = x.dataset.tab; renderRankList(); }));
-// 테스트 모드: 공유하기 전에 지울 부분
-$('#btnTestMode').addEventListener('click', () => {
-  testMode = !testMode;
-  $('#btnTestMode').textContent = testMode ? '테스트 모드: 켜짐 (모든 보상 사용 가능)' : '테스트 모드: 꺼짐';
-  $('#btnTestMode').setAttribute('aria-pressed', String(testMode));
-  refreshKing(); renderRank();
-  toast(testMode ? '테스트 모드: 공중부양·장풍·공부왕 책상을 쓸 수 있어요' : '테스트 모드를 껐어요');
-});
+/* ================= 설문 (사전 · 사후 · 결과) =================
+   답변은 surveys/pre/<uid>, surveys/post/<uid> 에 한 번만 저장되고, 이름은 저장하지 않아요.
+   결과는 반 전체 평균으로만 보여줘요. */
+const POST_OPEN = new Date(2026, 10, 10);   // 사후 설문 여는 날: 2026년 11월 10일
+let myPreDone = false, myPostDone = false, svTab = 'pre', svAnswers = {};
+const STUDY_OPTS = ['30분 미만', '30분~1시간', '1~2시간', '2~3시간', '3시간 이상'], STUDY_MIN = [15, 45, 90, 150, 210];
+const FOCUS_OPTS = ['10분 미만', '10~30분', '30분~1시간', '1시간 이상'], FOCUS_MIN = [5, 20, 45, 75];
+const FEATURES = ['랭킹', '1등 보상 (공중부양·장풍)', '친구랑 같이 있는 것', '응원·포즈', '칠판', '공부왕 책상'];
+const SURVEY = {
+  pre: [
+    { k:'q1', t:'학교 수업 말고, 하루 평균 공부시간은?', type:'pick', o:STUDY_OPTS },
+    { k:'q2', t:'혼자 공부할 때 집중이 유지되는 시간은?', type:'pick', o:FOCUS_OPTS },
+    { k:'q3', t:'공부를 시작하기가 얼마나 어려워?', type:'scale', lo:'쉬워요', hi:'어려워요' },
+    { k:'q4', t:'지금 공부하고 싶은 마음은 어느 정도야?', type:'scale', lo:'전혀 없어요', hi:'아주 많아요' },
+    { k:'q5', t:'친구랑 같이 공부하면 더 오래 할 것 같아?', type:'scale', lo:'아니요', hi:'그래요' },
+    { k:'q6', t:'공부할 때 제일 큰 방해 요소는?', type:'pick', o:['폰', '귀찮음', '혼자라 지루함', '뭘 할지 모름', '기타'] }
+  ],
+  post: [
+    { k:'q1', t:'앱을 쓴 뒤, 학교 수업 말고 하루 평균 공부시간은?', type:'pick', o:STUDY_OPTS },
+    { k:'q2', t:'앱을 쓴 뒤, 집중이 유지되는 시간은?', type:'pick', o:FOCUS_OPTS },
+    { k:'q3', t:'공부를 시작하기가 얼마나 어려워?', type:'scale', lo:'쉬워요', hi:'어려워요' },
+    { k:'q4', t:'지금 공부하고 싶은 마음은 어느 정도야?', type:'scale', lo:'전혀 없어요', hi:'아주 많아요' },
+    { k:'q5', t:'이 앱 덕분에 공부할 동기가 생겼어?', type:'scale', lo:'아니요', hi:'많이 생겼어요' },
+    { k:'q6', t:'가장 동기부여가 된 기능은?', type:'pick', o:FEATURES },
+    { k:'q7', t:'불편했던 점이나 바라는 점 (선택)', type:'text' }
+  ]
+};
+const postOpen = () => Date.now() >= POST_OPEN.getTime();
+const el = (tag, cls, text) => { const e = document.createElement(tag); if(cls) e.className = cls; if(text != null) e.textContent = text; return e; };
+function openSurvey(){
+  if(!me) return;
+  svTab = !myPreDone ? 'pre' : (postOpen() && !myPostDone ? 'post' : 'result');
+  svAnswers = {}; renderSurvey(); $('#surveySheet').hidden = false; hideHint();
+}
+function renderSurvey(){
+  document.querySelectorAll('#svTabs [data-sv]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.sv === svTab)));
+  const body = $('#svBody'); body.textContent = '';
+  if(svTab === 'result'){ renderResults(body); return; }
+  const done = svTab === 'pre' ? myPreDone : myPostDone;
+  if(done){ body.appendChild(el('p', 'sv-note', '이미 참여했어요. 고마워요! 결과 보기에서 반 전체 결과를 볼 수 있어요.')); return; }
+  if(svTab === 'post' && !postOpen()){ body.appendChild(el('p', 'sv-note', '사후 설문은 11월 10일에 열려요. 그때까지 앱으로 열심히 공부해봐요!')); return; }
+  body.appendChild(el('p', 'sv-note', svTab === 'pre'
+    ? '앱을 쓰기 전 내 공부 습관을 알려줘요. 이름은 저장되지 않고, 결과는 반 전체 평균으로만 보여요. 한 번만 낼 수 있어요.'
+    : '앱을 써본 뒤 달라진 점을 알려줘요. 사전 설문과 비교해서 앱이 도움이 됐는지 확인해요.'));
+  SURVEY[svTab].forEach((q, qi) => {
+    const box = el('div', 'q'); box.appendChild(el('p', null, (qi + 1) + '. ' + q.t));
+    if(q.type === 'text'){
+      const ta = el('textarea', 'sv-text'); ta.id = 'sv-' + q.k; ta.maxLength = 200; ta.placeholder = '자유롭게 적어줘요 (200자까지)';
+      ta.value = svAnswers[q.k] || ''; ta.addEventListener('input', () => { svAnswers[q.k] = ta.value; }); box.appendChild(ta);
+    } else {
+      const opts = el('div', 'opts'), labels = q.type === 'scale' ? ['1', '2', '3', '4', '5'] : q.o;
+      labels.forEach((lab, i) => {
+        const val = q.type === 'scale' ? i + 1 : i;
+        const btn = el('button', 'tool', lab); btn.type = 'button'; btn.setAttribute('aria-pressed', String(svAnswers[q.k] === val));
+        btn.addEventListener('click', () => { svAnswers[q.k] = val; opts.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === btn))); });
+        opts.appendChild(btn);
+      });
+      box.appendChild(opts);
+      if(q.type === 'scale'){ const h = el('div', 'scale-hint'); h.append(el('span', null, '1 ' + q.lo), el('span', null, '5 ' + q.hi)); box.appendChild(h); }
+    }
+    body.appendChild(box);
+  });
+  const send = el('button', 'btn primary', '설문 내기'); send.type = 'button';
+  send.addEventListener('click', submitSurvey); body.appendChild(send);
+}
+function submitSurvey(){
+  const qs = SURVEY[svTab], missing = qs.find(q => q.type !== 'text' && svAnswers[q.k] == null);
+  if(missing){ toast('아직 안 고른 질문이 있어요'); return; }
+  if(!rtdb || !myUid){ toast('로그인한 뒤에 낼 수 있어요'); return; }
+  const data = { at:Date.now() };
+  qs.forEach(q => { if(q.type === 'text'){ const v = String(svAnswers[q.k] || '').trim().slice(0, 200); if(v) data[q.k] = v; } else data[q.k] = svAnswers[q.k]; });
+  const phase = svTab;
+  rtdb.ref('surveys/' + phase + '/' + myUid).set(data).then(() => {
+    if(phase === 'pre') myPreDone = true; else myPostDone = true;
+    toast('설문 고마워요!'); me.say('설문 완료!'); svTab = 'result'; renderSurvey();
+  }).catch(e => toast('설문을 내지 못했어요 (' + ((e && e.code) || '오류') + ')'));
+}
+function avgOf(list, k, map){ const v = list.map(a => a && a[k]).filter(x => typeof x === 'number').map(x => map ? map[x] : x).filter(x => typeof x === 'number'); return v.length ? v.reduce((s, x) => s + x, 0)/v.length : null; }
+function renderResults(body){
+  body.appendChild(el('p', 'sv-note', '결과를 불러오는 중이에요…'));
+  if(!rtdb){ body.textContent = ''; body.appendChild(el('p', 'sv-note', '로그인한 뒤에 볼 수 있어요.')); return; }
+  Promise.all([rtdb.ref('surveys/pre').once('value'), rtdb.ref('surveys/post').once('value')]).then(([a, b]) => {
+    if(svTab !== 'result') return;
+    const pre = Object.values(a.val() || {}), post = Object.values(b.val() || {});
+    body.textContent = '';
+    body.appendChild(el('p', 'sv-note', '사전 설문 ' + pre.length + '명 · 사후 설문 ' + post.length + '명 참여' + (post.length ? '' : ' (사후 설문은 11월 10일에 열려요)')));
+    const metric = (title, sub, k, map, unit, max) => {
+      const m = el('div', 'metric'); const head = el('b', null, title); m.appendChild(head); if(sub) m.appendChild(el('small', null, sub));
+      [['사용 전', avgOf(pre, k, map), ''], ['사용 후', avgOf(post, k, map), 'post']].forEach(([lab, v, cls]) => {
+        const row = el('div', 'bar-row'); const bar = el('div', 'bar'), fill = el('i', cls);
+        fill.style.width = v == null ? '0%' : Math.max(3, Math.min(100, v/max*100)) + '%'; bar.appendChild(fill);
+        row.append(el('span', null, lab), bar, el('span', 'v', v == null ? '-' : (unit === '분' ? Math.round(v) + '분' : v.toFixed(1) + '점')));
+        m.appendChild(row);
+      });
+      body.appendChild(m);
+    };
+    metric('하루 평균 공부시간', '학교 수업 제외, 설문 답을 분으로 바꿔 평균 냈어요', 'q1', STUDY_MIN, '분', 210);
+    metric('집중 유지 시간', null, 'q2', FOCUS_MIN, '분', 75);
+    metric('공부 시작의 어려움', '낮을수록 좋아요 (5점 만점)', 'q3', null, '점', 5);
+    metric('공부하고 싶은 마음', '높을수록 좋아요 (5점 만점)', 'q4', null, '점', 5);
+    if(post.length){
+      const mv = avgOf(post, 'q5');
+      const m = el('div', 'metric'); m.appendChild(el('b', null, '앱 덕분에 생긴 공부 동기'));
+      const row = el('div', 'bar-row'), bar = el('div', 'bar'), fill = el('i', 'post'); fill.style.width = (mv/5*100) + '%'; bar.appendChild(fill);
+      row.append(el('span', null, '평균'), bar, el('span', 'v', mv.toFixed(1) + '점')); m.appendChild(row); body.appendChild(m);
+      const cnt = FEATURES.map((f, i) => ({ f, n:post.filter(x => x && x.q6 === i).length })).sort((x, y) => y.n - x.n);
+      const fm = el('div', 'metric'); fm.appendChild(el('b', null, '가장 동기부여가 된 기능'));
+      cnt.forEach(c => { const row = el('div', 'bar-row'); row.style.gridTemplateColumns = '110px minmax(0,1fr) 40px';
+        const bar = el('div', 'bar'), fill = el('i', 'post'); fill.style.width = (post.length ? c.n/post.length*100 : 0) + '%'; bar.appendChild(fill);
+        row.append(el('span', null, c.f), bar, el('span', 'v', c.n + '명')); fm.appendChild(row); });
+      body.appendChild(fm);
+    }
+    // 설문 말고 앱에 실제로 쌓인 기록
+    const real = Object.values(weekData || {}).filter(e => e && e.v === DATA_VER && typeof e.t === 'number');
+    const rm = el('div', 'metric'); rm.appendChild(el('b', null, '앱에 실제로 기록된 이번 주 공부시간'));
+    rm.appendChild(el('small', null, real.length ? '참여 ' + real.length + '명 · 1인 평균 ' + fmtTime(real.reduce((s, e) => s + e.t, 0)/real.length) : '아직 이번 주 기록이 없어요'));
+    body.appendChild(rm);
+  }).catch(e => { body.textContent = ''; body.appendChild(el('p', 'sv-note', '결과를 불러오지 못했어요 (' + ((e && e.code) || '오류') + ')')); });
+}
+document.querySelectorAll('#svTabs [data-sv]').forEach(x => x.addEventListener('click', () => { svTab = x.dataset.sv; svAnswers = {}; renderSurvey(); }));
+$('#svClose').addEventListener('click', () => { $('#surveySheet').hidden = true; });
+$('#btnSurvey').addEventListener('click', openSurvey);
+
 function openRank(){ renderRank(); $('#rankSheet').hidden = false; }
 $('#btnRank').addEventListener('click', openRank);
 $('#rankClose').addEventListener('click', () => { $('#rankSheet').hidden = true; });
@@ -1368,11 +1548,11 @@ function updateUI(){
   if(!$('#rankSheet').hidden) renderRankList();
   if(me){
     $('#rankTxt').textContent = '내 순위 ' + (rk.indexOf(me) + 1) + '위 · ' + mins(me.total);
-    const isTop = (rk[0] === me && me.total >= 60) || testMode;
+    const isTop = rk[0] === me && me.total >= 60;
     if(isTop && !flyUnlocked) unlockFly();
     else if(!isTop && flyUnlocked){ flyUnlocked = false; if(me.flying) setFly(false); toast('1등을 뺏겼어요! 1등 보상이 잠겼어요'); }
-    saveT -= 0.25; if(saveT <= 0){ saveT = 5; store.set('class8-today', { date:todayStr, total:me.total }); store.set('class8-week', { wk:thisWeek, t:me.week });
-      if(myWeekRef && me.week >= 1) myWeekRef.set({ t:Math.floor(me.week), name:me.name }).catch(netErr); }
+    saveT -= 0.25; if(saveT <= 0){ saveT = 5; store.set('class8-today2', { date:todayStr, total:me.total }); store.set('class8-week2', { wk:thisWeek, t:me.week });
+      if(myWeekRef && me.week >= 1) myWeekRef.set({ t:Math.floor(me.week), name:me.name, v:DATA_VER }).catch(netErr); }
   }
   if(!me) return;
   const sitting = me.mode === 'sit';
@@ -1398,6 +1578,8 @@ function loop(){
   const dt = Math.min(clock3.getDelta(), 0.05);
   if(botsOn){ bots.forEach(b => { botBrain(b, dt); b.update(dt); }); botCheer(dt); }
   updateBlasts(dt);
+  surveyDot.visible = !!me && (!myPreDone || (postOpen() && !myPostDone));
+  if(surveyDot.visible){ const sc = 0.3 + Math.sin(performance.now()/250)*0.04; surveyDot.scale.set(sc, sc, 1); }
   { const on = !!seats[VIP_SEAT].occ; lampLight.intensity += ((on ? 1.6 : 0.35) - lampLight.intensity)*Math.min(1, dt*4); bulb.material.color.set(on ? '#FFE7B0' : '#B8A27A'); }
   const now = Date.now();
   remotes.forEach((r, id) => {
@@ -1411,7 +1593,7 @@ function loop(){
     if(sendT <= 0){ sendT = 0.2; pushPresence(); }
   } else {
     if(!reduce) introYaw += dt*0.12;
-    cam.yaw = introYaw; cam.pitch = 0.75; cam.dist = 11; cam.t.set(0, 0.5, 0.5);
+    cam.yaw = introYaw; cam.pitch = 0.75; cam.dist = 13.5; cam.t.set(0, 0.5, 0.5);
   }
   if(ringT > 0){ ringT -= dt*1.4; ring.material.opacity = Math.max(0, ringT); ring.scale.setScalar(1 + (1 - ringT)*0.6); }
   const cp = Math.cos(cam.pitch);
@@ -1427,7 +1609,7 @@ function loop(){
 requestAnimationFrame(loop);
 
 // 글꼴이 늦게 도착하면 칠판과 이름표를 다시 그려요
-if(document.fonts && document.fonts.ready) document.fonts.ready.then(() => { drawBoard(); drawPlate(); allAvatars.forEach(a => a.drawLabel(true)); });
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(() => { drawBoard(); drawPlate(); drawCork(); allAvatars.forEach(a => a.drawLabel(true)); });
 })();
 </script>
 </body>
