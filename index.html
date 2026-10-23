@@ -234,7 +234,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline
       <button class="btn warm" id="btnStand">일어나기</button>
     </div>
   </div>
-  <div class="test" id="testNote">친구가 들어오기 전까지는 가상 친구들이 함께 있어요</div>
+  <div class="test" id="testNote">아직 혼자예요. 친구가 들어오면 여기에 보여요</div>
 </div>
 
 <div class="setup" id="setup">
@@ -797,14 +797,7 @@ class Avatar {
 }
 
 /* ---------- 5. 가상 친구들 (테스트용: 컴퓨터가 움직임) ---------- */
-const BOT_DEF = [
-  { name:'초록거북', hair:'#15151C', shirt:'#2FA36B', seat:1,  subject:'수학', min:22, today:34 },
-  { name:'번개토끼', hair:'#E7B75A', shirt:'#E7A92B', today:12 },
-  { name:'달빛고래', hair:'#3B2A24', shirt:'#2B2F45', seat:4,  subject:'영어', min:18, today:26 },
-  { name:'불꽃여우', hair:'#7A3B2A', shirt:'#D9534F', today:5 },
-  { name:'구름양',   hair:'#F08FB5', shirt:'#6E5BD8', seat:10, subject:'통합과학', min:7, today:9 },
-  { name:'별빛판다', hair:'#15151C', shirt:'#E8ECF6', seat:7,  subject:'국어', min:15, today:21 }
-];
+const BOT_DEF = [];   // 가상 친구(AI)는 없앴어요. 진짜 반 친구들만 교실에 들어와요
 const bots = BOT_DEF.map(d => {
   const p = randomFreePoint();
   const b = new Avatar({ name:d.name, hair:d.hair, shirt:d.shirt, x:p.x, z:p.z, ry:rand(-3,3), total:d.today*60 });
@@ -827,6 +820,7 @@ function botBrain(b, dt){
 }
 let cheerT = rand(4, 9);
 function botCheer(dt){
+  if(!bots.length) return;
   cheerT -= dt; if(cheerT > 0) return; cheerT = rand(7, 14);
   const top = bots.find(x => x === topAv);
   if(top && top.mode !== 'sit' && Math.random() < 0.45){
@@ -1255,7 +1249,7 @@ $('#edSave').addEventListener('click', () => {
   const c = inkCv.getContext('2d'); c.clearRect(0,0,1024,400); c.drawImage(work,0,0); composeBoard();
   const url = inkCv.toDataURL('image/png'); store.set('class8-ink', url); send({ t:'ink', url });
   $('#boardEd').hidden = true; resetView(); toast('칠판에 붙였어요');
-  setTimeout(() => pick(bots).say(pick(['오 칠판 봐!','글씨 잘 쓴다','ㅇㅇ 같이 하자'])), 1200);
+  if(botsOn && bots.length) setTimeout(() => pick(bots).say(pick(['오 칠판 봐!','글씨 잘 쓴다','ㅇㅇ 같이 하자'])), 1200);
 });
 $('#btnBoard').addEventListener('click', openBoard);
 
@@ -1538,7 +1532,7 @@ function toast(t){ const el = $('#toast'); el.textContent = t; el.hidden = false
 let uiT = 0, lastMode = '';
 function updateUI(){
   $('#count').textContent = String((botsOn ? bots.length : 0) + remotes.size + (me ? 1 : 0));
-  $('#testNote').textContent = botsOn ? '친구가 들어오기 전까지는 가상 친구들이 함께 있어요' : '우리 반 친구 ' + remotes.size + '명과 같이 있어요';
+  $('#testNote').textContent = botsOn ? '아직 혼자예요. 친구가 들어오면 여기에 보여요' : '우리 반 친구 ' + remotes.size + '명과 같이 있어요';
   document.querySelector('.chip .dot').style.background = netOn ? '#6EE7A8' : '#A9B0D6';
   const ph = $('#panel').hidden ? 0 : $('#panel').getBoundingClientRect().height;
   const land = window.innerWidth > window.innerHeight && window.innerHeight <= 520;   // 가로 화면인지
