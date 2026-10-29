@@ -266,8 +266,8 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
       <button type="button" class="pose flybtn" id="btnQ">질문 게시판</button>
     </div>
     <div class="scroller" aria-label="포즈">
-      <button class="pose flybtn" data-fly="1">새로운 행동 ? · 1등 보상</button>
-      <button class="pose flybtn" data-blast="1">새로운 행동 ? · 1등 보상</button>
+      <button class="pose flybtn" data-fly="1">공중부양</button>
+      <button class="pose flybtn" data-blast="1">장풍 쏘기</button>
       <button class="pose" data-pose="wave">손 흔들기</button>
       <button class="pose" data-pose="hooray">만세</button>
       <button class="pose" data-pose="clap">박수</button>
@@ -294,7 +294,7 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
     <div class="row" id="subjects"></div>
     <div class="scroller" aria-label="포즈">
       <button type="button" class="pose flybtn" id="btnFocus">집중 화면</button>
-      <button class="pose flybtn" data-fly="1">새로운 행동 ? · 1등 보상</button>
+      <button class="pose flybtn" data-fly="1">공중부양</button>
       <button class="pose" data-pose="wave">손 흔들기</button>
       <button class="pose" data-pose="hooray">만세</button>
       <button class="pose" data-pose="clap">박수</button>
@@ -577,7 +577,7 @@ function drawFame(todayName, weekName, helperName, helperN){
     x.fillStyle = name ? '#FFFFFF' : '#8C93D9'; x.font = (name ? '34px' : '26px') + ' Jua, "Noto Sans KR", sans-serif'; x.fillText(name || '아직 없어요', 256, y + 48);
     x.fillStyle = col === 'green' ? '#6EE7A8' : '#E5B93C'; x.font = '700 17px "Noto Sans KR", sans-serif'; x.fillText(reward, 256, y + 77);
   };
-  block(80, '오늘 공부시간 1등', todayName, '보상: 새로운 행동');
+  block(80, '오늘 공부시간 1등', todayName, '오늘 제일 오래 공부했어요');
   block(180, '이번 주 공부왕 (지난주 1등)', weekName, '보상: 공부왕 전용 책상');
   block(280, '이번 주 도움왕', helperName, helperName ? '최고의 답변 ' + helperN + '개' : '최고의 답변을 받아봐요', 'green');
   fameTex.needsUpdate = true;
@@ -1467,7 +1467,7 @@ $('#btnBoard').addEventListener('click', openBoard);
 
 /* 오늘 공부시간 랭킹 + 1등 보상(공중부양 포즈) */
 const todayStr = new Date().toDateString();
-let flyUnlocked = false;   // 지금 1등일 때만 true (1등을 뺏기면 다시 잠겨요)
+let flyUnlocked = true;   // 공중부양·장풍은 이제 모두가 쓸 수 있어요
 let saveT = 5;
 function ranking(){ const arr = (botsOn ? bots : []).concat([...remotes.values()].map(r => r.av)); if(me) arr.push(me); return arr.sort((a, b) => b.total - a.total); }
 const mins = s => Math.floor(s/60) + '분';
@@ -1500,12 +1500,7 @@ function renderRankList(){
   });
   const rk = ranking(), r = $('#reward'); r.textContent = '';
   const b = document.createElement('b'), s = document.createElement('span');
-  if(flyUnlocked){ b.textContent = '오늘 1등 보상 · 공중부양 + 장풍 사용 중'; s.textContent = '공중부양으로 책상 위를 날아다니고, 장풍으로 친구를 날려보낼 수 있어요. 1등을 뺏기면 다시 잠겨요.'; }
-  else {
-    b.textContent = '오늘 1등 보상 · 새로운 행동 2가지';
-    const gap = me ? Math.ceil((rk[0].total - me.total)/60) + 1 : 0;
-    s.textContent = '오늘 공부시간 1등만 쓸 수 있어요. ' + (me ? (rk[0] === me ? '곧 보상을 받아요!' : '1등까지 ' + gap + '분 더 공부하면 돼요.') : '');
-  }
+  b.textContent = '모두 쓸 수 있는 행동 · 공중부양 + 장풍'; s.textContent = '걷는 중에 공중부양으로 책상 위를 날아다니고, 장풍으로 친구를 날려보낼 수 있어요.';
   r.append(b, s);
   document.querySelectorAll('#rankTabs [data-tab]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.tab === rankTab)));
 }
@@ -1539,7 +1534,7 @@ let myPreDone = false, myPostDone = false, svTab = 'pre', svAnswers = {};
 const STUDY_OPTS = ['30분 미만', '30분~1시간', '1~2시간', '2~3시간', '3시간 이상'], STUDY_MIN = [15, 45, 90, 150, 210];
 const FOCUS_OPTS = ['10분 미만', '10~30분', '30분~1시간', '1시간 이상'], FOCUS_MIN = [5, 20, 45, 75];
 const PHONE_OPTS = ['거의 안 봐요', '가끔 봐요', '자주 봐요', '계속 봐요'], PHONE_SCORE = [0, 1, 2, 3];
-const FEATURES = ['랭킹', '1등 보상 (공중부양·장풍)', '친구랑 같이 있는 것', '응원·포즈', '칠판', '공부왕 책상'];
+const FEATURES = ['랭킹', '공중부양·장풍', '친구랑 같이 있는 것', '응원·포즈', '칠판', '공부왕 책상'];
 const SURVEY = {
   pre: [
     { k:'q1', t:'학교 수업 말고, 하루 평균 공부시간은?', type:'pick', o:STUDY_OPTS },
@@ -2073,8 +2068,6 @@ function updateUI(){
   if(me){
     $('#rankTxt').textContent = '내 순위 ' + (rk.indexOf(me) + 1) + '위 · ' + mins(me.total);
     const isTop = rk[0] === me && me.total >= 60;
-    if(isTop && !flyUnlocked) unlockFly();
-    else if(!isTop && flyUnlocked){ flyUnlocked = false; if(me.flying) setFly(false); toast('1등을 뺏겼어요! 1등 보상이 잠겼어요'); }
     saveT -= 0.25; if(saveT <= 0){ saveT = 5; store.set('class8-today2', { date:todayStr, total:me.total }); store.set('class8-week2', { wk:thisWeek, t:me.week });
       if(myWeekRef && me.week >= 1) myWeekRef.set({ t:Math.floor(me.week), name:me.name, v:DATA_VER }).catch(netErr);
       if(rtdb && myUid && me.total >= 1) rtdb.ref('days/' + myUid + '/' + todayKey).set({ t:Math.floor(me.total), v:DATA_VER }).catch(netErr);
