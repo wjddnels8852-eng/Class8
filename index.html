@@ -286,9 +286,9 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
     <div class="scroller" aria-label="포즈">
       <button class="pose flybtn" data-fly="1">공중부양</button>
       <button class="pose flybtn" data-skill="blast">장풍</button>
-      <button class="pose flybtn" data-skill="ice" aria-disabled="true">빙결 · 1시간 공부</button>
-      <button class="pose flybtn" data-skill="fire" aria-disabled="true">화염방사 · 2시간 공부</button>
-      <button class="pose flybtn" data-skill="slap" aria-disabled="true">싸대기 · 5시간 공부</button>
+      <button class="pose flybtn" data-skill="ice" aria-disabled="true">빙결 · 하루 1시간 공부</button>
+      <button class="pose flybtn" data-skill="fire" aria-disabled="true">화염방사 · 하루 2시간 공부</button>
+      <button class="pose flybtn" data-skill="slap" aria-disabled="true">싸대기 · 하루 5시간 공부</button>
       <button class="pose" data-pose="wave">손 흔들기</button>
       <button class="pose" data-pose="hooray">만세</button>
       <button class="pose" data-pose="clap">박수</button>
@@ -1118,7 +1118,7 @@ const POSES = ['wave','hooray','clap','dance','bow'];
 const DATA_VER = 2;
 function myState(){
   return { name:me.name, hair:me.hair, shirt:me.shirt, x:+me.pos.x.toFixed(2), z:+me.pos.z.toFixed(2), ry:+me.ry.toFixed(2), jy:+me.jumpY.toFixed(2),
-    mode:me.mode, seat:me.seat, subject:me.subject, studyStart:me.studyStart, total:Math.floor(me.total), fly:me.flying, date:todayStr, v:DATA_VER, streak:me.streak || 0, steady:!!me.steady };
+    mode:me.mode, seat:me.seat, subject:me.subject, studyStart:me.studyStart, total:Math.floor(me.total), fly:me.flying, date:todayStr, v:DATA_VER, streak:me.streak || 0, steady:!!me.steady, best:Math.floor(me.best || 0) };
 }
 // 바뀐 게 있을 때만 보내고(최대 1초 5번), 가만히 있으면 10초마다 '아직 있어요' 신호만 보내요
 function pushPresence(){
@@ -1161,7 +1161,7 @@ function handlePlayers(){
     av.subject = SUBJECTS.indexOf(s.subject) >= 0 ? s.subject : '수학';
     av.studyStart = num(s.studyStart, 0, now, now);
     av.total = (s.date === todayStr && s.v === DATA_VER) ? num(s.total, 0, 86400, 0) : 0; av.flying = s.fly === true;
-    av.streak = Math.floor(num(s.streak, 0, 999, 0)); av.steady = s.steady === true;
+    av.streak = Math.floor(num(s.streak, 0, 999, 0)); av.steady = s.steady === true; av.best = num(s.best, 0, 86400, 0);
     const seat = (Number.isInteger(s.seat) && s.seat >= 0 && s.seat < seats.length) ? s.seat : -1;
     if(seat !== av.seat){
       if(av.seat >= 0 && seats[av.seat].occ === av) seats[av.seat].occ = null;
@@ -1201,7 +1201,7 @@ function shareInk(){
 }
 // 로그인 뒤에 데이터베이스 연결 시작
 function startNetwork(uid){
-  rtdb.ref('days/' + uid).orderByKey().limitToLast(60).once('value').then(s => { const v = s.val() || {};
+  rtdb.ref('days/' + uid).orderByKey().once('value').then(s => { const v = s.val() || {};
     Object.keys(v).forEach(k => { const e = v[k]; if(e && e.v === DATA_VER && typeof e.t === 'number') myDays[k] = Math.max(myDays[k] || 0, e.t); }); recalcStreak(); }).catch(() => {});
   rtdb.ref('events').on('value', s => { const v = s.val() || {};
     calEvents = Object.keys(v).map(id => cleanEvent(id, v[id])).filter(Boolean); drawCalBoard(); boardKey = ''; if(!$('#calSheet').hidden && !typingIn('#calSheet')) renderCal(); }, netErr);
@@ -1273,6 +1273,7 @@ if(fbOk){
         startNetwork(u.uid);
         // 오늘 공부시간을 서버에서 이어받기 (다른 기기에서 공부한 것도 이어져요)
         myRef.once('value').then(s => { const d = s.val(); if(d && d.date === todayStr && d.v === DATA_VER && typeof d.total === 'number') savedTotal = Math.max(savedTotal, d.total);
+          if(d && d.v === DATA_VER){ myBest = Math.max(myBest, num(d.best, 0, 86400, 0), num(d.total, 0, 86400, 0)); recalcStreak(); }   // 어제까지 얻은 기술 이어받기
           if(d && typeof d.name === 'string' && !nickTouched) $('#nick').value = d.name.slice(0, 8); }).catch(() => {});
       }
     } else if(!inApp) showAuth('authIn');
@@ -1526,7 +1527,7 @@ function renderRankList(){
   });
   const rk = ranking(), r = $('#reward'); r.textContent = '';
   const b = document.createElement('b'), s = document.createElement('span');
-  b.textContent = '공부할수록 열리는 기술'; s.textContent = '공중부양·장풍은 누구나 · 오늘 1시간 공부하면 빙결, 2시간 화염방사, 5시간 싸대기. 자리에 앉아 공부 중일 땐 어떤 기술도 안 맞아요(면역).';
+  b.textContent = '공부할수록 열리는 기술'; s.textContent = '공중부양·장풍은 누구나 · 하루에 1시간 공부하면 빙결, 2시간 화염방사, 5시간 싸대기가 열리고, 한 번 열리면 계속 써요. 자리에 앉아 공부 중일 땐 어떤 기술도 안 맞아요(면역).';
   r.append(b, s);
   document.querySelectorAll('#rankTabs [data-tab]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.tab === rankTab)));
 }
@@ -1692,6 +1693,7 @@ $('#btnSurvey').addEventListener('click', openSurvey);
 const todayKey = dateKey(new Date());
 const SEASON_START = '2026-11-30', SEASON_END = '2026-12-13';   // 기말 시즌 (기말고사 12월 14일)
 let myDays = {}, allDaysCache = null, allDaysLoading = false;
+let myBest = num(store.get('class8-best', 0), 0, 86400, 0);   // 하루 최고 공부시간 (기술은 한 번 열리면 계속 써요)
 function recalcStreak(){
   if(!me) return;
   myDays[todayKey] = Math.max(myDays[todayKey] || 0, Math.floor(me.total));
@@ -1700,6 +1702,8 @@ function recalcStreak(){
   const n = new Date(), mon = new Date(n.getFullYear(), n.getMonth(), n.getDate() - (n.getDay() + 6) % 7), wd = [];
   for(let i=0;i<7;i++) wd.push((myDays[dateKey(new Date(mon.getFullYear(), mon.getMonth(), mon.getDate() + i))] || 0) >= 600);
   me.streak = s; me.weekDays = wd; me.steady = wd.filter(Boolean).length >= 5;
+  let best = Math.max(myBest, Math.floor(me.total)); Object.keys(myDays).forEach(k => { best = Math.max(best, Math.min(86400, myDays[k] || 0)); });
+  if(best > myBest){ myBest = best; store.set('class8-best', best); } me.best = myBest;
 }
 function renderStreakCard(){
   const c = $('#streakCard'); c.textContent = ''; if(!me) return;
@@ -2048,7 +2052,7 @@ const SKILLS = {
   fire:{ name:'화염방사', need:7200, cd:4000 },    // 오늘 2시간
   slap:{ name:'싸대기', need:18000, cd:3000 }      // 오늘 5시간
 };
-const skillOk = (av, k) => (av.total || 0) >= SKILLS[k].need;
+const skillOk = (av, k) => Math.max(av.total || 0, av.best || 0) >= SKILLS[k].need;   // 하루라도 그만큼 공부했으면 계속 써요
 const blastGeo = new THREE.SphereGeometry(0.26, 16, 12), glowGeo = new THREE.SphereGeometry(0.5, 16, 12), ringGeo = new THREE.TorusGeometry(0.42, 0.05, 8, 24);
 const iceGeo = new THREE.OctahedronGeometry(0.3), puffGeo = new THREE.SphereGeometry(0.16, 10, 8), flameGeo = new THREE.SphereGeometry(0.2, 10, 8);
 function spawnBlast(owner, x, z, dx, dz, kind){
@@ -2091,7 +2095,7 @@ function freeze(av){
   av.say('얼었다!'); if(av === me) toast('빙결에 맞아서 1초 동안 얼었어요!');
 }
 function burn(av){
-  if(!(av.burnT > 0)){ av.burnSave = []; av.body.traverse(o => { if(o.isMesh && o.material && o.material.color){ av.burnSave.push([o, o.material]); o.material = o.material.clone(); o.material.color.set('#151515'); } }); }
+  if(!(av.burnT > 0)){ av.burnSave = []; av.body.traverse(o => { if(o.isMesh && o.material && o.material.color){ av.burnSave.push([o, o.material]); o.material = o.material.clone(); o.material.color.set(o.material.color.getHexString() === '1b1f3b' ? '#FFFFFF' : '#151515'); /* 눈만 하얗게 */ } }); }
   av.burnT = 1; av.say('앗 뜨거!'); if(av === me) toast('화염방사에 맞아서 까맣게 탔어요!');
 }
 function unburn(av){ (av.burnSave || []).forEach(([o, m]) => { o.material.dispose(); o.material = m; }); av.burnSave = null; av.burnT = 0; }
@@ -2172,7 +2176,7 @@ const skillCd = {};
 function doSkill(k){
   if(!me) return;
   const S = SKILLS[k];
-  if(!skillOk(me, k)){ toast('오늘 ' + (S.need/3600) + '시간 공부하면 ' + S.name + '을(를) 쓸 수 있어요 · 지금 ' + fmtTime(me.total)); return; }
+  if(!skillOk(me, k)){ toast('하루에 ' + (S.need/3600) + '시간 공부하면 ' + S.name + '을(를) 계속 쓸 수 있어요 · 오늘 ' + fmtTime(me.total)); return; }
   if(me.mode === 'sit'){ toast('일어난 다음에 쓸 수 있어요'); return; }
   if(me.frozenT > 0){ toast('얼어서 못 움직여요!'); return; }
   const now = Date.now(); if(now < (skillCd[k] || 0)){ toast(S.name + ' 모으는 중…'); return; }
@@ -2185,7 +2189,7 @@ document.querySelectorAll('[data-skill]').forEach(b => b.addEventListener('click
 function syncFlyBtns(){
   document.querySelectorAll('[data-skill]').forEach(b => {
     const S = SKILLS[b.dataset.skill], ok = !!me && skillOk(me, b.dataset.skill);
-    const label = ok ? S.name : S.name + ' · ' + (S.need/3600) + '시간 공부';
+    const label = ok ? S.name : S.name + ' · 하루 ' + (S.need/3600) + '시간 공부';
     if(b.textContent !== label) b.textContent = label;
     b.setAttribute('aria-disabled', String(!ok));
   });
