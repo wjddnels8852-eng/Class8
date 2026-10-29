@@ -3,6 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="8반 교실">
 <title>8반 3D 교실</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;700&display=swap">
 <style>
@@ -246,7 +250,21 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
     <div class="chip"><span class="title">1학년 8반 교실</span></div>
     <button class="chip rankbtn" id="btnRank" hidden><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z" fill="#FFC93C"/></svg><span id="rankTxt">공부 랭킹</span></button>
   </div>
-  <div class="chip"><span class="dot"></span><span><b id="count">7</b>명 접속</span></div>
+  <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+    <div class="chip"><span class="dot"></span><span><b id="count">7</b>명 접속</span></div>
+    <button type="button" class="chip rankbtn" id="btnFull"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span id="fullTxt">전체화면</span></button>
+  </div>
+</div>
+<div class="board-ed" id="fullSheet" hidden>
+  <div class="ed-card" role="dialog" aria-label="아이폰 전체화면">
+    <div class="ed-head"><h2>아이폰은 이렇게 전체화면</h2><button type="button" class="tool" id="fullClose">닫기</button></div>
+    <ol style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:14px;line-height:1.6">
+      <li>사파리 아래쪽 <b>공유 버튼</b>(네모에 위 화살표)을 눌러요.</li>
+      <li><b>홈 화면에 추가</b>를 눌러요.</li>
+      <li>홈 화면에 생긴 <b>8반 교실</b> 아이콘으로 열면 주소창 없이 꽉 찬 화면이 돼요.</li>
+    </ol>
+    <p style="font-size:12px;color:var(--muted);margin:0">홈 화면 아이콘으로 열면 구글 로그인이 안 될 수 있어요. 그땐 "구글 로그인 없이 입장하기"로 들어와요. 사파리에서 쌓은 기록과는 따로 쌓여요.</p>
+  </div>
 </div>
 <div class="hint" id="hint"><b>조이스틱</b>으로 직접 움직이거나 <b>바닥을 탭</b>해요<br><b>책상을 탭</b>하면 앉아요 · 드래그로 화면 돌리기</div>
 <div class="joy" id="joy" hidden aria-label="캐릭터 이동 조이스틱" role="application">
@@ -267,7 +285,10 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
     </div>
     <div class="scroller" aria-label="포즈">
       <button class="pose flybtn" data-fly="1">공중부양</button>
-      <button class="pose flybtn" data-blast="1">장풍 쏘기</button>
+      <button class="pose flybtn" data-skill="blast">장풍</button>
+      <button class="pose flybtn" data-skill="ice" aria-disabled="true">빙결 · 1시간 공부</button>
+      <button class="pose flybtn" data-skill="fire" aria-disabled="true">화염방사 · 2시간 공부</button>
+      <button class="pose flybtn" data-skill="slap" aria-disabled="true">싸대기 · 5시간 공부</button>
       <button class="pose" data-pose="wave">손 흔들기</button>
       <button class="pose" data-pose="hooray">만세</button>
       <button class="pose" data-pose="clap">박수</button>
@@ -314,7 +335,8 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
     <div id="authIn" class="auth">
       <p>구글 계정으로 로그인하면 반 친구들과 같은 교실에 들어가요. 친구들에게는 내가 정한 닉네임만 보여요.</p>
       <button type="button" class="btn google" id="googleBtn"><svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.5l6.7-6.7C35.6 2.4 30.2 0 24 0 14.6 0 6.6 5.4 2.7 13.2l7.8 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17.5z"/><path fill="#FBBC05" d="M10.5 28.7c-.5-1.4-.8-3-.8-4.7s.3-3.2.8-4.7l-7.8-6.1C1 16.6 0 20.2 0 24s1 7.4 2.7 10.8l7.8-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.9 2.3-8.4 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.8 6.1C6.6 42.6 14.6 48 24 48z"/></svg>구글로 로그인</button>
-      <button type="button" class="btn" id="anonBtn" hidden>구글 로그인 없이 입장하기</button>
+      <button type="button" class="btn" id="anonBtn">구글 로그인 없이 입장하기</button>
+      <p style="font-size:12px;margin:0">사파리에서 구글 로그인이 안 되면 이 버튼으로 들어와요. 같은 폰, 같은 브라우저로 들어오면 공부 기록이 그대로 이어져요.</p>
     </div>
     <div id="authInApp" class="auth" hidden>
       <p><b>카카오톡 같은 앱 안에서는 구글 로그인이 막혀 있어요.</b> 크롬이나 사파리로 열어주세요.</p>
@@ -916,6 +938,10 @@ class Avatar {
     this.studyStart = Date.now() - (minutesAgo || 0)*60000;
   }
   update(dt){
+    if(this.frozenT > 0){ this.frozenT -= dt; if(this.iceBox) this.iceBox.visible = this.frozenT > 0;
+      if(!this.remote){ this.path = []; this.goSeat = null; this.manual = false; if(this.mode === 'walk') this.mode = 'idle'; } }
+    if(this.burnT > 0){ this.burnT -= dt; if(Math.random() < dt*10) puff(this.pos.x + rand(-0.25, 0.25), this.group.position.y + rand(0.6, 1.6), this.pos.z + rand(-0.25, 0.25), '#3A3A3A', 0.9);
+      if(this.burnT <= 0) unburn(this); }
     if(!this.remote && this.mode === 'sit'){ this.total += dt; this.week = (this.week || 0) + dt; }   // 앉아 있는 동안 오늘·이번 주 공부시간이 쌓여요
     if(!this.remote && this.mode === 'walk' && !this.manual && !this.path.length) this.mode = 'idle';
     if(!this.remote && this.mode === 'walk' && !this.manual){
@@ -959,6 +985,7 @@ class Avatar {
       else if(this.pose === 'hooray'){ L.rotation.x = 0; R.rotation.x = 0; L.rotation.z = -2.8; R.rotation.z = 2.8; this.body.position.y = Math.abs(Math.sin(t*8))*0.12; }
       else if(this.pose === 'clap'){ const c = Math.abs(Math.sin(t*13)); L.rotation.x = -1.25; R.rotation.x = -1.25; R.rotation.z = -0.7 + 0.45*c; L.rotation.z = 0.7 - 0.45*c; }
       else if(this.pose === 'dance'){ const s = Math.sin(t*6); this.body.rotation.y = s*0.5; L.rotation.x = 0; R.rotation.x = 0; L.rotation.z = -1.4 - s*0.7; R.rotation.z = 1.4 - s*0.7; this.body.position.y = Math.abs(Math.sin(t*12))*0.08; if(this.mode !== 'sit'){ this.legs[0].rotation.x = Math.sin(t*12)*0.3; this.legs[1].rotation.x = -Math.sin(t*12)*0.3; } }
+      else if(this.pose === 'slap'){ const q = Math.min(1, t/0.22); L.rotation.x = 0; R.rotation.x = -1.35; R.rotation.z = 1.5 - 2.4*q; this.body.rotation.y = 0.5 - 0.9*q; }
       else if(this.pose === 'blast'){ L.rotation.x = -1.5; R.rotation.x = -1.5; L.rotation.z = 0.25; R.rotation.z = -0.25; this.body.rotation.x = 0.15; }
       else if(this.pose === 'bow'){ const b = t < 0.5 ? t/0.5 : (t > 1.9 ? Math.max(0, 1 - (t-1.9)/0.5) : 1); this.body.rotation.x = 0.55*b; L.rotation.x = 0; R.rotation.x = 0; L.rotation.z += (0 - L.rotation.z)*k; R.rotation.z += (0 - R.rotation.z)*k; }
       if(t > this.poseDur) this.pose = null;
@@ -1124,7 +1151,7 @@ function handlePlayers(){
     if(!r){
       const name = (typeof s.name === 'string' && s.name.trim() ? s.name.trim() : '친구').slice(0, 8);
       r = { av:new Avatar({ name, hair:okColor(s.hair) ? s.hair : '#3B2A24', shirt:okColor(s.shirt) ? s.shirt : '#2C6FD1', x:num(s.x, -W/2, W/2, 0), z:num(s.z, -D/2, D/2, 0), remote:true }),
-            say:s.say && s.say.n, pose:s.pose && s.pose.n, blast:s.blast && s.blast.n, tx:0, tz:0 };
+            say:s.say && s.say.n, pose:s.pose && s.pose.n, skill:s.skill && s.skill.n, tx:0, tz:0 };
       remotes.set(uid, r); if(me) toast(name + '님이 들어왔어요');
     }
     const av = r.av;
@@ -1141,13 +1168,12 @@ function handlePlayers(){
       av.seat = seat; if(seat >= 0 && !(seats[seat].occ && seats[seat].occ.isMe)) seats[seat].occ = av;
     }
     if(s.say && s.say.n !== r.say){ r.say = s.say.n; if(SAY_OK.indexOf(s.say.text) >= 0){ av.say(s.say.text); onCheer(av.name); } }
-    if(s.blast && s.blast.n !== r.blast){
-      r.blast = s.blast.n; const bl = s.blast;
-      // 1등인 친구가 15초 안에 쏜 장풍만 받아요
-      if(av === topAv && Math.abs(now - num(bl.n, 0, 9e15, 0)) < 15000){
-        let dx = num(bl.dx, -1, 1, 0), dz = num(bl.dz, -1, 1, 1); const l = Math.hypot(dx, dz) || 1; dx /= l; dz /= l;
-        av.pose = 'blast'; av.poseT = 0; av.poseDur = 0.6;
-        spawnBlast(av, num(bl.x, -W/2, W/2, av.pos.x), num(bl.z, -D/2, D/2, av.pos.z), dx, dz);
+    if(s.skill && s.skill.n !== r.skill){
+      r.skill = s.skill.n; const sk = s.skill;
+      // 그 기술을 쓸 만큼 오늘 공부한 친구가 15초 안에 쓴 것만 받아요
+      if(SKILLS[sk.k] && skillOk(av, sk.k) && Math.abs(now - num(sk.n, 0, 9e15, 0)) < 15000){
+        let dx = num(sk.dx, -1, 1, 0), dz = num(sk.dz, -1, 1, 1); const l = Math.hypot(dx, dz) || 1; dx /= l; dz /= l;
+        castSkill(av, sk.k, num(sk.x, -W/2, W/2, av.pos.x), num(sk.z, -D/2, D/2, av.pos.z), dx, dz);
       }
     }
     if(s.pose && s.pose.n !== r.pose){ r.pose = s.pose.n; if(POSES.indexOf(s.pose.name) >= 0){ av.pose = s.pose.name; av.poseT = 0; av.poseDur = s.pose.name === 'dance' ? 4 : 2.6; } }
@@ -1299,14 +1325,14 @@ joyEl.addEventListener('pointercancel', joyEnd);
 window.addEventListener('keydown', e => {
   if(e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
   if(e.key === ' ' && me && $('#boardEd').hidden){ e.preventDefault(); doJump(); return; }
-  if((e.key === 'f' || e.key === 'F') && me){ doBlast(); return; }
+  if((e.key === 'f' || e.key === 'F') && me){ doSkill('blast'); return; }
   keys[e.key.toLowerCase()] = true;
 });
 window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
 const freeAt = (x, z) => { const c = toCell(x, z); return !blocked[c[1]*GW + c[0]]; };
 const flyFree = (x, z) => Math.abs(x) < W/2 - 0.5 && Math.abs(z) < D/2 - 0.5;   // 날 때는 벽만 막혀요
 function steer(dt){
-  if(me.spinT > 0) return;   // 장풍 맞고 날아가는 중
+  if(me.spinT > 0 || me.frozenT > 0) return;   // 장풍 맞고 날아가는 중 · 얼어 있는 중
   let ix = joy.x, iy = joy.y;
   if(keys['a'] || keys['arrowleft']) ix -= 1;
   if(keys['d'] || keys['arrowright']) ix += 1;
@@ -1500,7 +1526,7 @@ function renderRankList(){
   });
   const rk = ranking(), r = $('#reward'); r.textContent = '';
   const b = document.createElement('b'), s = document.createElement('span');
-  b.textContent = '모두 쓸 수 있는 행동 · 공중부양 + 장풍'; s.textContent = '걷는 중에 공중부양으로 책상 위를 날아다니고, 장풍으로 친구를 날려보낼 수 있어요.';
+  b.textContent = '공부할수록 열리는 기술'; s.textContent = '공중부양·장풍은 누구나 · 오늘 1시간 공부하면 빙결, 2시간 화염방사, 5시간 싸대기. 자리에 앉아 공부 중일 땐 어떤 기술도 안 맞아요(면역).';
   r.append(b, s);
   document.querySelectorAll('#rankTabs [data-tab]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.tab === rankTab)));
 }
@@ -1959,6 +1985,22 @@ $('#btnQ').addEventListener('click', openQ);
 
 function openRank(){ renderRank(); $('#rankSheet').hidden = false; }
 $('#btnRank').addEventListener('click', openRank);
+
+// 전체화면: 안드로이드·아이패드는 바로 전체화면, 아이폰은 "홈 화면에 추가" 안내
+{ const de = document.documentElement;
+  const fsEl = () => document.fullscreenElement || document.webkitFullscreenElement;
+  const canFS = !!(de.requestFullscreen || de.webkitRequestFullscreen);
+  const standalone = navigator.standalone === true || (window.matchMedia && matchMedia('(display-mode: standalone)').matches);
+  if(standalone) $('#btnFull').hidden = true;
+  const sync = () => { $('#fullTxt').textContent = fsEl() ? '전체화면 끄기' : '전체화면'; setTimeout(resize, 200); };
+  document.addEventListener('fullscreenchange', sync); document.addEventListener('webkitfullscreenchange', sync);
+  $('#btnFull').addEventListener('click', () => {
+    if(fsEl()){ (document.exitFullscreen || document.webkitExitFullscreen).call(document); return; }
+    if(canFS){ try { const r = (de.requestFullscreen || de.webkitRequestFullscreen).call(de); if(r && r.catch) r.catch(() => { $('#fullSheet').hidden = false; }); } catch(e) { $('#fullSheet').hidden = false; } }
+    else $('#fullSheet').hidden = false;
+  });
+  $('#fullClose').addEventListener('click', () => { $('#fullSheet').hidden = true; });
+}
 $('#rankClose').addEventListener('click', () => { $('#rankSheet').hidden = true; });
 function setFly(on){
   if(!me) return;
@@ -1980,62 +2022,153 @@ document.querySelectorAll('[data-fly]').forEach(b => b.addEventListener('click',
 }));
 /* 장풍 (1등 보상): 앞으로 기 덩어리를 쏘고, 맞은 친구는 날아가요.
    친구 폰에서는 '내가 맞았는지'를 각자 계산해서 스스로 날아가요 (자기 위치는 자기만 바꿀 수 있어서). */
-const blasts = [], bursts = [];
+const blasts = [], bursts = [], flames = [], puffs = [];
+const SKILLS = {
+  blast:{ name:'장풍', need:0, cd:2500 },
+  ice:{ name:'빙결', need:3600, cd:3000 },         // 오늘 1시간 공부하면
+  fire:{ name:'화염방사', need:7200, cd:4000 },    // 오늘 2시간
+  slap:{ name:'싸대기', need:18000, cd:3000 }      // 오늘 5시간
+};
+const skillOk = (av, k) => (av.total || 0) >= SKILLS[k].need;
 const blastGeo = new THREE.SphereGeometry(0.26, 16, 12), glowGeo = new THREE.SphereGeometry(0.5, 16, 12), ringGeo = new THREE.TorusGeometry(0.42, 0.05, 8, 24);
-function spawnBlast(owner, x, z, dx, dz){
-  const g = new THREE.Group();
-  g.add(new THREE.Mesh(blastGeo, new THREE.MeshBasicMaterial({ color:'#E6FDFF' })));
-  g.add(new THREE.Mesh(glowGeo, new THREE.MeshBasicMaterial({ color:'#5CE1E6', transparent:true, opacity:0.35, depthWrite:false })));
-  const ring = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({ color:'#FFFFFF', transparent:true, opacity:0.75 })); g.add(ring);
+const iceGeo = new THREE.OctahedronGeometry(0.3), puffGeo = new THREE.SphereGeometry(0.16, 10, 8), flameGeo = new THREE.SphereGeometry(0.2, 10, 8);
+function spawnBlast(owner, x, z, dx, dz, kind){
+  kind = kind || 'blast';
+  const g = new THREE.Group(), ice = kind === 'ice';
+  g.add(new THREE.Mesh(ice ? iceGeo : blastGeo, new THREE.MeshBasicMaterial({ color:ice ? '#F2FCFF' : '#E6FDFF' })));
+  g.add(new THREE.Mesh(glowGeo, new THREE.MeshBasicMaterial({ color:ice ? '#8FD8FF' : '#5CE1E6', transparent:true, opacity:0.35, depthWrite:false })));
+  const ring = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({ color:ice ? '#CFF4FF' : '#FFFFFF', transparent:true, opacity:0.75 })); g.add(ring);
   g.position.set(x, 1.1, z); scene.add(g);
-  blasts.push({ g, ring, owner, dx, dz, dist:0 });
+  blasts.push({ g, ring, owner, dx, dz, dist:0, kind });
+}
+function puff(x, y, z, color, life){
+  const m = new THREE.Mesh(puffGeo, new THREE.MeshBasicMaterial({ color, transparent:true, opacity:0.7, depthWrite:false }));
+  m.position.set(x, y, z); scene.add(m); puffs.push({ m, t:0, life:life || 0.8 });
+}
+function popText(av, text, color){   // 머리 위에 큰 글자가 튀어나와요 (짝! 면역!)
+  const c = document.createElement('canvas'); c.width = 256; c.height = 128; const x = c.getContext('2d');
+  x.font = '84px Jua, "Noto Sans KR", sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.lineWidth = 10; x.strokeStyle = '#1B1F3B'; x.strokeText(text, 128, 66); x.fillStyle = color; x.fillText(text, 128, 66);
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map:new THREE.CanvasTexture(c), transparent:true, depthTest:false }));
+  sp.position.set(av.pos.x, av.group.position.y + 2.3, av.pos.z); sp.scale.set(1.2, 0.6, 1); scene.add(sp);
+  bursts.push({ fx:sp, t:0, pop:true });
+}
+// 공부 중(앉아 있음)이면 어떤 기술도 안 맞아요
+function immune(av){
+  popText(av, '면역!', '#6EE7A8');
+  const sh = new THREE.Mesh(new THREE.SphereGeometry(0.8, 20, 14), new THREE.MeshBasicMaterial({ color:'#6EE7A8', transparent:true, opacity:0.35, depthWrite:false }));
+  sh.position.set(av.pos.x, av.group.position.y + 0.9, av.pos.z); scene.add(sh); bursts.push({ fx:sh, t:0, shield:true });
+  if(av === me) toast('공부 중이라 면역이에요!');
 }
 function knock(av, dx, dz){
-  if(av.mode === 'sit') av.standUp();
   av.path = []; av.goSeat = null; av.flying = false; av.mode = 'idle'; av.pose = null;
   av.kvx = dx*8; av.kvz = dz*8; av.vy = 6; av.jumpY = Math.max(av.jumpY, 0.01); av.spinT = 1.1;
   av.say('으악!');
   if(av === me) toast('장풍에 맞았어요!');
 }
+function freeze(av){
+  if(!av.iceBox){ av.iceBox = new THREE.Mesh(new THREE.BoxGeometry(0.95, 1.9, 0.95), new THREE.MeshLambertMaterial({ color:'#BFEFFF', transparent:true, opacity:0.55, depthWrite:false })); av.iceBox.position.y = 0.95; av.group.add(av.iceBox); }
+  av.frozenT = 1; av.iceBox.visible = true; av.pose = null; if(!av.remote){ av.flying = false; }
+  av.say('얼었다!'); if(av === me) toast('빙결에 맞아서 1초 동안 얼었어요!');
+}
+function burn(av){
+  if(!(av.burnT > 0)){ av.burnSave = []; av.body.traverse(o => { if(o.isMesh && o.material && o.material.color){ av.burnSave.push([o, o.material]); o.material = o.material.clone(); o.material.color.set('#151515'); } }); }
+  av.burnT = 1; av.say('앗 뜨거!'); if(av === me) toast('화염방사에 맞아서 까맣게 탔어요!');
+}
+function unburn(av){ (av.burnSave || []).forEach(([o, m]) => { o.material.dispose(); o.material = m; }); av.burnSave = null; av.burnT = 0; }
+function slapHit(av, dx, dz){
+  popText(av, '짝!', '#FF7C93');
+  if(!av.remote){ av.path = []; av.goSeat = null; av.flying = false; av.mode = 'idle'; av.kvx = dx*4; av.kvz = dz*4; av.spinT = 0.6; }
+  av.say('아야!'); if(av === me) toast('싸대기를 맞았어요!');
+}
+function onHit(av, kind, dx, dz){
+  if(av.mode === 'sit'){ immune(av); return; }
+  if(kind === 'blast'){ if(!av.remote) knock(av, dx, dz); }   // 위치는 맞은 친구 폰에서 움직여요
+  else if(kind === 'ice') freeze(av);
+  else if(kind === 'fire') burn(av);
+  else if(kind === 'slap') slapHit(av, dx, dz);
+}
+// 기술 쓰기 (내 폰에서도, 친구 폰에서도 똑같이 실행돼요)
+function castSkill(av, k, x, z, dx, dz){
+  if(k === 'slap'){
+    av.pose = 'slap'; av.poseT = 0; av.poseDur = 0.45; av.say('싸대기!');
+    let best = null, bd = 1.5;
+    allAvatars.forEach(a => { if(a === av || !a.group.visible) return; const ox = a.pos.x - av.pos.x, oz = a.pos.z - av.pos.z, d = Math.hypot(ox, oz);
+      if(d < bd && (ox*dx + oz*dz)/(d || 1) > 0.3){ best = a; bd = d; } });
+    if(best) setTimeout(() => onHit(best, 'slap', dx, dz), 180);
+    return;
+  }
+  av.pose = 'blast'; av.poseT = 0; av.poseDur = k === 'fire' ? 1.0 : 0.6; av.say(SKILLS[k].name + '!');
+  if(k === 'fire') flames.push({ owner:av, dx, dz, t:0, hit:new Set() });
+  else spawnBlast(av, x, z, dx, dz, k);
+}
 function updateBlasts(dt){
   for(let i = blasts.length - 1; i >= 0; i--){
-    const b = blasts[i], step = 10*dt;
+    const b = blasts[i], step = (b.kind === 'ice' ? 12 : 10)*dt;
     b.g.position.x += b.dx*step; b.g.position.z += b.dz*step; b.dist += step;
     b.ring.rotation.y += dt*8; b.ring.rotation.x += dt*5; b.g.scale.setScalar(1 + Math.sin(b.dist*6)*0.08);
+    if(b.kind === 'ice'){ b.g.children[0].rotation.y += dt*10; if(Math.random() < dt*20) puff(b.g.position.x, 1.1, b.g.position.z, '#DFF6FF', 0.4); }
     let hit = null;
     for(const a of allAvatars){ if(a !== b.owner && a.group.visible && Math.hypot(a.pos.x - b.g.position.x, a.pos.z - b.g.position.z) < 0.7){ hit = a; break; } }
     if(hit || b.dist > 11 || Math.abs(b.g.position.x) > W/2 || Math.abs(b.g.position.z) > D/2){
       if(hit){
-        if(!hit.remote) knock(hit, b.dx, b.dz);   // 친구는 친구 폰에서 날아가요
-        const fx = new THREE.Mesh(new THREE.RingGeometry(0.2, 0.32, 32), new THREE.MeshBasicMaterial({ color:'#BFF8FF', transparent:true, opacity:0.9, side:THREE.DoubleSide, depthWrite:false }));
+        onHit(hit, b.kind, b.dx, b.dz);
+        const fx = new THREE.Mesh(new THREE.RingGeometry(0.2, 0.32, 32), new THREE.MeshBasicMaterial({ color:b.kind === 'ice' ? '#E6F8FF' : '#BFF8FF', transparent:true, opacity:0.9, side:THREE.DoubleSide, depthWrite:false }));
         fx.position.copy(b.g.position); fx.lookAt(camera.position); scene.add(fx); bursts.push({ fx, t:0 });
       }
       scene.remove(b.g); blasts.splice(i, 1);
     }
   }
+  // 화염방사: 0.9초 동안 앞으로 불길을 뿜어요 (약 4m, 부채꼴)
+  for(let i = flames.length - 1; i >= 0; i--){
+    const f = flames[i], o = f.owner; f.t += dt;
+    if(f.t < 0.9 && o.group.visible){
+      for(let n=0;n<3;n++){
+        const m = new THREE.Mesh(flameGeo, new THREE.MeshBasicMaterial({ color:pick(['#FFB020', '#FF6A1A', '#FFD34D', '#FF3D1A']), transparent:true, opacity:0.9, depthWrite:false }));
+        const sp = rand(-0.35, 0.35), vx = f.dx*Math.cos(sp) + f.dz*Math.sin(sp), vz = f.dz*Math.cos(sp) - f.dx*Math.sin(sp);
+        m.position.set(o.pos.x + f.dx*0.55, o.group.position.y + 1.05, o.pos.z + f.dz*0.55); scene.add(m);
+        puffs.push({ m, t:0, life:0.55, vx:vx*7, vz:vz*7, vy:rand(-0.3, 0.6), grow:true });
+      }
+      allAvatars.forEach(a => { if(a === o || !a.group.visible || f.hit.has(a)) return;
+        const ox = a.pos.x - o.pos.x, oz = a.pos.z - o.pos.z, d = Math.hypot(ox, oz);
+        if(d < 4 && d > 0.01 && (ox*f.dx + oz*f.dz)/d > 0.88 && f.t > d/7){ f.hit.add(a); onHit(a, 'fire', f.dx, f.dz); } });
+    }
+    if(f.t >= 0.9) flames.splice(i, 1);
+  }
+  for(let i = puffs.length - 1; i >= 0; i--){
+    const e = puffs[i]; e.t += dt; const k = e.t/e.life;
+    if(e.vx != null){ e.m.position.x += e.vx*dt; e.m.position.z += e.vz*dt; e.m.position.y += e.vy*dt; } else e.m.position.y += dt*0.8;
+    e.m.scale.setScalar(e.grow ? 0.6 + k*1.8 : 1 + k); e.m.material.opacity = Math.max(0, 0.85*(1 - k));
+    if(k >= 1){ scene.remove(e.m); e.m.material.dispose(); puffs.splice(i, 1); }
+  }
   for(let i = bursts.length - 1; i >= 0; i--){
-    const e = bursts[i]; e.t += dt; e.fx.scale.setScalar(1 + e.t*10); e.fx.material.opacity = Math.max(0, 0.9 - e.t*2.2);
+    const e = bursts[i]; e.t += dt;
+    if(e.pop){ e.fx.position.y += dt*0.8; const s = e.t < 0.15 ? 0.6 + e.t/0.15*0.6 : 1.2; e.fx.scale.set(s*2, s, 1); e.fx.material.opacity = e.t > 0.6 ? Math.max(0, 1 - (e.t - 0.6)/0.4) : 1; if(e.t > 1){ scene.remove(e.fx); e.fx.material.map.dispose(); e.fx.material.dispose(); bursts.splice(i, 1); } continue; }
+    if(e.shield){ e.fx.scale.setScalar(1 + e.t*0.6); e.fx.material.opacity = Math.max(0, 0.35 - e.t*0.5); if(e.t > 0.7){ scene.remove(e.fx); bursts.splice(i, 1); } continue; }
+    e.fx.scale.setScalar(1 + e.t*10); e.fx.material.opacity = Math.max(0, 0.9 - e.t*2.2);
     if(e.t > 0.45){ scene.remove(e.fx); bursts.splice(i, 1); }
   }
 }
-let blastCd = 0;
-function doBlast(){
+const skillCd = {};
+function doSkill(k){
   if(!me) return;
-  if(!flyUnlocked){ toast('오늘 공부시간 1등만 쓸 수 있는 새로운 행동이에요'); openRank(); return; }
-  if(me.mode === 'sit'){ toast('일어난 다음에 쏠 수 있어요'); return; }
-  const now = Date.now(); if(now < blastCd){ toast('장풍 모으는 중…'); return; }
-  blastCd = now + 2500;
+  const S = SKILLS[k];
+  if(!skillOk(me, k)){ toast('오늘 ' + (S.need/3600) + '시간 공부하면 ' + S.name + '을(를) 쓸 수 있어요 · 지금 ' + fmtTime(me.total)); return; }
+  if(me.mode === 'sit'){ toast('일어난 다음에 쓸 수 있어요'); return; }
+  if(me.frozenT > 0){ toast('얼어서 못 움직여요!'); return; }
+  const now = Date.now(); if(now < (skillCd[k] || 0)){ toast(S.name + ' 모으는 중…'); return; }
+  skillCd[k] = now + S.cd;
   const dx = Math.sin(me.ry), dz = Math.cos(me.ry), x = me.pos.x + dx*0.6, z = me.pos.z + dz*0.6;
-  me.pose = 'blast'; me.poseT = 0; me.poseDur = 0.6; me.say('장풍!');
-  spawnBlast(me, x, z, dx, dz);
-  if(myRef) myRef.update({ blast:{ n:now, x:+x.toFixed(2), z:+z.toFixed(2), dx:+dx.toFixed(3), dz:+dz.toFixed(3) } }).catch(netErr);
+  castSkill(me, k, x, z, dx, dz);
+  if(myRef) myRef.update({ skill:{ n:now, k, x:+x.toFixed(2), z:+z.toFixed(2), dx:+dx.toFixed(3), dz:+dz.toFixed(3) } }).catch(netErr);
 }
-document.querySelectorAll('[data-blast]').forEach(b => b.addEventListener('click', doBlast));
+document.querySelectorAll('[data-skill]').forEach(b => b.addEventListener('click', () => doSkill(b.dataset.skill)));
 function syncFlyBtns(){
-  document.querySelectorAll('[data-blast]').forEach(b => {
-    const label = flyUnlocked ? '장풍 쏘기' : '새로운 행동 ? · 1등 보상';   // 1등이 되기 전엔 무슨 행동인지 비밀
+  document.querySelectorAll('[data-skill]').forEach(b => {
+    const S = SKILLS[b.dataset.skill], ok = !!me && skillOk(me, b.dataset.skill);
+    const label = ok ? S.name : S.name + ' · ' + (S.need/3600) + '시간 공부';
     if(b.textContent !== label) b.textContent = label;
-    b.setAttribute('aria-disabled', String(!flyUnlocked));
+    b.setAttribute('aria-disabled', String(!ok));
   });
   document.querySelectorAll('[data-fly]').forEach(b => {
     const label = !flyUnlocked ? '새로운 행동 ? · 1등 보상' : (me && me.flying ? '착지하기' : '공중부양');
