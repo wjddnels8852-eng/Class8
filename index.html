@@ -1753,7 +1753,7 @@ function updateFocus(){
   $('#focus').hidden = !show; if(!show) return;
   const s = Math.floor((Date.now() - me.studyStart)/1000), h = Math.floor(s/3600);
   $('#fTimer').textContent = (h ? h + ':' : '') + String(Math.floor(s/60) % 60).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
-  $('#fSubj').textContent = '집중 중 · ' + me.subject;
+  $('#fSubj').textContent = '집중 중 · ' + me.subject + (wakeLock ? ' · 화면 안 꺼짐' : '');
   $('#fToday').textContent = '오늘 내 공부 ' + fmtTime(me.total);
   $('#fClass').textContent = fmtTime(classToday());
   $('#focus').classList.toggle('glow', Date.now() < glowUntil);
@@ -1986,6 +1986,25 @@ $('#btnQ').addEventListener('click', openQ);
 function openRank(){ renderRank(); $('#rankSheet').hidden = false; }
 $('#btnRank').addEventListener('click', openRank);
 
+// 공부하는 동안 화면이 꺼지지 않게 (화면이 꺼지면 폰이 교실을 멈춰서 공부시간이 안 쌓여요)
+let wakeLock = null, wakeWanted = false, wakeWarned = false;
+function wantWake(on){
+  wakeWanted = on;
+  if(!on){ if(wakeLock){ wakeLock.release().catch(() => {}); wakeLock = null; } return; }
+  if(wakeLock) return;
+  if(!('wakeLock' in navigator)){
+    if(!wakeWarned){ wakeWarned = true; toast('이 폰은 화면 꺼짐 방지가 안 돼요. 설정에서 자동 잠금을 길게 바꿔주세요'); }
+    return;
+  }
+  navigator.wakeLock.request('screen').then(l => {
+    if(!wakeWanted){ l.release().catch(() => {}); return; }
+    wakeLock = l; l.addEventListener('release', () => { if(wakeLock === l) wakeLock = null; });
+  }).catch(() => {});
+}
+// 다른 앱 갔다 오거나 화면을 누를 때 다시 켜요
+document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible' && wakeWanted) wantWake(true); });
+window.addEventListener('pointerdown', () => { if(wakeWanted && !wakeLock) wantWake(true); }, true);
+
 // 전체화면: 안드로이드·아이패드는 바로 전체화면, 아이폰은 "홈 화면에 추가" 안내
 { const de = document.documentElement;
   const fsEl = () => document.fullscreenElement || document.webkitFullscreenElement;
@@ -2210,7 +2229,7 @@ function updateUI(){
   const sitting = me.mode === 'sit';
   if(me.mode !== lastMode){
     if(me.mode === 'sit' && lastMode !== 'sit'){ focusPeek = false; focusSig = ''; }
-    lastMode = me.mode;
+    lastMode = me.mode; wantWake(me.mode === 'sit');
     $('#walkUI').hidden = sitting; $('#sitUI').hidden = !sitting;
     $('#walkUI').style.display = sitting ? 'none' : 'flex';
     $('#sitUI').style.display = sitting ? 'flex' : 'none';
