@@ -240,6 +240,38 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
   .toast{bottom:calc(env(safe-area-inset-bottom,0px) + 70px)!important}
 }
 @media (prefers-reduced-motion: reduce){.hint{transition:none}}
+/* 옆방 공통 */
+#seaUI{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+#seaUI .btn{min-height:50px;padding:0 6px;font-size:14px;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:none}
+.seahud{position:fixed;inset:0;pointer-events:none;z-index:4}
+.seahud .depth{position:absolute;left:max(16px,env(safe-area-inset-left,0px));top:calc(env(safe-area-inset-top,0px) + 104px);background:rgba(15,20,38,.82);border-radius:14px;padding:8px 14px;display:flex;flex-direction:column;gap:2px}
+.seahud .depth small{font-size:11px;font-weight:700;color:#8FCBFF}
+.seahud .depth b{font-family:var(--font-d);font-weight:400;font-size:24px;font-variant-numeric:tabular-nums}
+.seahud .depth span{font-size:11px;color:#A9B0D6}
+.seahud .gauge{position:absolute;right:max(16px,env(safe-area-inset-right,0px));top:calc(env(safe-area-inset-top,0px) + 112px);height:38vh;width:8px;border-radius:4px;background:rgba(15,20,38,.82)}
+.seahud .gauge i{position:absolute;left:-4px;width:16px;height:16px;border-radius:50%;background:var(--accent);margin-top:-8px}
+.seahud .gauge span{position:absolute;right:14px;font-size:10px;color:#8FCBFF;white-space:nowrap}
+.seahud .gauge .g0{top:-6px}.seahud .gauge .g1{bottom:-6px}
+.seamsg{position:absolute;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 60px);background:rgba(15,20,38,.9);color:var(--warm);font-weight:700;font-size:14px;border-radius:12px;padding:8px 14px;white-space:nowrap}
+.ninocard{position:fixed;left:0;right:0;bottom:0;z-index:6;max-height:46vh;overflow-y:auto;background:var(--panel);border-radius:22px 22px 0 0;display:flex;flex-direction:column;gap:10px;
+  padding:14px max(16px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 14px) max(16px,env(safe-area-inset-left,0px))}
+.ninocard h2{margin:0;font-family:var(--font-d);font-weight:400;font-size:20px}
+.ninocard .who{font-size:12px;color:var(--muted)}
+.legend{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted)}
+.legend i{flex:1;height:8px;border-radius:4px;background:linear-gradient(90deg,#1B3A8C,#2E7FC4,#38C1D4,#9BE08A,#F2D35B,#F59A3A,#E8452C,#B5162B)}
+.ninotext{display:flex;flex-direction:column;gap:8px}
+.ninotext b{font-family:var(--font-d);font-weight:400;font-size:18px;color:var(--warm)}
+.ninotext p{margin:0;font-size:14px;line-height:1.65}
+.ninotext .kr{background:var(--panel-2);border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.6}
+@media (min-aspect-ratio: 5/4){
+  .ninocard{left:max(12px,env(safe-area-inset-left,0px));right:auto;top:calc(env(safe-area-inset-top,0px) + 64px);bottom:max(12px,env(safe-area-inset-bottom,0px));width:min(380px,42vw);max-height:none;border-radius:18px;padding:14px 16px}
+}
+.lockico{width:56px;height:56px;border-radius:50%;background:#B83B4E;display:flex;align-items:center;justify-content:center;align-self:center}
+.prog{height:12px;border-radius:6px;background:var(--line);overflow:hidden}.prog i{display:block;height:100%;background:var(--accent);border-radius:6px}
+.dexrow{display:grid;grid-template-columns:40px minmax(0,1fr);gap:10px;align-items:center;background:var(--panel-2);border-radius:12px;padding:10px 12px}
+.dexrow .n{font-family:var(--font-d);font-size:18px;color:var(--accent);text-align:center}
+.dexrow.no .n{color:var(--muted)}
+.dexrow b{font-size:14px}.dexrow small{display:block;font-size:12px;color:var(--muted);margin-top:2px;line-height:1.5}
 </style>
 </head>
 <body>
@@ -282,6 +314,8 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
       <button type="button" class="pose flybtn" id="btnSurvey">설문하기</button>
       <button type="button" class="pose flybtn" id="btnCal">수행평가 달력</button>
       <button type="button" class="pose flybtn" id="btnQ">질문 게시판</button>
+      <button type="button" class="pose flybtn" id="btnSea">심해 탐험실</button>
+      <button type="button" class="pose flybtn" id="btnNino">엘니뇨 탐구실</button>
     </div>
     <div class="scroller" aria-label="포즈">
       <button class="pose flybtn" data-fly="1">공중부양</button>
@@ -300,6 +334,12 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
       <button class="btn" id="btnBoard">칠판에 쓰기</button>
       <button class="btn primary" id="btnSeat">자리에 앉기</button>
     </div>
+  </div>
+  <div id="seaUI" hidden>
+    <button type="button" class="btn" id="seaUp">⬆ 떠오르기</button>
+    <button type="button" class="btn primary" id="seaDown">⬇ 잠수</button>
+    <button type="button" class="btn" id="seaDex">도감 0/12</button>
+    <button type="button" class="btn warm" id="seaExit">교실로</button>
   </div>
   <div id="sitUI" hidden style="display:flex;flex-direction:column;gap:12px">
     <div class="timer">
@@ -394,6 +434,42 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
       <button type="button" id="fPeek">교실 보기</button>
       <button type="button" class="warm" id="fBreak">쉬는 시간</button>
     </div>
+  </div>
+</div>
+
+<div class="seahud" id="seaHud" hidden>
+  <div class="depth"><small>현재 수심</small><b id="depthTxt">0 m</b><span id="zoneTxt">햇빛 구역</span><span id="seaWho"></span></div>
+  <div class="gauge" aria-hidden="true"><i id="gaugeDot" style="top:0"></i><span class="g0">0m</span><span class="g1">4000m</span></div>
+  <div class="seamsg" id="seaMsg" hidden></div>
+</div>
+
+<div class="ninocard" id="ninoCard" hidden>
+  <div class="ed-head"><div><h2>엘니뇨 탐구실</h2><div class="who" id="ninoWho"></div></div><button type="button" class="tool" id="ninoExit">교실로</button></div>
+  <div class="opts" id="ninoTabs">
+    <button type="button" class="tool" data-nino="normal" aria-pressed="true">평년</button>
+    <button type="button" class="tool" data-nino="nino" aria-pressed="false">엘니뇨</button>
+    <button type="button" class="tool" data-nino="nina" aria-pressed="false">라니냐</button>
+  </div>
+  <div class="legend"><span>차가운 바다</span><i></i><span>따뜻한 바다</span></div>
+  <div class="ninotext" id="ninoText"></div>
+  <p class="sv-note" style="margin:0">지구를 드래그하면 돌아가요 · 두 손가락으로 확대</p>
+</div>
+
+<div class="board-ed" id="lockSheet" hidden>
+  <div class="ed-card" role="dialog" aria-label="심해 탐험실 잠김" style="max-width:420px">
+    <div class="lockico" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#FFF4E0" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2" fill="#FFF4E0"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div>
+    <h2 style="margin:0;text-align:center">아직 들어갈 수 없어요</h2>
+    <p style="margin:0;text-align:center;font-size:14px;color:var(--muted);line-height:1.6">하루에 6시간 공부하면 심해 탐험실이 열려요.<br>한 번 열리면 계속 들어갈 수 있어요.</p>
+    <div class="prog"><i id="lockBar" style="width:0"></i></div>
+    <p id="lockTxt" style="margin:0;text-align:center;font-weight:700;color:var(--accent);font-size:14px"></p>
+    <div class="btns"><button type="button" class="btn" id="lockClose">닫기</button><button type="button" class="btn primary" id="lockStudy">공부하러 가기</button></div>
+  </div>
+</div>
+
+<div class="board-ed" id="dexSheet" hidden>
+  <div class="ed-card sv-card" role="dialog" aria-label="심해 도감">
+    <div class="ed-head"><h2 id="dexTitle">심해 도감</h2><button type="button" class="tool" id="dexClose">닫기</button></div>
+    <div id="dexBody" class="sv-body" style="gap:8px"></div>
   </div>
 </div>
 
@@ -845,7 +921,8 @@ function spriteFrom(cv, sx, sy){
   const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map:tex, depthWrite:false, transparent:true }));
   sp.scale.set(sx, sy, 1); sp.renderOrder = 10; return sp;
 }
-let topAv = null;   // 오늘 공부시간 1등 (이름표에 왕관 표시)
+let topAv = null;
+let room = 'class';   // 'class' 교실 · 'sea' 심해 탐험실 · 'nino' 엘니뇨 탐구실   // 오늘 공부시간 1등 (이름표에 왕관 표시)
 const allAvatars = [];
 class Avatar {
   constructor(o){
@@ -1118,7 +1195,8 @@ const POSES = ['wave','hooray','clap','dance','bow'];
 const DATA_VER = 2;
 function myState(){
   return { name:me.name, hair:me.hair, shirt:me.shirt, x:+me.pos.x.toFixed(2), z:+me.pos.z.toFixed(2), ry:+me.ry.toFixed(2), jy:+me.jumpY.toFixed(2),
-    mode:me.mode, seat:me.seat, subject:me.subject, studyStart:me.studyStart, total:Math.floor(me.total), fly:me.flying, date:todayStr, v:DATA_VER, streak:me.streak || 0, steady:!!me.steady, best:Math.floor(me.best || 0) };
+    mode:me.mode, seat:me.seat, subject:me.subject, studyStart:me.studyStart, total:Math.floor(me.total), fly:me.flying, date:todayStr, v:DATA_VER, streak:me.streak || 0, steady:!!me.steady, best:Math.floor(me.best || 0), room,
+    sea:room === 'sea' && diver ? { x:+diver.g.position.x.toFixed(1), y:+diver.g.position.y.toFixed(1), z:+diver.g.position.z.toFixed(1), h:+diver.h.toFixed(2) } : null };
 }
 // 바뀐 게 있을 때만 보내고(최대 1초 5번), 가만히 있으면 10초마다 '아직 있어요' 신호만 보내요
 function pushPresence(){
@@ -1162,7 +1240,9 @@ function handlePlayers(){
     av.studyStart = num(s.studyStart, 0, now, now);
     av.total = (s.date === todayStr && s.v === DATA_VER) ? num(s.total, 0, 86400, 0) : 0; av.flying = s.fly === true;
     av.streak = Math.floor(num(s.streak, 0, 999, 0)); av.steady = s.steady === true; av.best = num(s.best, 0, 86400, 0);
-    const seat = (Number.isInteger(s.seat) && s.seat >= 0 && s.seat < seats.length) ? s.seat : -1;
+    av.room = (s.room === 'sea' || s.room === 'nino') ? s.room : 'class'; av.group.visible = av.room === 'class';
+    seaRemote(uid, s, av);
+    const seat = (av.room === 'class' && Number.isInteger(s.seat) && s.seat >= 0 && s.seat < seats.length) ? s.seat : -1;
     if(seat !== av.seat){
       if(av.seat >= 0 && seats[av.seat].occ === av) seats[av.seat].occ = null;
       av.seat = seat; if(seat >= 0 && !(seats[seat].occ && seats[seat].occ.isMe)) seats[seat].occ = av;
@@ -1182,7 +1262,7 @@ function handlePlayers(){
   setBotsOn(remotes.size === 0);   // 진짜 친구가 오면 가상 친구들은 나가요
 }
 setInterval(handlePlayers, 5000);   // 연결이 끊긴 친구 정리
-function dropRemote(id){ const r = remotes.get(id); if(!r) return; if(r.av.seat >= 0 && seats[r.av.seat].occ === r.av) seats[r.av.seat].occ = null; r.av.dispose(); remotes.delete(id); }
+function dropRemote(id){ seaDrop(id); const r = remotes.get(id); if(!r) return; if(r.av.seat >= 0 && seats[r.av.seat].occ === r.av) seats[r.av.seat].occ = null; r.av.dispose(); remotes.delete(id); }
 function setBotsOn(on){
   if(on === botsOn) return; botsOn = on;
   bots.forEach(b => {
@@ -1325,8 +1405,8 @@ joyEl.addEventListener('pointerup', joyEnd);
 joyEl.addEventListener('pointercancel', joyEnd);
 window.addEventListener('keydown', e => {
   if(e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
-  if(e.key === ' ' && me && $('#boardEd').hidden){ e.preventDefault(); doJump(); return; }
-  if((e.key === 'f' || e.key === 'F') && me){ doSkill('blast'); return; }
+  if(e.key === ' ' && me && room === 'class' && $('#boardEd').hidden){ e.preventDefault(); doJump(); return; }
+  if((e.key === 'f' || e.key === 'F') && me && room === 'class'){ doSkill('blast'); return; }
   keys[e.key.toLowerCase()] = true;
 });
 window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
@@ -1370,10 +1450,10 @@ canvas.addEventListener('pointermove', e => {
   const p = pts.get(e.pointerId); if(!p) return;
   if(pts.size === 1){
     if(Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y) > 8) moved = true;
-    if(moved){ cam.yaw -= (e.clientX - p.x)*0.006; cam.pitch = clamp(cam.pitch + (e.clientY - p.y)*0.005, 0.22, 1.35); }
+    if(moved){ cam.yaw -= (e.clientX - p.x)*0.006; cam.pitch = clamp(cam.pitch + (e.clientY - p.y)*0.005, camLim.pmin, camLim.pmax); }
   }
   pts.set(e.pointerId, { x:e.clientX, y:e.clientY });
-  if(pts.size === 2){ const d = pdist(); if(d > 0){ cam.dist = clamp(cam.dist * pinchD / d, 3.5, 13); pinchD = d; } }
+  if(pts.size === 2){ const d = pdist(); if(d > 0){ cam.dist = clamp(cam.dist * pinchD / d, camLim.dmin, camLim.dmax); pinchD = d; } }
 });
 function endPointer(e){
   if(e.type === 'pointerup' && pts.size === 1 && !moved) tap(e.clientX, e.clientY);
@@ -1381,16 +1461,17 @@ function endPointer(e){
 }
 canvas.addEventListener('pointerup', endPointer);
 canvas.addEventListener('pointercancel', endPointer);
-canvas.addEventListener('wheel', e => { e.preventDefault(); cam.dist = clamp(cam.dist * (1 + e.deltaY*0.001), 3.5, 13); }, { passive:false });
+canvas.addEventListener('wheel', e => { e.preventDefault(); cam.dist = clamp(cam.dist * (1 + e.deltaY*0.001), camLim.dmin, camLim.dmax); }, { passive:false });
 
 const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
 const tapTargets = deskGroups.concat([vipGroup, surveyGroup, calGroup, qGroup, board, floor]);
 function tap(x, y){
-  if(!me) return;
+  if(!me || room !== 'class') return;
   ndc.set(x / window.innerWidth * 2 - 1, -(y / window.innerHeight) * 2 + 1);
   ray.setFromCamera(ndc, camera);
   const hits = ray.intersectObjects(tapTargets, true);
   for(const h of hits){
+    if(h.object.userData.door){ openDoor(h.object.userData.door); return; }
     if(h.object.userData.survey){ openSurvey(); return; }
     if(h.object.userData.cal){ openCal(); return; }
     if(h.object.userData.q){ if(qGroup.visible) openQ(); return; }
@@ -2246,6 +2327,568 @@ function updateUI(){
   }
 }
 
+/* ---------- 11. 옆방: 심해 탐험실 (하루 6시간 공부) · 엘니뇨 탐구실 (누구나) ---------- */
+const SEA_NEED = 21600;   // 하루 6시간 = 21600초. 한 번 채우면 계속 들어가요
+const seaOpen = () => !!me && Math.max(me.total || 0, me.best || 0) >= SEA_NEED;
+const camLim = { pmin:0.22, pmax:1.35, dmin:3.5, dmax:13 };
+const CLASS_LIM = { pmin:0.22, pmax:1.35, dmin:3.5, dmax:13 };
+
+// 교실 벽에 문 달기 (벽 그룹 안에 넣어서 벽이 숨겨지면 문도 같이 숨어요)
+const doorSigns = [];
+function paintSign(s){
+  const x = s.c.getContext('2d'); x.fillStyle = s.bg; x.fillRect(0, 0, s.c.width, s.c.height);
+  x.fillStyle = s.fg; x.textAlign = 'center'; x.textBaseline = 'middle'; x.font = s.font; x.fillText(s.text, s.c.width/2, s.c.height/2 + 3);
+  s.tex.needsUpdate = true;
+}
+function signMat(text, bg, fg, w, h, font){
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  const s = { c, text, bg, fg, font, tex:new THREE.CanvasTexture(c) }; paintSign(s); doorSigns.push(s);
+  return new THREE.MeshBasicMaterial({ map:s.tex });
+}
+function makeDoor(wallG, localX, kind, title, signText, signBg, doorColor, winColor){
+  const g = new THREE.Group(); g.position.set(localX, 0, 0.03); wallG.add(g);
+  const add = (geo, m, x, y, z) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); g.add(o); return o; };
+  add(new THREE.PlaneGeometry(1.5, 2.55), mat('#7A5638'), 0, 1.27, 0);
+  add(new THREE.PlaneGeometry(1.25, 2.4), mat(doorColor), 0, 1.2, 0.01);
+  add(new THREE.CircleGeometry(0.3, 28), new THREE.MeshBasicMaterial({ color:winColor }), 0, 1.7, 0.02);
+  add(new THREE.RingGeometry(0.3, 0.36, 28), mat('#C9D6E8'), 0, 1.7, 0.025);
+  add(new THREE.SphereGeometry(0.06, 12, 8), mat('#E5B93C'), 0.45, 1.1, 0.06);
+  add(new THREE.PlaneGeometry(1.0, 0.3), signMat(title, '#0F1426', '#8FCBFF', 400, 120, '700 50px "Noto Sans KR", sans-serif'), 0, 0.95, 0.02);
+  add(new THREE.PlaneGeometry(2.1, 0.42), signMat(signText, signBg, '#FFF4E0', 840, 168, '800 64px "Noto Sans KR", sans-serif'), 0, 2.88, 0.02);
+  g.traverse(o => { o.userData.door = kind; });
+  return g;
+}
+const seaDoor = makeDoor(rightWall, -5.9, 'sea', '심해 탐험실', '6시간공부후출입가능', '#B83B4E', '#1F4F7A', '#0A3A66');
+const ninoDoor = makeDoor(leftWall, 5.9, 'nino', '엘니뇨 탐구실', '엘니뇨 탐구실 · 누구나', '#2B6CB0', '#2B5E4A', '#2E86DE');
+tapTargets.push(seaDoor, ninoDoor);
+
+function openDoor(k){
+  if(!me) return;
+  if(k === 'sea' && !seaOpen()){
+    const p = Math.min(1, (me.total || 0)/SEA_NEED);
+    $('#lockBar').style.width = (p*100) + '%';
+    $('#lockTxt').textContent = '오늘 ' + fmtTime(me.total || 0) + ' · ' + fmtTime(Math.max(0, SEA_NEED - (me.total || 0))) + ' 남았어요';
+    $('#lockSheet').hidden = false; return;
+  }
+  enterRoom(k);
+}
+$('#lockClose').addEventListener('click', () => { $('#lockSheet').hidden = true; });
+$('#lockStudy').addEventListener('click', () => { $('#lockSheet').hidden = true; $('#btnSeat').click(); });
+$('#btnSea').addEventListener('click', () => openDoor('sea'));
+$('#btnNino').addEventListener('click', () => openDoor('nino'));
+
+function enterRoom(k){
+  if(!me || room === k) return;
+  lastRoomDoor = k;
+  if(me.mode === 'sit') me.standUp();
+  if(me.flying) setFly(false);
+  me.path = []; me.goSeat = null; me.manual = false; me.mode = 'idle'; me.kvx = me.kvz = 0;
+  room = k; me.group.visible = false; hideHint();
+  ['#calSheet', '#qSheet', '#surveySheet', '#rankSheet', '#boardEd', '#lockSheet'].forEach(s => { const e = $(s); if(e) e.hidden = true; });
+  $('#walkUI').hidden = true; $('#walkUI').style.display = 'none'; $('#sitUI').style.display = 'none';
+  if(k === 'sea'){
+    if(!seaScene) buildSea();
+    diver.g.position.set(rand(-3, 3), -1.6, 8); diver.h = Math.PI; dvel.set(0, 0, 0);
+    Object.assign(camLim, { pmin:-0.9, pmax:1.2, dmin:3, dmax:12 });
+    cam.yaw = 0; cam.pitch = 0.3; cam.dist = 6; cam.t.copy(diver.g.position);
+    $('#seaUI').hidden = false; $('#seaHud').hidden = false; $('#joy').hidden = false; $('#panel').hidden = false;
+    updDexBtn(); toast('심해 탐험실! 잠수 버튼을 누르고 있으면 내려가요');
+  } else {
+    if(!ninoScene) buildNino();
+    setNino(ninoMode);
+    $('#panel').hidden = true; $('#joy').hidden = true; $('#ninoCard').hidden = false;
+    Object.assign(camLim, { pmin:-1.2, pmax:1.2, dmin:6.5, dmax:30 });
+    cam.yaw = 0; cam.pitch = 0.12; cam.t.set(0, 0, 0);
+    requestAnimationFrame(() => { cam.dist = ninoFit(); });
+  }
+  lastSent = ''; pushPresence();
+}
+function exitRoom(){
+  if(room === 'class') return;
+  room = 'class'; seaVin = 0;
+  camera.clearViewOffset();
+  $('#seaUI').hidden = true; $('#seaHud').hidden = true; $('#ninoCard').hidden = true; $('#dexSheet').hidden = true;
+  $('#panel').hidden = false; $('#joy').hidden = false;
+  $('#walkUI').hidden = false; $('#walkUI').style.display = 'flex';
+  // 들어갔던 문 앞에서 나와요
+  let px = lastRoomDoor === 'sea' ? W/2 - 1.3 : -W/2 + 1.3, pz = -5.9;
+  for(let r = 0; r < 6 && !freeAt(px, pz); r += 0.5){ px += lastRoomDoor === 'sea' ? -0.5 : 0.5; }
+  me.pos.set(px, 0, pz); me.ry = me.targetRy = lastRoomDoor === 'sea' ? -Math.PI/2 : Math.PI/2;
+  me.group.visible = true;
+  Object.assign(camLim, CLASS_LIM); resetView(); cam.t.set(me.pos.x, 1, me.pos.z);
+  lastSent = ''; pushPresence();
+}
+let lastRoomDoor = 'sea';
+$('#seaExit').addEventListener('click', exitRoom);
+$('#ninoExit').addEventListener('click', exitRoom);
+
+function roomCount(k){ let n = room === k ? 1 : 0; remotes.forEach(r => { if(r.av.room === k) n++; }); return n; }
+function roomTick(dt){
+  if(room === 'sea') seaTick(dt); else if(room === 'nino') ninoTick(dt);
+}
+
+/* ===== 심해 탐험실 ===== */
+let seaScene = null, diver = null, seaLamp = null, seaAmb = null, seaSun = null, snow = null, seaVin = 0, seaMsgT = 0, bubbleT = 0;
+const fishList = [], bubbles = [], seaDivers = new Map(), dvel = new THREE.Vector3();
+let dex = new Set(store.get('class8-dex', []));
+const Lm = (c, o) => new THREE.MeshLambertMaterial(Object.assign({ color:c }, o || {}));
+const Gm = (c, o) => new THREE.MeshBasicMaterial(Object.assign({ color:c }, o || {}));
+function addM(parent, geo, m, x, y, z){ const o = new THREE.Mesh(geo, m); o.position.set(x || 0, y || 0, z || 0); parent.add(o); return o; }
+
+function makeDiver(shirt, hair){
+  const g = new THREE.Group(), b = new THREE.Group(); g.add(b);
+  const torso = addM(b, new THREE.CylinderGeometry(0.28, 0.3, 1.0, 14), mat(shirt)); torso.rotation.x = Math.PI/2;
+  addM(b, new THREE.SphereGeometry(0.3, 18, 14), mat('#F2C4A0'), 0, 0.05, 0.72);
+  const hr = addM(b, new THREE.SphereGeometry(0.32, 18, 10, 0, Math.PI*2, 0, Math.PI*0.5), mat(hair), 0, 0.08, 0.66); hr.rotation.x = -0.7;
+  addM(b, new THREE.BoxGeometry(0.44, 0.18, 0.14), Lm('#9FE6FF', { emissive:'#1A4A5A' }), 0, 0.1, 0.98);
+  const tank = addM(b, new THREE.CylinderGeometry(0.13, 0.13, 0.75, 12), mat('#E5B93C'), 0, 0.33, -0.05); tank.rotation.x = Math.PI/2;
+  const legs = [];
+  [-1, 1].forEach(s => {
+    const lg = new THREE.Group(); lg.position.set(s*0.14, 0, -0.45); b.add(lg);
+    const leg = addM(lg, new THREE.CylinderGeometry(0.1, 0.1, 0.65, 8), mat('#2A2F48'), 0, 0, -0.3); leg.rotation.x = Math.PI/2;
+    addM(lg, new THREE.BoxGeometry(0.24, 0.04, 0.4), mat('#1B1F3B'), 0, 0, -0.78);
+    legs.push(lg);
+  });
+  return { g, b, legs, h:0 };
+}
+function nameSprite(name){
+  const c = document.createElement('canvas'); c.width = 256; c.height = 64; const x = c.getContext('2d');
+  x.fillStyle = 'rgba(15,20,38,.85)'; x.beginPath(); x.roundRect ? x.roundRect(8, 8, 240, 48, 24) : x.rect(8, 8, 240, 48); x.fill();
+  x.fillStyle = '#FFFFFF'; x.font = '700 28px "Noto Sans KR", sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(name, 128, 34);
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map:new THREE.CanvasTexture(c), depthTest:false, transparent:true }));
+  sp.scale.set(1.6, 0.4, 1); return sp;
+}
+function fish(len, r, color, finColor){
+  const g = new THREE.Group();
+  const body = addM(g, new THREE.SphereGeometry(r, 14, 10), Lm(color)); body.scale.set(0.8, 1, len/(2*r));
+  const tail = addM(g, new THREE.ConeGeometry(r*0.9, r*1.6, 4), Lm(finColor || color), 0, 0, -len/2 - r*0.5); tail.rotation.x = Math.PI/2; tail.scale.x = 0.2;
+  [-1, 1].forEach(s => addM(g, new THREE.SphereGeometry(r*0.18, 8, 6), Gm('#111111'), s*r*0.55, r*0.25, len*0.32));
+  g.userData.tail = tail; return g;
+}
+const schoolAnim = (g, t) => g.userData.kids.forEach(f => { f.userData.tail.rotation.y = Math.sin(t*14 + f.userData.ph)*0.5; });
+
+// 수심: 1칸 = 40m → 바닥(-100) = 4000m
+const SPECIES = [
+  { id:'sardine', name:'정어리 떼', depth:'0~200m', y:[-1.5, -4], near:6, r:6, sp:2.4, bob:0.4,
+    fact:'수백 마리가 한 몸처럼 움직여서 큰 물고기를 헷갈리게 해요.',
+    build(){ const g = new THREE.Group(); g.userData.kids = [];
+      for(let i=0;i<34;i++){ const f = fish(0.42, 0.07, '#B8C7D6', '#8FA3B8'); f.position.set(rand(-1.8, 1.8), rand(-0.8, 0.8), rand(-1.4, 1.4)); f.userData.ph = rand(0, 6.28); g.add(f); g.userData.kids.push(f); }
+      return g; }, anim:schoolAnim },
+  { id:'turtle', name:'푸른바다거북', depth:'0~100m', y:[-1, -3], near:5, r:7, sp:1.2, bob:0.5,
+    fact:'숨을 쉬러 수면으로 올라와야 해요. 다 자라면 주로 해초를 먹어요.',
+    build(){ const g = new THREE.Group();
+      addM(g, new THREE.SphereGeometry(0.8, 18, 12), Lm('#5E7D3A')).scale.set(1, 0.42, 1.25);
+      addM(g, new THREE.SphereGeometry(0.75, 16, 8), Lm('#C9B27A'), 0, -0.08, 0).scale.set(1, 0.2, 1.2);
+      addM(g, new THREE.SphereGeometry(0.26, 12, 10), Lm('#8DA35A'), 0, 0.05, 1.15).scale.z = 1.3;
+      g.userData.fl = [];
+      [[-1, 0.45], [1, 0.45], [-1, -0.7], [1, -0.7]].forEach(([s, z], i) => { const p = new THREE.Group(); p.position.set(s*0.75, 0, z); g.add(p);
+        const f = addM(p, new THREE.BoxGeometry(i < 2 ? 0.9 : 0.45, 0.06, i < 2 ? 0.35 : 0.3), Lm('#7C9A4A'), s*(i < 2 ? 0.4 : 0.2), 0, 0); f.rotation.y = s*(i < 2 ? -0.4 : 0.3);
+        p.userData.s = s; g.userData.fl.push(p); });
+      return g; },
+    anim(g, t){ g.userData.fl.forEach((p, i) => { p.rotation.z = Math.sin(t*2.5 + (i > 1 ? 1 : 0))*0.5*p.userData.s; }); } },
+  { id:'moonjelly', name:'보름달물해파리', depth:'0~200m', y:[-2, -6], near:4.5, r:2, sp:0.4, bob:1.2,
+    fact:'몸의 95% 이상이 물이에요. 가운데 네 개의 고리가 보름달처럼 보여요.',
+    build(){ const g = new THREE.Group();
+      g.userData.bell = addM(g, new THREE.SphereGeometry(0.75, 22, 10, 0, Math.PI*2, 0, Math.PI/2), Lm('#E9D8FF', { transparent:true, opacity:0.55, emissive:'#3A2A55', side:THREE.DoubleSide }));
+      for(let i=0;i<4;i++){ const ring = addM(g, new THREE.TorusGeometry(0.16, 0.035, 6, 16), Gm('#F7A8D8'), Math.cos(i*Math.PI/2)*0.25, 0.25, Math.sin(i*Math.PI/2)*0.25); ring.rotation.x = Math.PI/2; }
+      for(let i=0;i<10;i++){ const a = i/10*Math.PI*2; addM(g, new THREE.CylinderGeometry(0.012, 0.012, 1.4, 4), Gm('#E7C8FF', { transparent:true, opacity:0.6 }), Math.cos(a)*0.6, -0.7, Math.sin(a)*0.6); }
+      return g; },
+    anim(g, t){ const s = 1 + Math.sin(t*2.4)*0.12; g.userData.bell.scale.set(s, 1/s, s); } },
+  { id:'lantern', name:'샛비늘치 (랜턴피시)', depth:'200~1000m', y:[-8, -22], near:5, r:5, sp:2, bob:1,
+    fact:'몸에 빛을 내는 점이 줄지어 있어요. 밤이 되면 먹이를 찾아 얕은 곳까지 올라와요.',
+    build(){ const g = new THREE.Group(); g.userData.kids = [];
+      for(let i=0;i<7;i++){ const f = fish(0.6, 0.1, '#2E3A4A'); f.position.set(rand(-1.5, 1.5), rand(-0.7, 0.7), rand(-1.2, 1.2));
+        for(let k=0;k<5;k++) [-1, 1].forEach(s => addM(f, new THREE.SphereGeometry(0.022, 6, 4), Gm('#7FF7FF'), s*0.08, -0.04, -0.2 + k*0.1));
+        f.userData.ph = rand(0, 6.28); g.add(f); g.userData.kids.push(f); }
+      return g; }, anim:schoolAnim },
+  { id:'oarfish', name:'산갈치', depth:'200~1000m', y:[-6, -20], near:6, r:8, sp:1.2, bob:1.5,
+    fact:'세상에서 가장 긴 경골어류예요. 8m가 넘게 자라기도 해요.',
+    build(){ const g = new THREE.Group(); g.userData.seg = [];
+      for(let i=0;i<18;i++){ const s = new THREE.Group(); s.position.z = -i*0.42; g.add(s); const h = 0.55 - i*0.018;
+        addM(s, new THREE.BoxGeometry(0.1, h, 0.45), Lm('#D9E6F2'));
+        addM(s, new THREE.BoxGeometry(0.04, 0.14, 0.42), Gm('#FF4D5E'), 0, h/2 + 0.06, 0);
+        if(i === 0){ [-1, 1].forEach(q => addM(s, new THREE.SphereGeometry(0.05, 8, 6), Gm('#111111'), q*0.06, 0.1, 0.12));
+          for(let k=0;k<4;k++) addM(s, new THREE.BoxGeometry(0.03, 0.5 + k*0.1, 0.03), Gm('#FF4D5E'), 0, 0.45 + k*0.08, 0.15 - k*0.08).rotation.x = -0.4 - k*0.15; }
+        g.userData.seg.push(s); }
+      return g; },
+    anim(g, t){ g.userData.seg.forEach((s, i) => { s.position.x = Math.sin(t*2.2 - i*0.45)*0.35*(i/18); s.position.y = Math.sin(t*1.5 - i*0.3)*0.1; }); } },
+  { id:'vampire', name:'흡혈오징어', depth:'600~1200m', y:[-16, -28], near:4.5, r:4, sp:0.8, bob:0.8,
+    fact:'이름과 달리 피를 먹지 않아요. 위에서 떨어지는 바다눈(유기물 부스러기)을 먹어요.',
+    build(){ const g = new THREE.Group();
+      addM(g, new THREE.SphereGeometry(0.45, 16, 12), Lm('#7A1E30')).scale.set(1, 1, 1.35);
+      [-1, 1].forEach(s => { addM(g, new THREE.SphereGeometry(0.22, 10, 8), Lm('#7A1E30'), s*0.42, 0.1, -0.3).scale.set(1.2, 0.25, 0.8);
+        addM(g, new THREE.SphereGeometry(0.09, 10, 8), Gm('#5CE1E6'), s*0.25, 0.12, 0.42); });
+      const cape = addM(g, new THREE.ConeGeometry(0.8, 0.9, 8, 1, true), Lm('#4A0F1E', { side:THREE.DoubleSide }), 0, 0, 0.75); cape.rotation.x = -Math.PI/2; g.userData.cape = cape;
+      for(let i=0;i<8;i++){ const a = i/8*Math.PI*2; addM(g, new THREE.SphereGeometry(0.04, 6, 4), Gm('#9FF0FF'), Math.cos(a)*0.75, Math.sin(a)*0.75, 1.15); }
+      return g; },
+    anim(g, t){ const s = 1 + Math.sin(t*1.6)*0.15; g.userData.cape.scale.set(s, 1, s); } },
+  { id:'giantsquid', name:'대왕오징어', depth:'300~1000m', y:[-18, -25], near:8, r:10, sp:1.4, bob:1,
+    fact:'눈이 농구공만큼 커요. 어두운 바다에서 작은 빛도 잘 알아봐요.',
+    build(){ const g = new THREE.Group(), red = Lm('#C2463A');
+      addM(g, new THREE.ConeGeometry(0.7, 3.6, 14), red, 0, 0, -1.6).rotation.x = -Math.PI/2;
+      [-1, 1].forEach(s => { addM(g, new THREE.SphereGeometry(0.6, 10, 8), red, s*0.45, 0, -3.0).scale.set(1.3, 0.12, 0.8);
+        addM(g, new THREE.SphereGeometry(0.26, 14, 10), Lm('#F4F2FF'), s*0.55, 0.15, 0.55); addM(g, new THREE.SphereGeometry(0.13, 10, 8), Gm('#0A0A10'), s*0.72, 0.17, 0.6); });
+      addM(g, new THREE.SphereGeometry(0.62, 14, 10), red, 0, 0, 0.5);
+      g.userData.arms = [];
+      for(let i=0;i<10;i++){ const a = i/8*Math.PI*2, long = i >= 8, len = long ? 5 : 2.6;
+        const arm = new THREE.Group(); arm.position.set(Math.cos(a)*0.32*(long ? 0.5 : 1), Math.sin(a)*0.32*(long ? 0.5 : 1), 0.9); g.add(arm);
+        addM(arm, new THREE.CylinderGeometry(0.03, 0.1, len, 6), red, 0, 0, len/2).rotation.x = Math.PI/2;
+        arm.userData.a = a; g.userData.arms.push(arm); }
+      return g; },
+    anim(g, t){ g.userData.arms.forEach((arm, i) => { arm.rotation.x = Math.sin(arm.userData.a)*-0.25 + Math.sin(t*1.8 + i)*0.12; arm.rotation.y = Math.cos(arm.userData.a)*0.25 + Math.cos(t*1.5 + i)*0.12; }); } },
+  { id:'blobfish', name:'블롭피시', depth:'600~1200m', y:[-20, -28], near:4.5, r:3, sp:0.5, bob:0.4,
+    fact:'깊은 바다에선 평범한 물고기 모양이에요. 물 밖으로 나와 압력이 낮아지면 흐물흐물해져요.',
+    build(){ const g = new THREE.Group(), pink = Lm('#E8A3A8');
+      addM(g, new THREE.SphereGeometry(0.6, 16, 12), pink).scale.set(1, 0.85, 1.2);
+      addM(g, new THREE.SphereGeometry(0.22, 12, 10), Lm('#E08F96'), 0, -0.05, 0.72).scale.set(1, 0.8, 0.9);
+      [-1, 1].forEach(s => addM(g, new THREE.SphereGeometry(0.06, 8, 6), Gm('#1B1F3B'), s*0.25, 0.18, 0.62));
+      addM(g, new THREE.TorusGeometry(0.15, 0.03, 6, 12, Math.PI), Lm('#B5656C'), 0, -0.36, 0.62);
+      const tail = addM(g, new THREE.ConeGeometry(0.3, 0.5, 4), pink, 0, 0, -0.85); tail.rotation.x = Math.PI/2; tail.scale.x = 0.25; g.userData.tail = tail;
+      return g; },
+    anim(g, t){ g.userData.tail.rotation.y = Math.sin(t*3)*0.3; } },
+  { id:'atolla', name:'아톨라해파리', depth:'1000~4000m', y:[-30, -75], near:5, r:3, sp:0.5, bob:1.5,
+    fact:'공격받으면 빙글빙글 파란 빛을 내요. 더 큰 동물을 불러서 자기를 공격한 동물을 쫓아내는 "도난 경보"예요.',
+    build(){ const g = new THREE.Group();
+      addM(g, new THREE.CylinderGeometry(0.9, 0.95, 0.28, 24), Lm('#9E1428', { emissive:'#2A0008' }));
+      addM(g, new THREE.SphereGeometry(0.5, 16, 8, 0, Math.PI*2, 0, Math.PI/2), Lm('#C21E36'), 0, 0.12, 0);
+      g.userData.dots = [];
+      for(let i=0;i<20;i++){ const a = i/20*Math.PI*2; g.userData.dots.push(addM(g, new THREE.SphereGeometry(0.07, 8, 6), Gm('#4FC3FF', { transparent:true }), Math.cos(a), -0.05, Math.sin(a))); }
+      for(let i=0;i<14;i++){ const a = i/14*Math.PI*2; addM(g, new THREE.CylinderGeometry(0.01, 0.01, 1.2, 4), Lm('#B5162B'), Math.cos(a)*0.9, -0.7, Math.sin(a)*0.9); }
+      addM(g, new THREE.CylinderGeometry(0.015, 0.015, 3.2, 4), Lm('#B5162B'), 0.2, -1.7, 0);
+      return g; },
+    anim(g, t){ g.userData.dots.forEach((d, i) => { d.material.opacity = 0.3 + 0.7*Math.max(0, Math.sin(t*4 - i*0.6)); }); } },
+  { id:'angler', name:'초롱아귀', depth:'1000~4000m', y:[-40, -92], near:5.5, r:5, sp:0.7, bob:1,
+    fact:'머리에 달린 빛나는 낚싯대로 먹이를 꾀어요. 이 빛은 몸속에 사는 세균이 만들어요.',
+    build(){ const g = new THREE.Group();
+      addM(g, new THREE.SphereGeometry(0.9, 18, 14), Lm('#2A3442')).scale.set(0.9, 0.85, 1.1);
+      addM(g, new THREE.SphereGeometry(0.75, 16, 8, 0, Math.PI*2, Math.PI/2, Math.PI/2), Lm('#0A0E14'), 0, -0.05, 0.45).scale.set(0.9, 0.5, 0.9);
+      for(let i=0;i<9;i++){ const a = -0.9 + i*0.225; addM(g, new THREE.ConeGeometry(0.05, 0.22, 5), Lm('#F4F2FF'), Math.sin(a)*0.62, -0.1, 0.45 + Math.cos(a)*0.62).rotation.x = Math.PI; }
+      [-1, 1].forEach(s => { addM(g, new THREE.SphereGeometry(0.13, 10, 8), Lm('#F4F2FF'), s*0.38, 0.35, 0.65); addM(g, new THREE.SphereGeometry(0.06, 8, 6), Gm('#0A0A10'), s*0.42, 0.37, 0.75); });
+      const tail = addM(g, new THREE.ConeGeometry(0.5, 0.8, 4), Lm('#232C38'), 0, 0, -1.25); tail.rotation.x = Math.PI/2; tail.scale.x = 0.2; g.userData.tail = tail;
+      const rod = new THREE.Group(); rod.position.set(0, 0.7, 0.4); g.add(rod);
+      addM(rod, new THREE.CylinderGeometry(0.025, 0.035, 1.0, 6), Lm('#3B4A5A'), 0, 0.45, 0.15).rotation.x = 0.35;
+      addM(rod, new THREE.SphereGeometry(0.13, 12, 10), Gm('#FFF3B0'), 0, 0.92, 0.42);
+      g.userData.halo = addM(rod, new THREE.SphereGeometry(0.4, 12, 10), Gm('#FFE27A', { transparent:true, opacity:0.25, depthWrite:false }), 0, 0.92, 0.42);
+      const pl = new THREE.PointLight('#FFE27A', 1.4, 7); pl.position.set(0, 0.92, 0.42); rod.add(pl);
+      g.userData.rod = rod; return g; },
+    anim(g, t){ g.userData.rod.rotation.x = Math.sin(t*1.2)*0.12; g.userData.halo.scale.setScalar(1 + Math.sin(t*3)*0.15); g.userData.tail.rotation.y = Math.sin(t*2.5)*0.3; } },
+  { id:'dumbo', name:'덤보문어', depth:'1000~7000m', y:[-50, -95], near:4.5, r:3, sp:0.6, bob:1.2,
+    fact:'귀처럼 생긴 지느러미를 펄럭이며 헤엄쳐요. 가장 깊은 곳에 사는 문어예요.',
+    build(){ const g = new THREE.Group(), c = Lm('#E8957E');
+      addM(g, new THREE.SphereGeometry(0.6, 16, 12), c, 0, 0.3, 0).scale.set(1, 1.1, 1);
+      g.userData.ears = [];
+      [-1, 1].forEach(s => { const e = new THREE.Group(); e.position.set(s*0.5, 0.55, 0); g.add(e);
+        addM(e, new THREE.SphereGeometry(0.3, 10, 8), c, s*0.25, 0, 0).scale.set(1, 0.2, 0.7); e.userData.s = s; g.userData.ears.push(e);
+        addM(g, new THREE.SphereGeometry(0.08, 8, 6), Gm('#1B1F3B'), s*0.25, 0.35, 0.52); });
+      const skirt = addM(g, new THREE.ConeGeometry(0.75, 0.7, 10, 1, true), Lm('#D9806A', { side:THREE.DoubleSide }), 0, -0.35, 0); skirt.rotation.x = Math.PI; g.userData.skirt = skirt;
+      return g; },
+    anim(g, t){ g.userData.ears.forEach(e => { e.rotation.z = Math.sin(t*3)*0.5*e.userData.s; }); const s = 1 + Math.sin(t*1.5)*0.12; g.userData.skirt.scale.set(s, 1, s); } },
+  { id:'tubeworm', name:'관벌레 (열수구)', depth:'2000m 이상 바닥', y:[-100, -100], near:7, r:0, sp:0, bob:0, fixed:[5, -6],
+    fact:'햇빛이 없는 바닥에서도 살아요. 뜨거운 열수구에서 나오는 화학물질을 이용하는 세균과 함께 살아요.',
+    build(){ const g = new THREE.Group();
+      addM(g, new THREE.CylinderGeometry(0.5, 1.2, 4, 10), Lm('#2B2724'), 0, 2, 0);
+      addM(g, new THREE.CylinderGeometry(0.35, 0.5, 0.6, 10), Lm('#1A1715'), 0, 4.2, 0);
+      for(let i=0;i<26;i++){ const a = rand(0, 6.28), r = rand(1.4, 3.2), h = rand(0.6, 1.8), x = Math.cos(a)*r, z = Math.sin(a)*r;
+        addM(g, new THREE.CylinderGeometry(0.06, 0.07, h, 6), Lm('#ECE6D8'), x, h/2, z);
+        addM(g, new THREE.SphereGeometry(0.12, 8, 6), Lm('#E0263A', { emissive:'#3A0008' }), x, h + 0.05, z).scale.y = 1.6; }
+      const pl = new THREE.PointLight('#FF7A2E', 1.3, 12); pl.position.set(0, 4.8, 0); g.add(pl);
+      g.userData.sparks = [];
+      for(let i=0;i<24;i++) g.userData.sparks.push(addM(g, new THREE.SphereGeometry(rand(0.05, 0.12), 6, 4), Gm(i % 3 ? '#3A3430' : '#FF8A3A', { transparent:true, opacity:0.8 }), rand(-0.3, 0.3), 4.5 + rand(0, 4), rand(-0.3, 0.3)));
+      return g; },
+    anim(g, t, dt){ g.userData.sparks.forEach(sp => { sp.position.y += dt*1.2; sp.position.x += Math.sin(t + sp.position.y)*dt*0.2; if(sp.position.y > 9) sp.position.y = 4.5; sp.material.opacity = Math.max(0, 0.8 - (sp.position.y - 4.5)/5); }); } }
+];
+const DEX_N = SPECIES.length;
+
+function buildSea(){
+  seaScene = new THREE.Scene();
+  seaScene.background = new THREE.Color('#2A8FD0');
+  seaScene.fog = new THREE.FogExp2('#2A8FD0', 0.03);
+  seaAmb = new THREE.HemisphereLight('#BFE8FF', '#0A1A2A', 1); seaScene.add(seaAmb);
+  seaSun = new THREE.DirectionalLight('#DFF4FF', 0.8); seaSun.position.set(5, 40, 10); seaScene.add(seaSun);
+  // 수면과 햇빛 줄기
+  const surf = new THREE.Mesh(new THREE.PlaneGeometry(140, 140), Gm('#8FDBFF', { transparent:true, opacity:0.55, side:THREE.DoubleSide })); surf.rotation.x = -Math.PI/2; seaScene.add(surf);
+  for(let i=0;i<8;i++){ const c = addM(seaScene, new THREE.ConeGeometry(1.4, 22, 8, 1, true), Gm('#BFEFFF', { transparent:true, opacity:0.05, depthWrite:false, side:THREE.DoubleSide }), rand(-20, 20), -11, rand(-20, 20)); c.rotation.z = 0.15; }
+  // 바닥 (4000m)
+  const fl = new THREE.Mesh(new THREE.PlaneGeometry(90, 90), Lm('#4A443A')); fl.rotation.x = -Math.PI/2; fl.position.y = -100; seaScene.add(fl);
+  for(let i=0;i<40;i++){ const s = rand(0.4, 2.2); addM(seaScene, new THREE.DodecahedronGeometry(s, 0), Lm('#35322C'), rand(-35, 35), -100 + s*0.4, rand(-35, 35)).rotation.set(rand(0, 3), rand(0, 3), 0); }
+  // 바다눈 (아래로 떨어지는 작은 부스러기)
+  const N = 500, pos = new Float32Array(N*3);
+  for(let i=0;i<N;i++){ pos[i*3] = rand(-12, 12); pos[i*3+1] = rand(-12, 12); pos[i*3+2] = rand(-12, 12); }
+  const sg = new THREE.BufferGeometry(); sg.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  snow = new THREE.Points(sg, new THREE.PointsMaterial({ color:'#CFE8FF', size:0.06, transparent:true, opacity:0.7 })); seaScene.add(snow);
+  // 나 (잠수부) + 머리 손전등
+  diver = makeDiver(me.shirt, me.hair); seaScene.add(diver.g);
+  seaLamp = new THREE.SpotLight('#E6FBFF', 2, 30, 0.6, 0.5, 1); seaLamp.position.set(0, 0.15, 1.0); diver.g.add(seaLamp);
+  const tg = new THREE.Object3D(); tg.position.set(0, -0.6, 8); diver.g.add(tg); seaLamp.target = tg;
+  const body = new THREE.PointLight('#9FE6FF', 0.6, 4); body.position.set(0, 1, 0.5); diver.g.add(body);
+  // 물고기들
+  SPECIES.forEach(d => {
+    const g = d.build(); seaScene.add(g);
+    const cx = d.fixed ? d.fixed[0] : rand(-12, 12), cz = d.fixed ? d.fixed[1] : rand(-12, 12), cy = d.fixed ? d.y[0] : rand(d.y[1], d.y[0]);
+    g.position.set(cx + d.r, cy, cz);
+    fishList.push({ d, g, cx, cy, cz, r:d.r, a:rand(0, 6.28), ph:rand(0, 6.28) });
+  });
+  seaDivers.forEach(r => { if(!r.obj) addRemoteDiver(r); });
+}
+function addRemoteDiver(r){ r.obj = makeDiver(r.shirt, r.hair); r.obj.g.position.set(r.tx, r.ty, r.tz); const tag = nameSprite(r.name); tag.position.y = 1.0; r.obj.g.add(tag); seaScene.add(r.obj.g); }
+function seaRemote(uid, s, av){
+  if(s.room !== 'sea' || !s.sea || typeof s.sea !== 'object'){ seaDrop(uid); return; }
+  const x = num(s.sea.x, -30, 30, 0), y = num(s.sea.y, -100, 0, -2), z = num(s.sea.z, -30, 30, 0), h = num(s.sea.h, -50, 50, 0);
+  let r = seaDivers.get(uid);
+  if(!r){ r = { name:av.name, shirt:okColor(s.shirt) ? s.shirt : '#2C6FD1', hair:okColor(s.hair) ? s.hair : '#3B2A24', obj:null, tx:x, ty:y, tz:z, th:h }; seaDivers.set(uid, r); }
+  r.tx = x; r.ty = y; r.tz = z; r.th = h;
+  if(seaScene && !r.obj) addRemoteDiver(r);
+}
+function seaDrop(uid){ const r = seaDivers.get(uid); if(!r) return; if(r.obj && seaScene) seaScene.remove(r.obj.g); seaDivers.delete(uid); }
+
+// 떠오르기 · 잠수 버튼 (누르고 있는 동안 움직여요)
+function holdBtn(id, v){
+  const b = $(id);
+  b.addEventListener('pointerdown', e => { e.preventDefault(); seaVin = v; try { b.setPointerCapture(e.pointerId); } catch(err) {} });
+  ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(n => b.addEventListener(n, () => { if(seaVin === v) seaVin = 0; }));
+  b.addEventListener('contextmenu', e => e.preventDefault());
+}
+holdBtn('#seaUp', 1); holdBtn('#seaDown', -1);
+
+function discover(d){
+  dex.add(d.id); store.set('class8-dex', [...dex]); updDexBtn();
+  const m = $('#seaMsg'); m.textContent = '새 물고기 발견! ' + d.name + ' · 도감 ' + dex.size + '/' + DEX_N; m.hidden = false; seaMsgT = 3.5;
+}
+function updDexBtn(){ $('#seaDex').textContent = '도감 ' + dex.size + '/' + DEX_N; }
+$('#seaDex').addEventListener('click', () => {
+  const body = $('#dexBody'); body.textContent = '';
+  $('#dexTitle').textContent = '심해 도감 ' + dex.size + '/' + DEX_N;
+  SPECIES.forEach((d, i) => {
+    const got = dex.has(d.id), r = el('div', 'dexrow' + (got ? '' : ' no'));
+    r.appendChild(el('span', 'n', got ? String(i + 1) : '?'));
+    const tx = el('div'); tx.appendChild(el('b', null, got ? d.name : '아직 못 만났어요'));
+    tx.appendChild(el('small', null, '수심 ' + d.depth + (got ? ' · ' + d.fact : ''))); r.appendChild(tx); body.appendChild(r);
+  });
+  $('#dexSheet').hidden = false;
+});
+$('#dexClose').addEventListener('click', () => { $('#dexSheet').hidden = true; });
+
+const C_SURF = new THREE.Color('#2A8FD0'), C_MID = new THREE.Color('#073A6A'), C_DEEP = new THREE.Color('#01060F'), tmpC = new THREE.Color();
+function seaTick(dt){
+  const t = performance.now()/1000, p = diver.g.position;
+  // 조이스틱 = 앞뒤좌우, 버튼 = 위아래
+  let ix = joy.x, iy = joy.y;
+  if(keys['a'] || keys['arrowleft']) ix -= 1; if(keys['d'] || keys['arrowright']) ix += 1;
+  if(keys['w'] || keys['arrowup']) iy -= 1; if(keys['s'] || keys['arrowdown']) iy += 1;
+  const mag = Math.min(1, Math.hypot(ix, iy));
+  let vx = 0, vz = 0;
+  if(mag >= 0.12){
+    const fx = -Math.sin(cam.yaw), fz = -Math.cos(cam.yaw), rx = Math.cos(cam.yaw), rz = -Math.sin(cam.yaw);
+    let mx = fx*(-iy) + rx*ix, mz = fz*(-iy) + rz*ix; const ml = Math.hypot(mx, mz) || 1; vx = mx/ml*4.2*mag; vz = mz/ml*4.2*mag;
+    diver.h = Math.atan2(vx, vz);
+  }
+  const vin = clamp(seaVin + (keys['e'] ? 1 : 0) - (keys['q'] ? 1 : 0), -1, 1);
+  const k = Math.min(1, dt*4);
+  dvel.x += (vx - dvel.x)*k; dvel.z += (vz - dvel.z)*k; dvel.y += (vin*3.6 - dvel.y)*k;
+  p.x = clamp(p.x + dvel.x*dt, -30, 30); p.z = clamp(p.z + dvel.z*dt, -30, 30); p.y = clamp(p.y + dvel.y*dt, -98.6, -0.7);
+  let da = diver.h - diver.g.rotation.y; while(da > Math.PI) da -= Math.PI*2; while(da < -Math.PI) da += Math.PI*2;
+  diver.g.rotation.y += da*Math.min(1, dt*6);
+  diver.b.rotation.x = clamp(-dvel.y*0.15, -0.5, 0.5);
+  const sw = 0.25 + Math.min(1, Math.hypot(dvel.x, dvel.y, dvel.z)/4)*0.6;
+  diver.legs.forEach((l, i) => { l.rotation.x = Math.sin(t*8 + i*Math.PI)*0.4*sw; });
+  cam.t.lerp(new THREE.Vector3(p.x, p.y + 0.3, p.z), 1 - Math.exp(-dt*6));
+  // 깊어질수록 어두워져요 (햇빛은 약 1000m까지)
+  const depth = -p.y, dk = Math.min(1, depth/25), sun = Math.pow(1 - dk, 1.6);
+  if(dk < 0.4) tmpC.copy(C_SURF).lerp(C_MID, dk/0.4); else tmpC.copy(C_MID).lerp(C_DEEP, (dk - 0.4)/0.6);
+  seaScene.background.copy(tmpC); seaScene.fog.color.copy(tmpC); seaScene.fog.density = 0.03 + 0.025*dk;
+  seaAmb.intensity = 0.14 + 0.9*sun; seaSun.intensity = 0.9*sun; seaLamp.intensity = 0.8 + 1.8*dk;
+  // 바다눈은 나를 따라다녀요
+  const a = snow.geometry.attributes.position, arr = a.array;
+  for(let i=0;i<arr.length;i+=3){
+    arr[i+1] -= dt*0.25;
+    for(let q=0;q<3;q++){ const c = q === 0 ? p.x : q === 1 ? p.y : p.z; if(arr[i+q] < c - 12) arr[i+q] += 24; else if(arr[i+q] > c + 12) arr[i+q] -= 24; }
+  }
+  a.needsUpdate = true;
+  // 공기방울
+  bubbleT -= dt;
+  if(bubbleT <= 0){ bubbleT = 0.7; const hd = new THREE.Vector3(0, 0.3, 0.8).applyEuler(diver.g.rotation).add(p);
+    const bb = addM(seaScene, new THREE.SphereGeometry(rand(0.04, 0.08), 8, 6), Gm('#DFF6FF', { transparent:true, opacity:0.7 }), hd.x, hd.y, hd.z); bubbles.push({ m:bb, t:0 }); }
+  for(let i = bubbles.length - 1; i >= 0; i--){ const b = bubbles[i]; b.t += dt; b.m.position.y += dt*1.4; b.m.position.x += Math.sin(t*5 + i)*dt*0.1; b.m.material.opacity = Math.max(0, 0.7 - b.t*0.3);
+    if(b.t > 2.3 || b.m.position.y > -0.2){ seaScene.remove(b.m); b.m.geometry.dispose(); b.m.material.dispose(); bubbles.splice(i, 1); } }
+  // 물고기
+  fishList.forEach(f => {
+    const d = f.d;
+    if(d.sp){ f.a += d.sp*dt/f.r;
+      const x = f.cx + Math.cos(f.a)*f.r, z = f.cz + Math.sin(f.a)*f.r, y = f.cy + Math.sin(t*0.4 + f.ph)*d.bob;
+      const ddx = x - f.g.position.x, ddz = z - f.g.position.z; if(Math.abs(ddx) + Math.abs(ddz) > 1e-6) f.g.rotation.y = Math.atan2(ddx, ddz);
+      f.g.position.set(x, y, z); }
+    if(d.anim) d.anim(f.g, t, dt);
+    if(!dex.has(d.id) && f.g.position.distanceTo(p) < d.near) discover(d);
+  });
+  // 같이 잠수한 친구들
+  seaDivers.forEach(r => { if(!r.obj) return; const g = r.obj.g, q = 1 - Math.exp(-dt*8);
+    g.position.x += (r.tx - g.position.x)*q; g.position.y += (r.ty - g.position.y)*q; g.position.z += (r.tz - g.position.z)*q;
+    let d2 = r.th - g.rotation.y; while(d2 > Math.PI) d2 -= Math.PI*2; while(d2 < -Math.PI) d2 += Math.PI*2; g.rotation.y += d2*q;
+    r.obj.legs.forEach((l, i) => { l.rotation.x = Math.sin(t*8 + i*Math.PI)*0.3; }); });
+  // 화면 표시
+  const m = Math.round(depth*40);
+  $('#depthTxt').textContent = m.toLocaleString() + ' m';
+  $('#zoneTxt').textContent = m < 200 ? '햇빛 구역' : m < 1000 ? '어스름 구역 (빛이 거의 없어요)' : '한밤 구역 (빛이 전혀 없어요)';
+  $('#gaugeDot').style.top = (depth/100*100) + '%';
+  const n = roomCount('sea'); $('#seaWho').textContent = n > 1 ? n + '명이 같이 잠수 중' : '';
+  if(seaMsgT > 0){ seaMsgT -= dt; if(seaMsgT <= 0) $('#seaMsg').hidden = true; }
+}
+
+/* ===== 엘니뇨 탐구실: 커다란 지구 + 바다 온도 ===== */
+let ninoScene = null, globe = null, cloudMesh = null, ninoMode = 'normal', globeCv = null, globeTex = null, cloudCv = null, cloudTex = null;
+const ninoLabels = [], dynLabels = {};
+const GTW = 1280, GTH = 640;
+const lxp = lon => (lon + 180)/360*GTW, lyp = lat => (90 - lat)/180*GTH;
+// 대륙 (경도, 위도) — 단순하게 그린 모양
+const LANDS = [
+  [[-168,66],[-162,70],[-140,70],[-125,70],[-95,72],[-80,73],[-62,60],[-55,52],[-66,45],[-70,42],[-76,35],[-81,31],[-80,25],[-82,28],[-84,30],[-90,29],[-97,27],[-97,21],[-92,18],[-87,21],[-88,16],[-83,15],[-83,9],[-79,9],[-77,8],[-80,8],[-85,11],[-92,14],[-105,20],[-110,23],[-112,30],[-115,30],[-117,33],[-121,35],[-124,40],[-124,46],[-127,50],[-133,56],[-140,60],[-150,60],[-158,57],[-165,55],[-160,59],[-166,62]],
+  [[-73,78],[-60,82],[-30,83],[-20,80],[-20,72],[-30,68],[-42,60],[-50,62],[-55,68],[-60,76]],
+  [[-77,8],[-72,12],[-63,11],[-55,6],[-50,1],[-44,-2],[-35,-6],[-39,-14],[-41,-22],[-48,-26],[-53,-34],[-58,-38],[-62,-40],[-65,-45],[-68,-52],[-72,-54],[-75,-50],[-74,-40],[-72,-30],[-71,-18],[-76,-14],[-81,-5],[-80,0],[-78,4]],
+  [[-17,21],[-16,28],[-10,30],[-6,35],[10,37],[11,33],[20,31],[32,31],[34,28],[39,18],[43,12],[51,12],[48,5],[40,-3],[40,-15],[35,-22],[33,-27],[27,-34],[20,-35],[18,-30],[12,-17],[13,-6],[9,-1],[9,4],[4,6],[-4,5],[-8,4],[-13,8],[-17,14]],
+  [[-10,36],[-9,43],[-2,44],[-4,48],[2,51],[8,54],[10,58],[5,62],[14,68],[25,71],[40,68],[60,70],[70,73],[80,73],[100,77],[115,74],[130,72],[150,72],[170,70],[180,68],[180,65],[170,60],[163,58],[156,51],[155,59],[143,59],[137,54],[140,48],[135,43],[129,41],[129,35],[126,37],[122,40],[118,38],[121,32],[120,26],[115,22],[108,21],[106,18],[109,12],[105,9],[100,13],[100,6],[103,1],[98,8],[98,16],[94,17],[91,22],[86,20],[80,15],[77,8],[73,17],[70,21],[66,25],[57,26],[56,24],[59,22],[52,17],[44,13],[43,16],[35,28],[33,31],[36,36],[27,36],[26,40],[22,37],[19,41],[13,45],[16,40],[12,38],[8,44],[3,43],[-1,37],[-6,36]],
+  [[114,-22],[122,-18],[130,-12],[137,-12],[136,-15],[141,-11],[145,-15],[153,-25],[151,-34],[146,-39],[140,-38],[135,-35],[129,-32],[116,-35],[114,-28]],
+  [[95,5],[106,-6],[104,-6],[98,1]], [[109,1],[116,7],[119,1],[116,-4],[110,-3]], [[105,-6],[115,-8],[106,-7.5]], [[131,-1],[141,-3],[150,-10],[142,-9],[138,-8]],
+  [[120,-1],[125,1],[122,-5]], [[120,18],[122,18],[126,7],[122,8]],
+  [[130,31],[135,34],[140,36],[142,40],[141,45],[145,43],[140,38],[137,35],[131,34]],
+  [[-5,50],[1,51],[0,53],[-3,56],[-6,58],[-5,54]], [[44,-25],[47,-25],[50,-15],[49,-12],[44,-17]],
+  [[172,-34],[178,-38],[174,-41],[167,-46],[171,-44]]
+];
+const TSTOPS = [[0,'#1B3A8C'],[10,'#2E7FC4'],[18,'#38C1D4'],[23,'#9BE08A'],[26,'#F2D35B'],[28,'#F59A3A'],[29.5,'#E8452C'],[31,'#B5162B']]
+  .map(([v, c]) => { const q = new THREE.Color(c); return [v, q.r*255, q.g*255, q.b*255]; });
+function tRGB(T){
+  if(T <= TSTOPS[0][0]) return TSTOPS[0].slice(1);
+  for(let i=1;i<TSTOPS.length;i++){ const b = TSTOPS[i]; if(T <= b[0]){ const a = TSTOPS[i-1], f = (T - a[0])/(b[0] - a[0]); return [a[1] + (b[1]-a[1])*f, a[2] + (b[2]-a[2])*f, a[3] + (b[3]-a[3])*f]; } }
+  return TSTOPS[TSTOPS.length-1].slice(1);
+}
+const TLUT = []; for(let i=0;i<=320;i++) TLUT.push(tRGB(i/8 - 5));   // 미리 계산해 둔 온도→색 표
+const gs = (x, s) => Math.exp(-(x/s)*(x/s));
+// 태평양 적도 바다 온도가 평년·엘니뇨·라니냐 때 어떻게 다른지 (대략)
+function sstAnom(lonE, lat, m){
+  if(m === 'normal') return 2.0*gs(lonE-150, 25)*gs(lat, 14) - 7.5*gs(lonE-255, 40)*gs(lat+1, 8) - 4*gs(lonE-280, 10)*gs(lat+12, 14);
+  if(m === 'nino') return 1.0*gs(lonE-160, 25)*gs(lat, 14) + 2.4*gs(lonE-235, 45)*gs(lat, 9) + 2*gs(lonE-278, 8)*gs(lat+5, 10) - 1.2*gs(lonE-283, 6)*gs(lat+18, 10);
+  return 2.2*gs(lonE-138, 20)*gs(lat, 14) - 9.5*gs(lonE-240, 55)*gs(lat+1, 9) - 4.5*gs(lonE-280, 10)*gs(lat+12, 14);
+}
+function drawGlobe(m){
+  const x = globeCv.getContext('2d'), img = x.createImageData(GTW, GTH), d = img.data;
+  for(let j=0;j<GTH;j++){
+    const lat = 90 - (j + 0.5)/GTH*180, cl = Math.cos(lat*Math.PI/180), base = 27.5*Math.pow(Math.max(0, cl), 1.6) - 1.5*(1 - cl);
+    for(let i=0;i<GTW;i++){
+      const lon = (i + 0.5)/GTW*360 - 180, lonE = lon < 0 ? lon + 360 : lon;
+      const T = base + (Math.abs(lat) < 40 && lonE > 95 && lonE < 300 ? sstAnom(lonE, lat, m) : 0);
+      const c = TLUT[Math.max(0, Math.min(TLUT.length - 1, Math.round((T + 5)*8)))], q = (j*GTW + i)*4; d[q] = c[0]; d[q+1] = c[1]; d[q+2] = c[2]; d[q+3] = 255;
+    }
+  }
+  x.putImageData(img, 0, 0);
+  // 대륙
+  x.lineJoin = 'round';
+  LANDS.forEach((poly, n) => { x.beginPath(); poly.forEach(([lo, la], i) => { const px = lxp(lo), py = lyp(la); if(i) x.lineTo(px, py); else x.moveTo(px, py); }); x.closePath();
+    x.fillStyle = n === 1 ? '#E8F0F6' : '#3F7D4E'; x.fill(); x.strokeStyle = n === 1 ? '#C9D6E8' : '#2C5B38'; x.lineWidth = 2; x.stroke(); });
+  x.fillStyle = '#E8F0F6'; x.beginPath(); x.moveTo(0, lyp(-68)); for(let lo=-180; lo<=180; lo+=10) x.lineTo(lxp(lo), lyp(-68 - 3*Math.sin(lo/23))); x.lineTo(GTW, GTH); x.lineTo(0, GTH); x.closePath(); x.fill();
+  // 무역풍 화살표 (적도 근처 동쪽 → 서쪽)
+  const w = { normal:[14, 1, 4], nino:[6, -1, 3], nina:[22, 1, 6] }[m];
+  const arrow = (lonE, lat) => {
+    const toLon = v => v > 180 ? v - 360 : v, a = toLon(lonE + w[1]*w[0]/2), b = toLon(lonE - w[1]*w[0]/2);
+    const x1 = lxp(a), x2 = lxp(b), y = lyp(lat), dir = Math.sign(x2 - x1);
+    [['rgba(15,20,38,.75)', w[2] + 4], ['#FFFFFF', w[2]]].forEach(([col, lw]) => {
+      x.strokeStyle = col; x.fillStyle = col; x.lineWidth = lw; x.beginPath(); x.moveTo(x1, y); x.lineTo(x2 - dir*8, y); x.stroke();
+      x.beginPath(); x.moveTo(x2 + dir*(lw/2), y); x.lineTo(x2 - dir*14, y - 7 - lw/2); x.lineTo(x2 - dir*14, y + 7 + lw/2); x.closePath(); x.fill(); });
+  };
+  [160, 200, 225, 250, 272].forEach(lo => [10, -10].forEach(la => arrow(lo, la)));
+  globeTex.needsUpdate = true;
+}
+function drawClouds(m){
+  const x = cloudCv.getContext('2d'); x.clearRect(0, 0, GTW, GTH);
+  const blob = (lonE, lat, s, al) => { const lon = lonE > 180 ? lonE - 360 : lonE;
+    for(let i=0;i<9;i++){ const cx = lxp(lon + rand(-6, 6)*s), cy = lyp(lat + rand(-3.5, 3.5)*s), r = rand(10, 22)*s;
+      const g = x.createRadialGradient(cx, cy, 0, cx, cy, r); g.addColorStop(0, 'rgba(255,255,255,' + al + ')'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.beginPath(); x.arc(cx, cy, r, 0, 7); x.fill(); } };
+  for(let lo=-170; lo<180; lo+=40){ blob(lo + 180, 48, 1.4, 0.25); blob(lo + 200, -50, 1.4, 0.25); }
+  const C = { normal:[[125, 0, 1.2], [145, -4, 1.2], [110, -3, 0.9]], nino:[[200, 0, 1.2], [230, -2, 1.3], [258, -3, 1.1], [279, -4, 0.9]], nina:[[115, -3, 1.4], [133, 0, 1.4], [150, -6, 1.2], [128, -14, 1]] }[m];
+  C.forEach(([lo, la, s]) => blob(lo, la, s, 0.9));
+  cloudTex.needsUpdate = true;
+}
+function latLon(lat, lon, r){ const ph = (lon + 180)/360*Math.PI*2, th = (90 - lat)/180*Math.PI; return new THREE.Vector3(-r*Math.cos(ph)*Math.sin(th), r*Math.cos(th), r*Math.sin(ph)*Math.sin(th)); }
+function labelSprite(text, color){
+  const c = document.createElement('canvas'); c.width = 384; c.height = 96;
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map:new THREE.CanvasTexture(c), depthTest:false, transparent:true }));
+  sp.userData.c = c; setLabel(sp, text, color); sp.scale.set(1.9, 0.475, 1); return sp;
+}
+function setLabel(sp, text, color){
+  const c = sp.userData.c, x = c.getContext('2d'); x.clearRect(0, 0, 384, 96);
+  x.font = '700 40px "Noto Sans KR", sans-serif'; const w = Math.min(372, x.measureText(text).width + 40);
+  x.fillStyle = 'rgba(15,20,38,.85)'; x.beginPath(); x.roundRect ? x.roundRect(192 - w/2, 12, w, 72, 36) : x.rect(192 - w/2, 12, w, 72); x.fill();
+  x.fillStyle = color || '#FFFFFF'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(text, 192, 50);
+  sp.material.map.needsUpdate = true;
+}
+function buildNino(){
+  ninoScene = new THREE.Scene(); ninoScene.background = new THREE.Color('#060A18');
+  ninoScene.add(new THREE.AmbientLight('#FFFFFF', 0.6));
+  const sun = new THREE.DirectionalLight('#FFFFFF', 0.7); sun.position.set(6, 5, 12); ninoScene.add(sun);
+  const N = 900, pos = new Float32Array(N*3);
+  for(let i=0;i<N;i++){ const v = new THREE.Vector3(rand(-1, 1), rand(-1, 1), rand(-1, 1)).normalize().multiplyScalar(rand(60, 90)); pos[i*3] = v.x; pos[i*3+1] = v.y; pos[i*3+2] = v.z; }
+  const sg = new THREE.BufferGeometry(); sg.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  ninoScene.add(new THREE.Points(sg, new THREE.PointsMaterial({ color:'#FFFFFF', size:0.25 })));
+  globeCv = document.createElement('canvas'); globeCv.width = GTW; globeCv.height = GTH; globeTex = new THREE.CanvasTexture(globeCv);
+  cloudCv = document.createElement('canvas'); cloudCv.width = GTW; cloudCv.height = GTH; cloudTex = new THREE.CanvasTexture(cloudCv);
+  globe = new THREE.Group(); ninoScene.add(globe);
+  globe.add(new THREE.Mesh(new THREE.SphereGeometry(4, 64, 48), new THREE.MeshLambertMaterial({ map:globeTex })));
+  cloudMesh = new THREE.Mesh(new THREE.SphereGeometry(4.06, 64, 48), new THREE.MeshLambertMaterial({ map:cloudTex, transparent:true, depthWrite:false })); globe.add(cloudMesh);
+  ninoScene.add(new THREE.Mesh(new THREE.SphereGeometry(4.3, 48, 32), new THREE.MeshBasicMaterial({ color:'#5CC8FF', transparent:true, opacity:0.12, side:THREE.BackSide })));
+  // 태평양이 정면에 오게 돌려요 (경도 160°W)
+  globe.rotation.y = Math.PI/2 - (-160 + 180)/360*Math.PI*2;
+  [['태평양', 18, -150], ['인도네시아', 2, 117], ['호주', -25, 134], ['페루', -10, -76], ['대한민국', 37, 127.8], ['남아메리카', -22, -58]].forEach(([n, la, lo]) => {
+    const sp = labelSprite(n); sp.position.copy(latLon(la, lo, 4.35)); globe.add(sp); ninoLabels.push(sp); });
+  ['warm', 'cold', 'wind', 'rain'].forEach(k => { const sp = labelSprite(''); globe.add(sp); ninoLabels.push(sp); dynLabels[k] = sp; });
+}
+const NINO_LBL = {
+  normal:{ warm:['따뜻한 바닷물이 모인 곳', -6, 150], cold:['차가운 물이 올라와요', -4, -105], wind:['무역풍 (동 → 서)', 12, -165], rain:['비구름 많음', -12, 125] },
+  nino:{ warm:['따뜻한 물이 동쪽으로!', -7, -130], cold:['', 0, 0], wind:['무역풍이 약해져요', 12, -165], rain:['비구름이 동쪽으로', 10, -110] },
+  nina:{ warm:['따뜻한 물이 더 서쪽에', -6, 140], cold:['평소보다 더 차가워요', -6, -120], wind:['무역풍이 강해져요', 12, -165], rain:['비구름 더 많음', -16, 120] }
+};
+const NINO_TEXT = {
+  normal:{ t:'평년 (보통 때)', p:[
+    '적도 근처에는 동쪽에서 서쪽으로 무역풍이 불어요. 바람이 따뜻한 바닷물을 서태평양(인도네시아·호주 쪽)으로 밀어서 그쪽 바다가 가장 따뜻해요.',
+    '동태평양(페루 앞바다)은 깊은 곳의 차가운 물이 위로 올라와요. 이걸 "용승"이라고 해요. 영양분이 많아서 멸치가 잘 잡혀요.',
+    '따뜻한 바다 위에서 공기가 올라가며 비구름이 생겨서, 인도네시아 쪽에 비가 많이 와요.'],
+    kr:'위의 탭을 눌러서 엘니뇨·라니냐 때 바다 색이 어떻게 바뀌는지 비교해 봐요.' },
+  nino:{ t:'엘니뇨 · 스페인어로 "남자아이"', p:[
+    '무역풍이 약해지면 서쪽에 모여 있던 따뜻한 물이 동쪽으로 퍼져요. 그래서 페루 앞바다 온도가 평소보다 높아져요.',
+    '차가운 물이 덜 올라와서 영양분이 줄고, 물고기가 덜 잡혀요.',
+    '비구름도 동쪽으로 옮겨가요. 페루·에콰도르엔 큰비와 홍수, 인도네시아·호주엔 가뭄과 산불이 생기기 쉬워요.',
+    '크리스마스 무렵 페루 어부들이 먼저 알아채서 "아기 예수"라는 뜻의 이름이 붙었어요. 보통 2~7년마다 찾아와요.'],
+    kr:'우리나라는? 겨울이 비교적 따뜻하고 비나 눈이 많아지는 경향이 있지만, 해마다 다르게 나타나요.' },
+  nina:{ t:'라니냐 · 스페인어로 "여자아이"', p:[
+    '엘니뇨와 반대예요. 무역풍이 평소보다 강해져서 따뜻한 물이 서쪽으로 더 밀려가고, 동태평양은 더 차가워져요.',
+    '인도네시아·호주 쪽은 비가 더 많이 와서 홍수가 날 수 있고, 페루 쪽은 더 건조해져요.'],
+    kr:'우리나라는? 겨울이 춥고 건조해지는 경향이 있지만, 해마다 다르게 나타나요.' }
+};
+function setNino(m){
+  ninoMode = m;
+  drawGlobe(m); drawClouds(m);
+  Object.keys(dynLabels).forEach(k => { const [txt, la, lo] = NINO_LBL[m][k], sp = dynLabels[k];
+    sp.visible = !!txt; sp.userData.off = !txt; if(txt){ setLabel(sp, txt, k === 'warm' ? '#FF9B7A' : k === 'cold' ? '#8FCBFF' : k === 'rain' ? '#E6F8FF' : '#FFE27A'); sp.position.copy(latLon(la, lo, 4.45)); } });
+  document.querySelectorAll('#ninoTabs [data-nino]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.nino === m)));
+  const box = $('#ninoText'), T = NINO_TEXT[m]; box.textContent = '';
+  box.appendChild(el('b', null, T.t)); T.p.forEach(s => box.appendChild(el('p', null, s))); box.appendChild(el('div', 'kr', T.kr));
+}
+document.querySelectorAll('#ninoTabs [data-nino]').forEach(b => b.addEventListener('click', () => setNino(b.dataset.nino)));
+// 설명 카드에 가리지 않도록 지구를 옆(또는 위)으로 비켜서 보여줘요
+function ninoView(){
+  const w = window.innerWidth, h = window.innerHeight, card = $('#ninoCard'), side = w/h >= 1.25;
+  if(side){ const cw = card.offsetWidth + 12; camera.setViewOffset(w, h, -cw/2, 0, w, h); return { wf:(w - cw)/w, hf:1 }; }
+  const ch = card.offsetHeight; camera.setViewOffset(w, h, 0, ch/2, w, h); return { wf:1, hf:(h - ch)/h };
+}
+function ninoFit(){ const v = ninoView(), asp = window.innerWidth/window.innerHeight, tn = Math.tan(27.5*Math.PI/180);
+  return clamp(Math.max(10/(2*tn*v.hf), 10/(2*tn*asp*v.wf)), 8, 28); }
+const tmpV = new THREE.Vector3(), camDir = new THREE.Vector3();
+function ninoTick(dt){
+  ninoView();
+  cam.t.set(0, 0, 0);
+  cloudMesh.rotation.y += dt*0.01;
+  camDir.copy(camera.position).normalize();
+  ninoLabels.forEach(sp => { if(sp.userData.off){ sp.visible = false; return; } sp.getWorldPosition(tmpV); sp.visible = tmpV.normalize().dot(camDir) > 0.3; });
+  const n = roomCount('nino'); $('#ninoWho').textContent = n > 1 ? '지금 ' + n + '명이 같이 보고 있어요' : '지구를 돌려서 바다 색을 비교해 봐요';
+}
+
 /* ---------- 10. 매 프레임 실행 ---------- */
 const clock3 = new THREE.Clock();
 let sendT = 0, introYaw = 0;
@@ -2263,9 +2906,11 @@ function loop(){
     const k = 1 - Math.exp(-dt*10); r.av.pos.x += (r.tx - r.av.pos.x)*k; r.av.pos.z += (r.tz - r.av.pos.z)*k; r.av.update(dt);
   });
   if(me){
-    steer(dt);
-    me.update(dt);
-    cam.t.lerp(new THREE.Vector3(me.pos.x, 1, me.pos.z), 1 - Math.exp(-dt*6));
+    if(room === 'class'){
+      steer(dt);
+      me.update(dt);
+      cam.t.lerp(new THREE.Vector3(me.pos.x, 1, me.pos.z), 1 - Math.exp(-dt*6));
+    } else roomTick(dt);
     sendT -= dt;
     if(sendT <= 0){ sendT = 0.2; pushPresence(); }
   } else {
@@ -2275,18 +2920,19 @@ function loop(){
   if(ringT > 0){ ringT -= dt*1.4; ring.material.opacity = Math.max(0, ringT); ring.scale.setScalar(1 + (1 - ringT)*0.6); }
   const cp = Math.cos(cam.pitch);
   camera.position.set(cam.t.x + Math.sin(cam.yaw)*cp*cam.dist, cam.t.y + Math.sin(cam.pitch)*cam.dist, cam.t.z + Math.cos(cam.yaw)*cp*cam.dist);
+  if(room === 'sea') camera.position.y = Math.min(-0.3, Math.max(camera.position.y, -99.4));
   camera.lookAt(cam.t);
   // 카메라 쪽 벽은 숨겨서 가리지 않게
   frontWall.visible = camera.position.z < D/2 - 0.2; backWall.visible = camera.position.z > -D/2 + 0.2;
   leftWall.visible = camera.position.x > -W/2 + 0.2; rightWall.visible = camera.position.x < W/2 - 0.2;
   uiT -= dt; if(uiT <= 0){ uiT = 0.25; updateUI(); }
-  renderer.render(scene, camera);
+  renderer.render(room === 'sea' ? seaScene : room === 'nino' ? ninoScene : scene, camera);
   requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
 
 // 글꼴이 늦게 도착하면 칠판과 이름표를 다시 그려요
-if(document.fonts && document.fonts.ready) document.fonts.ready.then(() => { drawBoard(); drawPlate(); drawCork(); drawCalBoard(); drawQBoard(); boardKey = ''; fameKey = ''; allAvatars.forEach(a => a.drawLabel(true)); });
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(() => { drawBoard(); drawPlate(); drawCork(); drawCalBoard(); drawQBoard(); doorSigns.forEach(paintSign); boardKey = ''; fameKey = ''; allAvatars.forEach(a => a.drawLabel(true)); });
 })();
 </script>
 </body>
