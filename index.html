@@ -272,6 +272,32 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
 .dexrow{display:grid;grid-template-columns:40px minmax(0,1fr);gap:10px;align-items:center;background:var(--panel-2);border-radius:12px;padding:10px 12px}
 .dexrow .n{font-family:var(--font-d);font-size:18px;color:var(--accent);text-align:center}
 .dexrow.no .n{color:var(--muted)}
+.geobtn{position:fixed;z-index:6;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 108px);min-height:50px;padding:0 20px;border:0;border-radius:999px;
+  background:linear-gradient(180deg,#7DF0F2,#3FCAD8);color:#0F1426;font:400 18px var(--font-d);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 4px 0 #1E8A96,0 10px 24px rgba(0,0,0,.35);animation:geoBob 1.6s ease-in-out infinite}
+@keyframes geoBob{50%{transform:translateX(-50%) translateY(-4px)}}
+@media (prefers-reduced-motion: reduce){.geobtn{animation:none}}
+#geoCard .tabs3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+#geoCard .tabs3 .tool{min-height:40px;padding:0 4px;font-size:13px}
+.geokinds{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.geokinds button{min-height:40px;border-radius:12px;border:1.5px solid var(--line);background:var(--panel-2);color:var(--muted);font:700 13px var(--font-b)}
+.geokinds button.on{border-color:var(--warm);color:var(--warm);background:rgba(255,201,60,.1)}
+#geoKindTxt{font-size:14px;line-height:1.6}#geoKindTxt b{color:#FF7C93}
+#geoCv{width:100%;height:220px;border-radius:12px;display:block;touch-action:none;cursor:grab}
+#geoInfo{font-weight:800;color:#6EE7A8;font-size:14px;margin:0}
+#geoDef{background:rgba(92,225,230,.1);border:1.5px solid var(--accent);border-radius:12px;padding:10px;font-size:13px;line-height:1.6;margin:0}
+#geoQuizBox{display:flex;flex-direction:column;gap:8px}#geoQuizBox p{margin:0;font-size:15px;line-height:1.6}
+.dexgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.dexcard{border-radius:16px;padding:10px 10px 12px;display:flex;flex-direction:column;gap:3px;border:1px solid rgba(255,255,255,.1);text-align:left;color:var(--fg);font:inherit;cursor:pointer}
+.dexcard.sea{background:radial-gradient(circle at 50% 30%,#1E5C8C,#071A33 75%)}
+.dexcard.space{background:radial-gradient(circle at 50% 30%,#2A2F66,#05061A 75%)}
+.dexcard .pic{width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center}
+.dexcard img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 6px 10px rgba(0,0,0,.45))}
+.dexcard .no{font-size:11px;font-weight:800;color:var(--accent)}
+.dexcard b{font-size:15px}
+.dexcard small{font-size:11px;color:#C9C6F0;line-height:1.5}
+.dexcard .fact{display:none;font-size:12px;line-height:1.55;color:var(--fg);margin-top:4px}
+.dexcard.open .fact{display:block}
+.dexcard.lock{opacity:.8}.dexcard.lock b{color:var(--muted)}
 .dexrow b{font-size:14px}
 /* 우주 */
 #spaceUI{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
@@ -371,6 +397,7 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
       <button type="button" class="pose flybtn" id="btnSea">심해 탐험실</button>
       <button type="button" class="pose flybtn" id="btnNino">엘니뇨 탐구실</button>
       <button type="button" class="pose flybtn" id="btnSpace">우주 발사장</button>
+      <button type="button" class="pose flybtn" id="btnGeo">기하 탐구실</button>
     </div>
     <div class="scroller" aria-label="포즈">
       <button class="pose flybtn" data-fly="1">공중부양</button>
@@ -515,6 +542,26 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
   <div class="seamsg" id="seaMsg" hidden></div>
 </div>
 
+<button type="button" class="geobtn" id="geoBtn" hidden>⬇ 기하 탐구실로 내려가기</button>
+<div class="ninocard" id="geoCard" hidden>
+  <div class="ed-head"><div><h2>📐 기하 탐구실 · 이차곡선</h2><div class="who">고2·고3 기하 미리 보기</div></div><button type="button" class="tool" id="geoExit">교실로 ⬆</button></div>
+  <div class="tabs3" id="geoTabs"><button type="button" class="tool" data-g="cone" aria-pressed="true">① 원뿔 자르기</button><button type="button" class="tool" data-g="focus" aria-pressed="false">② 초점과 실</button><button type="button" class="tool" data-g="quiz" aria-pressed="false">③ 확인 문제</button></div>
+  <div id="geoP_cone" style="display:flex;flex-direction:column;gap:10px">
+    <div class="fusrow"><span>평면 기울기</span><input type="range" id="geoTheta" min="0" max="85" step="0.5" value="25" aria-label="평면 기울기"><b id="geoTval">25°</b></div>
+    <div class="geokinds" id="geoKinds"><button type="button" data-k="circle">원</button><button type="button" data-k="ellipse">타원</button><button type="button" data-k="para">포물선</button><button type="button" data-k="hyper">쌍곡선</button></div>
+    <p id="geoKindTxt" style="margin:0"></p>
+    <div class="ninotext"><div class="kr"><b style="font-size:14px;font-family:inherit;color:var(--warm)">왜 '이차곡선'일까?</b><br>원뿔을 평면으로 자르면 단면에 곡선이 생겨요. 자르는 각도에 따라 원 → 타원 → 포물선 → 쌍곡선 4가지가 나와요. 모두 식으로 쓰면 x², y²이 들어가서 '이차'곡선이라고 불러요. 지구를 손가락으로 돌리듯 원뿔도 돌려 보세요.</div></div>
+  </div>
+  <div id="geoP_focus" hidden style="display:flex;flex-direction:column;gap:10px">
+    <div class="opts" id="geoFocusTabs"><button type="button" class="tool" data-f="ellipse" aria-pressed="true">타원</button><button type="button" class="tool" data-f="para" aria-pressed="false">포물선</button><button type="button" class="tool" data-f="hyper" aria-pressed="false">쌍곡선</button></div>
+    <p id="geoDef">타원: 두 점 F, F′(초점)까지 거리의 합이 일정한 점들의 모임</p>
+    <canvas id="geoCv" aria-label="곡선 위의 점 P를 끌어서 거리를 확인하는 그림"></canvas>
+    <p id="geoInfo"></p>
+    <p class="sv-note" style="margin:0">빨간 점 P를 손가락으로 끌어 보세요. 압정 두 개에 실을 묶고 연필로 당기며 돌리면 타원이 그려지는 원리예요. 🔭 행성 궤도는 타원, 🛰️ 위성 안테나 접시는 포물선 모양이에요.</p>
+  </div>
+  <div id="geoP_quiz" hidden><div id="geoQuizBox"></div></div>
+  <p class="sv-note" style="margin:0;background:rgba(255,201,60,.08);border-radius:10px;padding:8px 10px"><b style="color:var(--warm)">기하 진도</b> <span id="geoProg"></span></p>
+</div>
 <div class="ninocard" id="ninoCard" hidden>
   <div class="ed-head"><div><h2>엘니뇨 탐구실</h2><div class="who" id="ninoWho"></div></div><button type="button" class="tool" id="ninoExit">교실로</button></div>
   <div class="opts" id="ninoTabs">
@@ -958,7 +1005,7 @@ function plant(x, z){
   [[0, 0.75, 0, 0.32], [0.16, 0.95, 0.08, 0.24], [-0.14, 0.92, -0.06, 0.26], [0.04, 1.15, -0.1, 0.2]].forEach(([dx, y, dz, r]) => {
     const l = new THREE.Mesh(new THREE.IcosahedronGeometry(r, 0), mat(r > 0.25 ? '#3E8A55' : '#5BAA6A')); l.position.set(x + dx, y, z + dz); l.castShadow = true; scene.add(l); });
 }
-plant(-W/2 + 0.45, -D/2 + 0.45); plant(-W/2 + 0.45, D/2 - 0.45); plant(W/2 - 0.45, D/2 - 0.45);
+plant(-W/2 + 0.45, -D/2 + 0.45); plant(W/2 - 0.45, D/2 - 0.45);
 { const sx = 7.6, sz = D/2 - 0.25; box(2.2, 1.5, 0.4, '#6B4A2E', sx, 0.75, sz);
   [0.35, 0.85, 1.32].forEach(y => box(2.1, 0.04, 0.36, '#8A6243', sx, y, sz - 0.01));
   const BC = ['#D9534F', '#2C6FD1', '#2FA36B', '#E7A92B', '#8F5BD1', '#E8ECF6'];
@@ -1199,8 +1246,8 @@ class Avatar {
     return (this.rest ? '쉬는 중' : '교실 구경 중') + fire;
   }
   drawLabel(force){
-    const crowned = topAv === this, st = this.statusText(), key = this.name + '|' + st + '|' + crowned + '|' + this.steady;
-    const disp = (this.steady ? '★ ' : '') + this.name;   // ★ = 이번 주 꾸준왕
+    const crowned = topAv === this, st = this.statusText(), key = this.name + '|' + st + '|' + crowned + '|' + this.steady + '|' + this.geo;
+    const disp = (this.steady ? '★ ' : '') + (this.geo ? '📐' : '') + this.name;   // ★ = 이번 주 꾸준왕
     if(!force && key === this._lk) return; this._lk = key;
     const x = this.labelCv.getContext('2d'); x.clearRect(0,0,320,112);
     x.font = '700 30px "Noto Sans KR", sans-serif';
@@ -1416,7 +1463,7 @@ const POSES = ['wave','hooray','clap','dance','bow'];
 const DATA_VER = 2;
 function myState(){
   return { name:me.name, hair:me.hair, shirt:me.shirt, x:+me.pos.x.toFixed(2), z:+me.pos.z.toFixed(2), ry:+me.ry.toFixed(2), jy:+me.jumpY.toFixed(2),
-    mode:me.mode, seat:me.seat, subject:me.subject, studyStart:me.studyStart, total:Math.floor(me.total), fly:me.flying, date:todayStr, v:DATA_VER, streak:me.streak || 0, steady:!!me.steady, best:Math.floor(me.best || 0), room,
+    mode:me.mode, seat:me.seat, subject:me.subject, studyStart:me.studyStart, total:Math.floor(me.total), fly:me.flying, date:todayStr, v:DATA_VER, streak:me.streak || 0, steady:!!me.steady, best:Math.floor(me.best || 0), room, geo:!!geoDone,
     sea:room === 'sea' && diver ? { x:+diver.g.position.x.toFixed(1), y:+diver.g.position.y.toFixed(1), z:+diver.g.position.z.toFixed(1), h:+diver.h.toFixed(2) } : null,
     sp:spaceState() };
 }
@@ -1461,8 +1508,8 @@ function handlePlayers(){
     av.subject = SUBJECTS.indexOf(s.subject) >= 0 ? s.subject : '수학';
     av.studyStart = num(s.studyStart, 0, now, now);
     av.total = (s.date === todayStr && s.v === DATA_VER) ? num(s.total, 0, 86400, 0) : 0; av.flying = s.fly === true;
-    av.streak = Math.floor(num(s.streak, 0, 999, 0)); av.steady = s.steady === true; av.best = num(s.best, 0, 86400, 0);
-    av.room = (s.room === 'sea' || s.room === 'nino' || s.room === 'space') ? s.room : 'class'; av.group.visible = av.room === 'class';
+    av.streak = Math.floor(num(s.streak, 0, 999, 0)); av.steady = s.steady === true; av.geo = s.geo === true; av.best = num(s.best, 0, 86400, 0);
+    av.room = (s.room === 'sea' || s.room === 'nino' || s.room === 'space' || s.room === 'geo') ? s.room : 'class'; av.group.visible = av.room === 'class';
     seaRemote(uid, s, av); spaceRemote(uid, s, av);
     const seat = (av.room === 'class' && Number.isInteger(s.seat) && s.seat >= 0 && s.seat < seats.length) ? s.seat : -1;
     if(seat !== av.seat){
@@ -1694,6 +1741,7 @@ function tap(x, y){
   const hits = ray.intersectObjects(tapTargets, true);
   for(const h of hits){
     if(h.object.userData.door){ openDoor(h.object.userData.door); return; }
+    if(h.object.userData.geoHole){ geoTapHole(); return; }
     if(h.object.userData.survey){ openSurvey(); return; }
     if(h.object.userData.cal){ openCal(); return; }
     if(h.object.userData.q){ if(qGroup.visible) openQ(); return; }
@@ -1725,7 +1773,7 @@ $('#setupForm').addEventListener('submit', e => {
   if(!myUid){ toast('먼저 구글로 로그인해요'); return; }
   const nick = ($('#nick').value || '').trim().slice(0, 8) || '익명';
   store.set('class8-avatar', { nick, hair:choice.hair, shirt:choice.shirt });
-  me = new Avatar({ name:nick, hair:choice.hair, shirt:choice.shirt, x:-6, z:6.2, ry:Math.PI, isMe:true });
+  me = new Avatar({ name:nick, hair:choice.hair, shirt:choice.shirt, x:-6, z:6.2, ry:Math.PI, isMe:true }); me.geo = !!store.get('class8-geo', false);
   cam.t.set(me.pos.x, 1, me.pos.z); resetView();
   { const td = store.get('class8-today2', null); me.total = Math.max(td && td.date === todayStr ? td.total : 0, savedTotal); lastSent = '';
     const tw = store.get('class8-week2', null); me.week = Math.max(tw && tw.wk === thisWeek ? tw.t : 0, savedWeek); refreshKing(); recalcStreak(); }
@@ -2615,6 +2663,8 @@ function enterRoom(k){
     cam.yaw = 0; cam.pitch = 0.3; cam.dist = 6; cam.t.copy(diver.g.position);
     $('#seaUI').hidden = false; $('#seaHud').hidden = false; $('#joy').hidden = false; $('#panel').hidden = false;
     updDexBtn(); toast('심해 탐험실! 잠수 버튼을 누르고 있으면 내려가요');
+  } else if(k === 'geo'){
+    enterGeo();
   } else if(k === 'space'){
     enterSpace();
   } else {
@@ -2632,11 +2682,12 @@ function exitRoom(){
   room = 'class'; seaVin = 0;
   camera.clearViewOffset();
   $('#seaUI').hidden = true; $('#seaHud').hidden = true; $('#ninoCard').hidden = true; $('#dexSheet').hidden = true;
-  leaveSpace();
+  leaveSpace(); leaveGeo();
   $('#panel').hidden = false; $('#joy').hidden = false;
   $('#walkUI').hidden = false; $('#walkUI').style.display = 'flex';
   // 들어갔던 문 앞에서 나와요
-  let px = -W/2 + 1.6, pz = DOOR_Z[lastRoomDoor] || 0;   // 문 세 개는 왼쪽 벽에 나란히 있어요
+  let px = -W/2 + 1.6, pz = DOOR_Z[lastRoomDoor] || 0;
+  if(lastRoomDoor === 'geo'){ px = HOLE.x + 1.4; pz = HOLE.z - 0.8; }   // 구멍 옆으로 올라와요   // 문 세 개는 왼쪽 벽에 나란히 있어요
   for(let r = 0; r < 6 && !freeAt(px, pz); r += 0.5){ px += 0.5; }
   me.pos.set(px, 0, pz); me.ry = me.targetRy = Math.PI/2;
   me.group.visible = true;
@@ -2650,7 +2701,7 @@ $('#ninoExit').addEventListener('click', exitRoom);
 
 function roomCount(k){ let n = room === k ? 1 : 0; remotes.forEach(r => { if(r.av.room === k) n++; }); return n; }
 function roomTick(dt){
-  if(room === 'sea') seaTick(dt); else if(room === 'nino') ninoTick(dt); else if(room === 'space') spaceTick(dt);
+  if(room === 'sea') seaTick(dt); else if(room === 'nino') ninoTick(dt); else if(room === 'space') spaceTick(dt); else if(room === 'geo') geoTick(dt);
 }
 
 /* ===== 심해 탐험실 ===== */
@@ -2922,15 +2973,39 @@ function discover(d){
   const m = $('#seaMsg'); m.textContent = '새 물고기 발견! ' + d.name + ' · 도감 ' + dex.size + '/' + DEX_N; m.hidden = false; seaMsgT = 3.5;
 }
 function updDexBtn(){ $('#seaDex').textContent = '도감 ' + dex.size + '/' + DEX_N; }
+/* 도감 사진: 게임 속 3D 모델을 작은 사진으로 찍어서 보여줘요 (못 만난 건 실루엣) */
+let thumbR = null; const thumbCache = {};
+function thumbOf(key, buildFn, dark){
+  const ck = key + (dark ? ':d' : ''); if(thumbCache[ck]) return thumbCache[ck];
+  try {
+    if(!thumbR){ thumbR = new THREE.WebGLRenderer({ antialias:true, alpha:true, preserveDrawingBuffer:true }); thumbR.setPixelRatio(1); thumbR.setSize(240, 240, false); thumbR.setClearColor(0x000000, 0); }
+    const sc = new THREE.Scene(); sc.add(new THREE.HemisphereLight('#FFFFFF', '#40507A', 1.15));
+    const dl = new THREE.DirectionalLight('#FFFFFF', 0.85); dl.position.set(4, 6, 7); sc.add(dl);
+    const o = buildFn(); sc.add(o); o.updateMatrixWorld(true);
+    if(dark) sc.overrideMaterial = new THREE.MeshBasicMaterial({ color:'#3A4170' });
+    const box = new THREE.Box3().setFromObject(o), c = box.getCenter(new THREE.Vector3()), sz = box.getSize(new THREE.Vector3());
+    const r = Math.max(sz.x, sz.y, sz.z)*0.5 || 1, d = r/Math.tan(17.5*Math.PI/180)*1.05;
+    const cm = new THREE.PerspectiveCamera(35, 1, 0.01, 2000); cm.position.set(c.x + d*0.62, c.y + d*0.32, c.z + d*0.72); cm.lookAt(c);
+    thumbR.render(sc, cm);
+    return thumbCache[ck] = thumbR.domElement.toDataURL('image/png');
+  } catch(e){ return ''; }
+}
+function dexCard(kind, i, got, name, sub, fact, img){
+  const c = el('button', 'dexcard ' + kind + (got ? '' : ' lock')); c.type = 'button';
+  const pic = el('div', 'pic'); if(img){ const im = el('img'); im.src = img; im.alt = got ? name : '아직 모르는 생물'; pic.appendChild(im); } c.appendChild(pic);
+  c.appendChild(el('span', 'no', 'No.' + String(i + 1).padStart(2, '0')));
+  c.appendChild(el('b', null, got ? name : '???'));
+  c.appendChild(el('small', null, sub));
+  if(got){ c.appendChild(el('div', 'fact', fact)); c.addEventListener('click', () => c.classList.toggle('open')); }
+  return c;
+}
 $('#seaDex').addEventListener('click', () => {
   const body = $('#dexBody'); body.textContent = '';
   $('#dexTitle').textContent = '심해 도감 ' + dex.size + '/' + DEX_N;
-  SPECIES.forEach((d, i) => {
-    const got = dex.has(d.id), r = el('div', 'dexrow' + (got ? '' : ' no'));
-    r.appendChild(el('span', 'n', got ? String(i + 1) : '?'));
-    const tx = el('div'); tx.appendChild(el('b', null, got ? d.name : '아직 못 만났어요'));
-    tx.appendChild(el('small', null, '수심 ' + d.depth + (got ? ' · ' + d.fact : ''))); r.appendChild(tx); body.appendChild(r);
-  });
+  body.appendChild(el('p', 'sv-note', '카드를 누르면 설명이 펼쳐져요'));
+  const grid = el('div', 'dexgrid'); body.appendChild(grid);
+  SPECIES.forEach((d, i) => { const got = dex.has(d.id);
+    grid.appendChild(dexCard('sea', i, got, d.name, '수심 ' + d.depth, d.fact, thumbOf('sea-' + d.id, () => d.build(), !got))); });
   $('#dexSheet').hidden = false;
 });
 $('#dexClose').addEventListener('click', () => { $('#dexSheet').hidden = true; });
@@ -3166,6 +3241,219 @@ function ninoTick(dt){
 /* ===== 우주 발사장: 로켓 타고 10초 → 우주 (무중력) ===== */
 const spaceDoor = makeDoor(leftWall, 0, 'space', '우주 발사장', '우주 발사장 · 누구나', '#5B3FA8', '#2A2F5A', '#0B0F2A');
 tapTargets.push(spaceDoor);
+
+/* ===== 📐 기하 탐구실 (지하): 교실 구석 구멍으로 내려가요 ===== */
+const HOLE = { x:-8.6, z:5.9 };
+let geoNear = false, geoDesc = 0, geoScene = null, geoTab = 'cone', geoTheta = 25, geoCurve = null, geoPlane = null, geoQuiz = null, geoFocus = 'ellipse';
+let geoDone = !!store.get('class8-geo', false);
+// 교실 바닥 구멍 + 사다리 + 떠오르는 도형
+const holeG = new THREE.Group(); holeG.position.set(HOLE.x, 0, HOLE.z); scene.add(holeG);
+{ const hole = new THREE.Mesh(new THREE.CircleGeometry(0.85, 40), new THREE.MeshBasicMaterial({ color:'#04060E' })); hole.rotation.x = -Math.PI/2; hole.position.y = 0.012; holeG.add(hole);
+  const rim = new THREE.Mesh(new THREE.RingGeometry(0.85, 1.02, 40), mat('#8A8F9E')); rim.rotation.x = -Math.PI/2; rim.position.y = 0.015; holeG.add(rim);
+  for(let i=0;i<16;i++){ if(i % 2) continue; const st = new THREE.Mesh(new THREE.RingGeometry(0.86, 1.01, 6, 1, i/16*Math.PI*2, Math.PI*2/16), new THREE.MeshBasicMaterial({ color:'#FFC93C' })); st.rotation.x = -Math.PI/2; st.position.y = 0.017; holeG.add(st); }
+  [-0.22, 0.22].forEach(x => { const r = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.9, 0.05), mat('#C9CCD6')); r.position.set(x, 0.05, -0.55); holeG.add(r); });
+  [0.25, 0.45].forEach(y => { const r = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.04, 0.04), mat('#C9CCD6')); r.position.set(0, y, -0.55); holeG.add(r); });
+  const glow = new THREE.Mesh(new THREE.RingGeometry(0.6, 0.84, 40), new THREE.MeshBasicMaterial({ color:'#5CE1E6', transparent:true, opacity:0.4, depthWrite:false })); glow.rotation.x = -Math.PI/2; glow.position.y = 0.014; holeG.add(glow); holeG.userData.glow = glow;
+  const sign = labelSprite('📐 기하 탐구실 (지하) ↓', '#5CE1E6'); sign.position.set(0, 2.1, 0); sign.scale.set(2.8, 0.7, 1); holeG.add(sign); holeG.userData.sign = sign;
+  holeG.userData.shapes = [new THREE.TetrahedronGeometry(0.13), new THREE.BoxGeometry(0.16, 0.16, 0.16), new THREE.OctahedronGeometry(0.13), new THREE.IcosahedronGeometry(0.12)].map((g, i) => {
+    const m = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color:['#5CE1E6', '#FFC93C', '#C9A8FF', '#FF7C93'][i], wireframe:true, transparent:true })); holeG.add(m); return { m, t:i*0.8 }; });
+  hole.userData.geoHole = true; holeG.traverse(o => { o.userData.geoHole = true; }); }
+tapTargets.push(holeG);
+function geoHoleTick(dt){
+  const t = performance.now()/1000;
+  holeG.userData.glow.material.opacity = 0.25 + Math.sin(t*2.5)*0.15;
+  holeG.userData.sign.position.y = 2.1 + Math.sin(t*2)*0.08;
+  holeG.userData.shapes.forEach(s => { s.t += dt*0.45; const k = s.t % 3.2/3.2; s.m.position.set(Math.sin(s.t*2)*0.3, k*1.8, Math.cos(s.t*2)*0.3); s.m.rotation.x += dt*2; s.m.rotation.y += dt*1.5; s.m.material.opacity = Math.sin(Math.PI*k); });
+  if(!me || room !== 'class') return;
+  if(geoDesc > 0){   // 구멍으로 내려가는 중
+    geoDesc += dt; const k = Math.min(1, geoDesc/1.1);
+    me.pos.x += (HOLE.x - me.pos.x)*Math.min(1, dt*6); me.pos.z += (HOLE.z - me.pos.z)*Math.min(1, dt*6); me.jumpY = -2.2*k*k;
+    $('#fadeOv').style.background = '#000'; $('#fadeOv').style.opacity = Math.max(0, (k - 0.4)/0.6);
+    if(geoDesc >= 1.15){ geoDesc = 0; me.jumpY = 0; enterRoom('geo'); setTimeout(() => { $('#fadeOv').style.opacity = 0; setTimeout(() => { $('#fadeOv').style.background = ''; }, 700); }, 80); }
+    return;
+  }
+  const near = Math.hypot(me.pos.x - HOLE.x, me.pos.z - HOLE.z) < 2.0 && me.mode !== 'sit';
+  if(near !== geoNear){ geoNear = near; $('#geoBtn').hidden = !near; }
+}
+function geoGoDown(){
+  if(!me || room !== 'class' || geoDesc > 0) return;
+  if(me.flying) setFly(false);
+  me.path = []; me.goSeat = null; me.manual = false; me.mode = 'idle'; geoDesc = 0.001; $('#geoBtn').hidden = true; geoNear = false;
+}
+$('#geoBtn').addEventListener('click', geoGoDown);
+$('#btnGeo').addEventListener('click', () => { if(!me) return; if(Math.hypot(me.pos.x - HOLE.x, me.pos.z - HOLE.z) < 2.0) geoGoDown(); else { goTo(HOLE.x + 1.3, HOLE.z - 0.6); toast('구멍 앞으로 걸어가요'); } });
+function geoTapHole(){ if(Math.hypot(me.pos.x - HOLE.x, me.pos.z - HOLE.z) < 2.0) geoGoDown(); else goTo(HOLE.x + 1.3, HOLE.z - 0.6); }
+
+// --- 지하 탐구실 3D: 원뿔 자르기 ---
+const CONE_H = 3, CONE_R = 1.5, CONE_K = CONE_R/CONE_H, BETA = Math.atan(CONE_H/CONE_R)*180/Math.PI;   // 모선 기울기 ≈ 63.4°
+function buildGeo(){
+  geoScene = new THREE.Scene(); geoScene.background = new THREE.Color('#070B1C');
+  geoScene.add(new THREE.HemisphereLight('#CFE0FF', '#20263F', 0.9));
+  const dl = new THREE.DirectionalLight('#FFFFFF', 0.6); dl.position.set(5, 8, 6); geoScene.add(dl);
+  const grid = new THREE.GridHelper(40, 40, '#2E5C8A', '#1A2A4A'); grid.position.y = -3.2; geoScene.add(grid);
+  const fl = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.MeshBasicMaterial({ color:'#0A1028' })); fl.rotation.x = -Math.PI/2; fl.position.y = -3.21; geoScene.add(fl);
+  // 위에서 내려오는 빛 (교실 구멍)
+  const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 2.2, 14, 24, 1, true), new THREE.MeshBasicMaterial({ color:'#FFF3C4', transparent:true, opacity:0.05, side:THREE.DoubleSide, depthWrite:false })); shaft.position.set(-6, 4, -4); geoScene.add(shaft);
+  // 벽에 떠 있는 수식들
+  [['x²/a² + y²/b² = 1', -9, 2, -10], ['y² = 4px', 9, 3, -10], ['x²/a² − y²/b² = 1', 0, 5, -12], ['PF + PF′ = 2a', -11, 0, -4], ['|PF − PF′| = 2a', 11, 0, -4]].forEach(([s, x, y, z]) => {
+    const sp = labelSprite(s, '#8FCBFF'); sp.position.set(x, y, z); sp.scale.set(4.4, 1.1, 1); sp.material.opacity = 0.7; geoScene.add(sp); });
+  // 두 개의 원뿔 (꼭짓점이 맞붙은 모양)
+  const cm = new THREE.MeshLambertMaterial({ color:'#3E6FD9', transparent:true, opacity:0.45, side:THREE.DoubleSide, depthWrite:false });
+  const up = new THREE.Mesh(new THREE.ConeGeometry(CONE_R, CONE_H, 48, 1, true), cm); up.rotation.x = Math.PI; up.position.y = CONE_H/2; geoScene.add(up);
+  const dn = new THREE.Mesh(new THREE.ConeGeometry(CONE_R, CONE_H, 48, 1, true), cm); dn.position.y = -CONE_H/2; geoScene.add(dn);
+  [CONE_H, -CONE_H].forEach(y => { const r = new THREE.Mesh(new THREE.TorusGeometry(CONE_R, 0.02, 6, 48), new THREE.MeshBasicMaterial({ color:'#8FCBFF' })); r.rotation.x = Math.PI/2; r.position.y = y; geoScene.add(r); });
+  const axis = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, CONE_H*2 + 0.6, 6), new THREE.MeshBasicMaterial({ color:'#FFFFFF', transparent:true, opacity:0.4 })); geoScene.add(axis);
+  // 모선 한 줄 강조 (포물선 기준이 되는 선)
+  const gen = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, Math.hypot(CONE_H, CONE_R)*2, 6), new THREE.MeshBasicMaterial({ color:'#FFE27A' }));
+  gen.rotation.x = -Math.atan(CONE_R/CONE_H); geoScene.add(gen);
+  const gl = labelSprite('모선', '#FFE27A'); gl.position.set(0, CONE_H + 0.3, -CONE_R - 0.2); gl.scale.set(1.2, 0.3, 1); geoScene.add(gl);
+  // 자르는 평면
+  geoPlane = new THREE.Mesh(new THREE.PlaneGeometry(6, 6), new THREE.MeshBasicMaterial({ color:'#FFC93C', transparent:true, opacity:0.22, side:THREE.DoubleSide, depthWrite:false }));
+  geoScene.add(geoPlane);
+  const edge = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(6, 6)), new THREE.LineBasicMaterial({ color:'#FFC93C' })); geoPlane.add(edge);
+  // 단면 곡선 (두꺼운 빨간 점들로 그려요)
+  geoCurve = new THREE.Points(new THREE.BufferGeometry(), new THREE.PointsMaterial({ color:'#FF5A4E', size:0.09 }));
+  geoCurve.geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(3*1800), 3)); geoScene.add(geoCurve);
+  updateConic();
+}
+// 평면: 점 (0, c, 0)을 지나고 x축 둘레로 θ만큼 기운 평면. 원뿔: x² + z² = (k·y)²
+function updateConic(){
+  if(!geoScene) return;
+  const th = geoTheta*Math.PI/180, c = 1.1;
+  geoPlane.rotation.set(Math.PI/2 - th, 0, 0); geoPlane.position.set(0, c, 0);
+  const u = [1, 0, 0], v = [0, Math.sin(th), Math.cos(th)], arr = geoCurve.geometry.attributes.position.array; let n = 0;
+  for(let i=0;i<1800 && n < 1800;i++){
+    const ph = i/1800*Math.PI*2, d = [Math.cos(ph)*u[0] + Math.sin(ph)*v[0], Math.cos(ph)*u[1] + Math.sin(ph)*v[1], Math.cos(ph)*u[2] + Math.sin(ph)*v[2]];
+    const k2 = CONE_K*CONE_K, a = d[0]*d[0] + d[2]*d[2] - k2*d[1]*d[1], b = -2*k2*c*d[1], cc = -k2*c*c;
+    let roots = [];
+    if(Math.abs(a) < 1e-9){ if(Math.abs(b) > 1e-9) roots = [-cc/b]; }
+    else { const D = b*b - 4*a*cc; if(D >= 0){ const s = Math.sqrt(D); roots = [(-b + s)/(2*a), (-b - s)/(2*a)]; } }
+    roots.forEach(r => { if(r < 0 || n >= 1800) return; const y = c + r*d[1]; if(Math.abs(y) > CONE_H) return;
+      arr[n*3] = r*d[0]; arr[n*3+1] = y; arr[n*3+2] = r*d[2]; n++; });
+  }
+  geoCurve.geometry.setDrawRange(0, n); geoCurve.geometry.attributes.position.needsUpdate = true;
+  const kind = geoTheta < 0.5 ? 'circle' : Math.abs(geoTheta - BETA) < 1.2 ? 'para' : geoTheta < BETA ? 'ellipse' : 'hyper';
+  renderGeoKind(kind);
+}
+const GEO_KIND = {
+  circle:['원', '평면이 원뿔의 축에 수직(바닥과 평행)이면 단면은 원이에요.'],
+  ellipse:['타원', '평면을 조금 기울이면 찌그러진 원, 타원이 돼요. 아직 원뿔 한쪽만 잘리고 닫힌 곡선이에요.'],
+  para:['포물선', '평면이 노란 모선과 딱 평행해지는 순간! 곡선이 한쪽으로 열려서 포물선이 돼요.'],
+  hyper:['쌍곡선', '모선보다 더 가파르게 세우면 위아래 원뿔이 둘 다 잘려서 두 갈래 곡선, 쌍곡선이 돼요.']
+};
+function renderGeoKind(kind){
+  $('#geoTval').textContent = Math.round(geoTheta) + '°';
+  document.querySelectorAll('#geoKinds [data-k]').forEach(b => b.classList.toggle('on', b.dataset.k === kind));
+  $('#geoKindTxt').textContent = ''; $('#geoKindTxt').appendChild(el('b', null, '지금 단면: ' + GEO_KIND[kind][0])); $('#geoKindTxt').appendChild(el('span', null, ' ' + GEO_KIND[kind][1]));
+}
+$('#geoTheta').addEventListener('input', () => { geoTheta = +$('#geoTheta').value; if(Math.abs(geoTheta - BETA) < 1.2) geoTheta = BETA; updateConic(); });
+document.querySelectorAll('#geoKinds [data-k]').forEach(b => b.addEventListener('click', () => { geoTheta = { circle:0, ellipse:30, para:BETA, hyper:78 }[b.dataset.k]; $('#geoTheta').value = geoTheta; updateConic(); }));
+
+// --- ② 초점과 실: 정의를 손으로 확인 (2D 그림) ---
+let geoP = 1.0, geoDrag = false;
+function drawFocus(){
+  const cv = $('#geoCv'); if(!cv.width || cv.width !== cv.clientWidth*2){ cv.width = cv.clientWidth*2; cv.height = cv.clientHeight*2; }
+  const x = cv.getContext('2d'), W2 = cv.width, H2 = cv.height, S = Math.min(W2/13, H2/9), ox = W2/2, oy = H2/2;
+  const P = (px, py) => [ox + px*S, oy - py*S];
+  x.fillStyle = '#E9D9B4'; x.fillRect(0, 0, W2, H2);
+  x.strokeStyle = 'rgba(0,0,0,.08)'; x.lineWidth = 1; for(let i=-7;i<=7;i++){ const [gx] = P(i, 0); x.beginPath(); x.moveTo(gx, 0); x.lineTo(gx, H2); x.stroke(); } for(let j=-5;j<=5;j++){ const [, gy] = P(0, j); x.beginPath(); x.moveTo(0, gy); x.lineTo(W2, gy); x.stroke(); }
+  const dot = (p, col, r) => { x.fillStyle = col; x.beginPath(); x.arc(p[0], p[1], r, 0, 7); x.fill(); };
+  const line = (a, b, col, w, dash) => { x.strokeStyle = col; x.lineWidth = w; x.setLineDash(dash || []); x.beginPath(); x.moveTo(a[0], a[1]); x.lineTo(b[0], b[1]); x.stroke(); x.setLineDash([]); };
+  const txt = (s, p, col, size) => { x.fillStyle = col; x.font = '800 ' + (size || 26) + 'px "Noto Sans KR", sans-serif'; x.textAlign = 'center'; x.fillText(s, p[0], p[1]); };
+  const len = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+  x.strokeStyle = '#C2463A'; x.lineWidth = 5; x.beginPath();
+  let info = '';
+  if(geoFocus === 'ellipse'){   // a=5, b=4, c=3
+    for(let i=0;i<=120;i++){ const t = i/120*Math.PI*2, q = P(5*Math.cos(t), 4*Math.sin(t)); i ? x.lineTo(q[0], q[1]) : x.moveTo(q[0], q[1]); } x.stroke();
+    const p = [5*Math.cos(geoP), 4*Math.sin(geoP)], F = [-3, 0], F2 = [3, 0], d1 = len(p, F), d2 = len(p, F2);
+    line(P(...F), P(...p), '#2A2A33', 3); line(P(...F2), P(...p), '#2A2A33', 3);
+    dot(P(...F), '#2C6FD1', 10); dot(P(...F2), '#2C6FD1', 10); dot(P(...p), '#FF5A4E', 13);
+    txt('F', P(-3, -0.8), '#2C6FD1'); txt("F′", P(3, -0.8), '#2C6FD1'); txt(d1.toFixed(1), P((p[0] - 3)/2, p[1]/2 + 0.5), '#2A2A33', 24); txt(d2.toFixed(1), P((p[0] + 3)/2, p[1]/2 + 0.5), '#2A2A33', 24);
+    info = 'PF + PF′ = ' + d1.toFixed(1) + ' + ' + d2.toFixed(1) + ' = ' + (d1 + d2).toFixed(1) + ' (항상 10!)';
+  } else if(geoFocus === 'para'){   // y² = 8x : 초점 (2, 0), 준선 x = −2 (화면에선 왼쪽으로 2칸 옮겨 그려요)
+    for(let i=0;i<=100;i++){ const y = -4.4 + i*0.088, q = P(y*y/8 - 2, y); i ? x.lineTo(q[0], q[1]) : x.moveTo(q[0], q[1]); } x.stroke();
+    const yy = Math.sin(geoP)*4.4, p = [yy*yy/8 - 2, yy], dF = Math.hypot(yy*yy/8 - 2, yy), dL = yy*yy/8 + 2;
+    line(P(-4, -5), P(-4, 5), '#2C6FD1', 3, [10, 8]); txt('준선', P(-4.9, 3.8), '#2C6FD1', 22);
+    line(P(0, 0), P(...p), '#2A2A33', 3); line(P(-4, p[1]), P(...p), '#2A2A33', 3, [6, 6]);
+    dot(P(0, 0), '#2C6FD1', 10); dot(P(...p), '#FF5A4E', 13); txt('F', P(0, -0.8), '#2C6FD1');
+    info = '초점까지 ' + dF.toFixed(1) + ' = 준선까지 ' + dL.toFixed(1) + ' (항상 같아요!)';
+  } else {   // x²/9 − y²/7 = 1, 초점 (±4, 0)
+    for(const sg of [1, -1]){ x.beginPath(); for(let i=0;i<=80;i++){ const t = -1.6 + i*0.04, q = P(sg*3*Math.cosh(t), Math.sqrt(7)*Math.sinh(t)); i ? x.lineTo(q[0], q[1]) : x.moveTo(q[0], q[1]); } x.stroke(); }
+    const tt = Math.sin(geoP)*1.15, p = [3*Math.cosh(tt), Math.sqrt(7)*Math.sinh(tt)], F = [-4, 0], F2 = [4, 0], d1 = len(p, F), d2 = len(p, F2);
+    line(P(...F), P(...p), '#2A2A33', 3); line(P(...F2), P(...p), '#2A2A33', 3);
+    dot(P(...F), '#2C6FD1', 10); dot(P(...F2), '#2C6FD1', 10); dot(P(...p), '#FF5A4E', 13); txt('F', P(-4, -0.8), '#2C6FD1'); txt("F′", P(4, -0.8), '#2C6FD1');
+    info = '|PF − PF′| = |' + d1.toFixed(1) + ' − ' + d2.toFixed(1) + '| = ' + Math.abs(d1 - d2).toFixed(1) + ' (항상 6!)';
+  }
+  $('#geoInfo').textContent = info;
+}
+{ const cv = $('#geoCv');
+  const move = e => { if(!geoDrag) return; const r = cv.getBoundingClientRect(), px = (e.clientX - r.left)/r.width - 0.5, py = 0.5 - (e.clientY - r.top)/r.height;
+    geoP = geoFocus === 'ellipse' ? Math.atan2(py*1.2, px) : Math.max(-1.5, Math.min(1.5, Math.asin(Math.max(-1, Math.min(1, py*2.2))))); drawFocus(); };
+  cv.addEventListener('pointerdown', e => { geoDrag = true; try { cv.setPointerCapture(e.pointerId); } catch(err) {} move(e); });
+  cv.addEventListener('pointermove', move); ['pointerup', 'pointercancel'].forEach(n => cv.addEventListener(n, () => { geoDrag = false; })); }
+document.querySelectorAll('#geoFocusTabs [data-f]').forEach(b => b.addEventListener('click', () => { geoFocus = b.dataset.f; geoP = 1;
+  document.querySelectorAll('#geoFocusTabs [data-f]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+  $('#geoDef').textContent = { ellipse:'타원: 두 점 F, F′(초점)까지 거리의 합이 일정한 점들의 모임', para:'포물선: 한 점 F(초점)와 한 직선(준선)까지 거리가 같은 점들의 모임', hyper:'쌍곡선: 두 점 F, F′(초점)까지 거리의 차가 일정한 점들의 모임' }[geoFocus];
+  drawFocus(); }));
+
+// --- ③ 확인 문제 ---
+const GEO_Q = [
+  ['원뿔을 자르는 평면이 원뿔의 축에 수직이면 단면은?', ['원', '타원', '포물선', '쌍곡선'], 0, 0],
+  ['평면이 원뿔의 모선과 평행하면 단면은?', ['원', '타원', '포물선', '쌍곡선'], 2, BETA],
+  ['평면을 모선보다 더 가파르게 세우면 위아래 원뿔이 모두 잘려요. 이때 단면은?', ['원', '타원', '포물선', '쌍곡선'], 3, 78],
+  ['타원은 두 초점까지 거리의 ○이 일정한 점들의 모임이에요. ○은?', ['합', '차', '곱', '평균'], 0, null],
+  ['쌍곡선은 두 초점까지 거리의 ○가 일정한 점들의 모임이에요. ○는?', ['합', '차', '곱', '몫'], 1, null],
+  ['포물선 위의 점은 초점과 어떤 것까지의 거리가 같을까요?', ['꼭짓점', '준선', '다른 초점', '원점'], 1, null],
+  ['행성이 태양 둘레를 도는 궤도는 어떤 모양일까요?', ['원 (정확히)', '타원', '포물선', '쌍곡선'], 1, 30]
+];
+function geoStartQuiz(){ geoQuiz = { list:GEO_Q.slice().sort(() => Math.random() - 0.5).slice(0, 3), i:0, score:0 }; renderGeoQuiz(); }
+function renderGeoQuiz(){
+  const box = $('#geoQuizBox'); box.textContent = '';
+  if(geoQuiz.i >= geoQuiz.list.length){
+    box.appendChild(el('b', null, '3문제 중 ' + geoQuiz.score + '문제 맞혔어요!'));
+    if(geoQuiz.score === 3){ if(!geoDone){ geoDone = true; me.geo = true; store.set('class8-geo', true); me.drawLabel(true); lastSent = ''; } box.appendChild(el('p', 'sv-note', '이차곡선 완료! 교실 이름표에 📐 배지가 붙었어요.')); }
+    else box.appendChild(el('p', 'sv-note', '3문제를 다 맞히면 📐 배지를 받아요. 3D로 다시 보고 도전해 봐요!'));
+    const b = el('button', 'btn primary', '다시 풀기'); b.type = 'button'; b.addEventListener('click', geoStartQuiz); box.appendChild(b);
+    renderGeoProgress(); return;
+  }
+  const [q, opts, ans, ang] = geoQuiz.list[geoQuiz.i];
+  box.appendChild(el('b', null, '확인 문제 ' + (geoQuiz.i + 1) + '/3')); box.appendChild(el('p', null, q));
+  let done = false;
+  opts.forEach((o, k) => { const b = el('button', 'quizopt', o); b.type = 'button';
+    b.addEventListener('click', () => { if(done) return; done = true;
+      if(k === ans){ geoQuiz.score++; } else b.classList.add('no');
+      box.querySelectorAll('.quizopt')[ans].classList.add('ok');
+      if(ang != null){ const again = el('button', 'btn', '↺ 3D로 다시 보기'); again.type = 'button'; again.addEventListener('click', () => { geoTheta = ang; $('#geoTheta').value = ang; setGeoTab('cone'); updateConic(); }); box.appendChild(again); }
+      const nx = el('button', 'btn primary', geoQuiz.i === 2 ? '결과 보기' : '다음 문제'); nx.type = 'button'; nx.addEventListener('click', () => { geoQuiz.i++; renderGeoQuiz(); }); box.appendChild(nx); });
+    box.appendChild(b); });
+}
+function renderGeoProgress(){ $('#geoProg').textContent = (geoDone ? '✅' : '⬜') + ' 이차곡선 · ⬜ 공간도형 · ⬜ 공간좌표 · ⬜ 벡터 (곧 열려요)'; }
+function setGeoTab(k){ geoTab = k;
+  document.querySelectorAll('#geoTabs [data-g]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.g === k)));
+  ['cone', 'focus', 'quiz'].forEach(s => { $('#geoP_' + s).hidden = s !== k; });
+  if(k === 'focus') requestAnimationFrame(drawFocus);
+  if(k === 'quiz' && (!geoQuiz || geoQuiz.i >= 3)) geoStartQuiz();
+}
+document.querySelectorAll('#geoTabs [data-g]').forEach(b => b.addEventListener('click', () => setGeoTab(b.dataset.g)));
+$('#geoExit').addEventListener('click', exitRoom);
+
+function enterGeo(){
+  if(!geoScene) buildGeo();
+  $('#panel').hidden = true; $('#joy').hidden = true; $('#geoCard').hidden = false; $('#geoBtn').hidden = true; geoNear = false;
+  Object.assign(camLim, { pmin:-0.6, pmax:1.2, dmin:5, dmax:24 });
+  cam.yaw = 0.5; cam.pitch = 0.25; cam.t.set(0, 0, 0);
+  setGeoTab('cone'); renderGeoProgress(); updateConic();
+  requestAnimationFrame(() => { const v = geoView(), asp = window.innerWidth/window.innerHeight, tn = Math.tan(27.5*Math.PI/180); cam.dist = clamp(Math.max(8/(2*tn*v.hf), 8/(2*tn*asp*v.wf)), 6, 22); });
+  toast('지하 기하 탐구실! 슬라이더로 평면을 기울여 봐요');
+}
+function leaveGeo(){ $('#geoCard').hidden = true; }
+function geoView(){
+  const w = window.innerWidth, h = window.innerHeight, card = $('#geoCard'), side = w/h >= 1.25;
+  if(side){ const cw = card.offsetWidth + 12; camera.setViewOffset(w, h, -cw/2, 0, w, h); return { wf:(w - cw)/w, hf:1 }; }
+  const ch = card.offsetHeight; camera.setViewOffset(w, h, 0, ch/2, w, h); return { wf:1, hf:Math.max(0.3, (h - ch)/h) };
+}
+function geoTick(dt){ geoView(); cam.t.set(0, 0, 0); }
+
 $('#btnSpace').addEventListener('click', () => openDoor('space'));
 
 let earthClouds = null, spaceBelt = null;
@@ -3470,10 +3758,15 @@ $('#spGo').addEventListener('click', () => {
 });
 $('#spDex').addEventListener('click', () => {
   const body = showSheet('우주 도감 ' + spDex.size + '/' + SP_N);
-  BODIES.forEach((b, i) => { const got = spDex.has(b.id), r = el('div', 'dexrow' + (got ? '' : ' no'));
-    r.appendChild(el('span', 'n', got ? String(i + 1) : '?'));
-    const tx = el('div'); tx.appendChild(el('b', null, got ? b.name : '아직 안 가 봤어요'));
-    tx.appendChild(el('small', null, got ? '크기 ' + b.size + ' · ' + weightTxt(b.g) + ' · ' + b.fact : '행성 이동으로 가까이 가 보면 열려요')); r.appendChild(tx); body.appendChild(r); });
+  body.appendChild(el('p', 'sv-note', '카드를 누르면 설명이 펼쳐져요'));
+  const grid = el('div', 'dexgrid'); body.appendChild(grid);
+  BODIES.forEach((b, i) => { const got = spDex.has(b.id);
+    const build = () => { const g = new THREE.Group();
+      g.add(new THREE.Mesh(new THREE.SphereGeometry(1, 40, 28), b.id === 'sun' ? new THREE.MeshBasicMaterial({ color:'#FFD34D' }) : new THREE.MeshLambertMaterial({ map:planetTex(b) })));
+      if(b.id === 'saturn'){ const ring = new THREE.Mesh(new THREE.RingGeometry(1.3, 2.2, 64), new THREE.MeshLambertMaterial({ color:'#E8D7A8', side:THREE.DoubleSide, transparent:true, opacity:0.8 })); ring.rotation.x = -Math.PI/2 + 0.45; g.add(ring); }
+      if(b.id === 'uranus') g.children[0].rotation.z = 1.7;
+      return g; };
+    grid.appendChild(dexCard('space', i, got, b.name, got ? '크기 ' + b.size : '가까이 가 보면 열려요', weightTxt(b.g) + ' · ' + b.fact, thumbOf('sp-' + b.id, build, !got))); });
 });
 $('#spQuiz').addEventListener('click', () => {
   const pool = QUIZ.slice().sort(() => Math.random() - 0.5).slice(0, 5);
@@ -3758,7 +4051,7 @@ const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: 
 function loop(){
   const dt = Math.min(clock3.getDelta(), 0.05);
   if(botsOn){ bots.forEach(b => { botBrain(b, dt); b.update(dt); }); botCheer(dt); }
-  updateBlasts(dt); if(room === 'class') doorFxTick(dt);
+  updateBlasts(dt); if(room === 'class') doorFxTick(dt); geoHoleTick(dt);
   soundTick(); qGroup.visible = frontWall.visible;
   surveyDot.visible = !!me && (!myPreDone || (postOpen() && !myPostDone));
   if(surveyDot.visible){ const sc = 0.3 + Math.sin(performance.now()/250)*0.04; surveyDot.scale.set(sc, sc, 1); }
@@ -3788,7 +4081,7 @@ function loop(){
   frontWall.visible = camera.position.z < D/2 - 0.2; backWall.visible = camera.position.z > -D/2 + 0.2;
   leftWall.visible = camera.position.x > -W/2 + 0.2; rightWall.visible = camera.position.x < W/2 - 0.2; outdoor.visible = rightWall.visible;
   uiT -= dt; if(uiT <= 0){ uiT = 0.25; updateUI(); }
-  renderer.render(room === 'sea' ? seaScene : room === 'nino' ? ninoScene : room === 'space' ? (spacePhase === 'space' ? spaceScene : launchScene) : scene, camera);
+  renderer.render(room === 'sea' ? seaScene : room === 'nino' ? ninoScene : room === 'space' ? (spacePhase === 'space' ? spaceScene : launchScene) : room === 'geo' ? geoScene : scene, camera);
   requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
