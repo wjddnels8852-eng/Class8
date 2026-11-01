@@ -507,7 +507,7 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
       <button type="button" class="btn" id="copyLink">주소 복사하기</button>
     </div>
     <div id="authOk" class="auth" hidden>
-      <p>로그인됐어요. 닉네임과 색을 고르고 들어가요. 실명은 쓰지 마세요. <button type="button" class="linkbtn" id="logoutBtn">로그아웃</button></p>
+      <p><b id="whoAcct" style="display:block;margin-bottom:4px"></b>로그인됐어요. 닉네임과 색을 고르고 들어가요. 실명은 쓰지 마세요. <button type="button" class="linkbtn" id="logoutBtn">로그아웃</button></p>
     </div>
     <div id="charFields" hidden style="display:flex;flex-direction:column;gap:14px">
     <div class="field">
@@ -1648,6 +1648,7 @@ if(fbOk){
   auth.onAuthStateChanged(u => {
     if(u){
       if(!inApp) showAuth('authOk');
+      $('#whoAcct').textContent = u.isAnonymous ? '👤 익명 계정 (이 기기에서만 쓸 수 있어요)' : '✅ 구글 계정: ' + (u.email || u.displayName || '이름 없음');
       if(myUid !== u.uid){
         startNetwork(u.uid);
         // 오늘 공부시간을 서버에서 이어받기 (다른 기기에서 공부한 것도 이어져요)
