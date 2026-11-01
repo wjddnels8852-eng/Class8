@@ -271,7 +271,23 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
 .dexrow{display:grid;grid-template-columns:40px minmax(0,1fr);gap:10px;align-items:center;background:var(--panel-2);border-radius:12px;padding:10px 12px}
 .dexrow .n{font-family:var(--font-d);font-size:18px;color:var(--accent);text-align:center}
 .dexrow.no .n{color:var(--muted)}
-.dexrow b{font-size:14px}.dexrow small{display:block;font-size:12px;color:var(--muted);margin-top:2px;line-height:1.5}
+.dexrow b{font-size:14px}
+/* 우주 */
+#spaceUI{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+#spaceUI .btn{min-height:46px;padding:0 6px;font-size:14px;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:none}
+.launchov{position:fixed;inset:0;z-index:7;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;pointer-events:none;text-align:center}
+.launchov b{font-family:var(--font-d);font-weight:400;font-size:clamp(72px,22vw,140px);line-height:1;color:#FFFFFF;text-shadow:0 4px 0 rgba(0,0,0,.35)}
+.launchov span{font-size:16px;font-weight:700;color:#FFFFFF;background:rgba(15,20,38,.7);border-radius:999px;padding:6px 14px}
+.fadeov{position:fixed;inset:0;z-index:8;background:#FFFFFF;opacity:0;pointer-events:none;transition:opacity .6s}
+.planetcard{position:fixed;z-index:5;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 104px);width:min(360px,calc(100% - 32px));background:rgba(15,20,38,.9);border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;pointer-events:none}
+.planetcard b{font-family:var(--font-d);font-weight:400;font-size:20px;color:var(--warm)}
+.planetcard p{margin:0;font-size:13px;line-height:1.55}
+.planetcard .st{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;font-size:12px;color:#C9C6F0}
+.zerog{position:fixed;z-index:6;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 104px);width:min(380px,calc(100% - 32px));background:var(--panel);border:1.5px solid var(--accent);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.zerog b{font-family:var(--font-d);font-weight:400;font-size:20px;color:var(--accent)}
+.zerog p{margin:0;font-size:14px;line-height:1.6}
+.quizopt{min-height:46px;border-radius:12px;border:1.5px solid var(--line);background:var(--panel-2);color:var(--fg);font:700 14px var(--font-b);text-align:left;padding:8px 12px;cursor:pointer}
+.quizopt.ok{border-color:#6EE7A8;background:rgba(110,231,168,.15)}.quizopt.no{border-color:#FF7C93;background:rgba(255,124,147,.12)}.dexrow small{display:block;font-size:12px;color:var(--muted);margin-top:2px;line-height:1.5}
 </style>
 </head>
 <body>
@@ -316,6 +332,7 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
       <button type="button" class="pose flybtn" id="btnQ">질문 게시판</button>
       <button type="button" class="pose flybtn" id="btnSea">심해 탐험실</button>
       <button type="button" class="pose flybtn" id="btnNino">엘니뇨 탐구실</button>
+      <button type="button" class="pose flybtn" id="btnSpace">우주 발사장</button>
     </div>
     <div class="scroller" aria-label="포즈">
       <button class="pose flybtn" data-fly="1">공중부양</button>
@@ -340,6 +357,14 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
     <button type="button" class="btn primary" id="seaDown">⬇ 잠수</button>
     <button type="button" class="btn" id="seaDex">도감 0/12</button>
     <button type="button" class="btn warm" id="seaExit">교실로</button>
+  </div>
+  <div id="spaceUI" hidden>
+    <button type="button" class="btn" id="spUp">⬆ 위로</button>
+    <button type="button" class="btn" id="spDown">⬇ 아래로</button>
+    <button type="button" class="btn primary" id="spGo">행성 이동</button>
+    <button type="button" class="btn" id="spDex">도감 0/10</button>
+    <button type="button" class="btn" id="spQuiz">우주 퀴즈</button>
+    <button type="button" class="btn warm" id="spExit">교실로</button>
   </div>
   <div id="sitUI" hidden style="display:flex;flex-direction:column;gap:12px">
     <div class="timer">
@@ -453,6 +478,24 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
   <div class="legend"><span>차가운 바다</span><i></i><span>따뜻한 바다</span></div>
   <div class="ninotext" id="ninoText"></div>
   <p class="sv-note" style="margin:0">지구를 드래그하면 돌아가요 · 두 손가락으로 확대</p>
+</div>
+
+<div class="launchov" id="launchOv" hidden><b id="launchNum">3</b><span id="launchSub">우주 도착까지 10초</span></div>
+<div class="fadeov" id="fadeOv"></div>
+<div class="planetcard" id="planetCard" hidden></div>
+<div class="zerog" id="zeroG" hidden>
+  <b>우주 도착! 지금은 무중력 상태예요</b>
+  <p>사실 우주 정거장 높이에서도 지구가 끌어당기는 힘은 땅에서의 약 90%나 돼요.</p>
+  <p>그런데도 둥둥 뜨는 건, 나와 우주선이 함께 지구 쪽으로 계속 <b style="font-size:inherit;font-family:inherit;color:var(--warm)">떨어지면서</b> 옆으로 아주 빠르게 날아가고 있어서예요. 이걸 "자유 낙하"라고 해요.</p>
+  <p>한 번 밀면 계속 미끄러지듯 움직여요. 조이스틱으로 움직이고, "행성 이동"으로 행성까지 날아가 봐요.</p>
+  <button type="button" class="btn primary" id="zeroGOk">알겠어요</button>
+</div>
+
+<div class="board-ed" id="spSheet" hidden>
+  <div class="ed-card sv-card" role="dialog" aria-label="우주">
+    <div class="ed-head"><h2 id="spTitle">행성 이동</h2><button type="button" class="tool" id="spClose">닫기</button></div>
+    <div id="spBody" class="sv-body" style="gap:8px"></div>
+  </div>
 </div>
 
 <div class="board-ed" id="lockSheet" hidden>
@@ -1196,7 +1239,8 @@ const DATA_VER = 2;
 function myState(){
   return { name:me.name, hair:me.hair, shirt:me.shirt, x:+me.pos.x.toFixed(2), z:+me.pos.z.toFixed(2), ry:+me.ry.toFixed(2), jy:+me.jumpY.toFixed(2),
     mode:me.mode, seat:me.seat, subject:me.subject, studyStart:me.studyStart, total:Math.floor(me.total), fly:me.flying, date:todayStr, v:DATA_VER, streak:me.streak || 0, steady:!!me.steady, best:Math.floor(me.best || 0), room,
-    sea:room === 'sea' && diver ? { x:+diver.g.position.x.toFixed(1), y:+diver.g.position.y.toFixed(1), z:+diver.g.position.z.toFixed(1), h:+diver.h.toFixed(2) } : null };
+    sea:room === 'sea' && diver ? { x:+diver.g.position.x.toFixed(1), y:+diver.g.position.y.toFixed(1), z:+diver.g.position.z.toFixed(1), h:+diver.h.toFixed(2) } : null,
+    sp:spaceState() };
 }
 // 바뀐 게 있을 때만 보내고(최대 1초 5번), 가만히 있으면 10초마다 '아직 있어요' 신호만 보내요
 function pushPresence(){
@@ -1240,8 +1284,8 @@ function handlePlayers(){
     av.studyStart = num(s.studyStart, 0, now, now);
     av.total = (s.date === todayStr && s.v === DATA_VER) ? num(s.total, 0, 86400, 0) : 0; av.flying = s.fly === true;
     av.streak = Math.floor(num(s.streak, 0, 999, 0)); av.steady = s.steady === true; av.best = num(s.best, 0, 86400, 0);
-    av.room = (s.room === 'sea' || s.room === 'nino') ? s.room : 'class'; av.group.visible = av.room === 'class';
-    seaRemote(uid, s, av);
+    av.room = (s.room === 'sea' || s.room === 'nino' || s.room === 'space') ? s.room : 'class'; av.group.visible = av.room === 'class';
+    seaRemote(uid, s, av); spaceRemote(uid, s, av);
     const seat = (av.room === 'class' && Number.isInteger(s.seat) && s.seat >= 0 && s.seat < seats.length) ? s.seat : -1;
     if(seat !== av.seat){
       if(av.seat >= 0 && seats[av.seat].occ === av) seats[av.seat].occ = null;
@@ -1262,7 +1306,7 @@ function handlePlayers(){
   setBotsOn(remotes.size === 0);   // 진짜 친구가 오면 가상 친구들은 나가요
 }
 setInterval(handlePlayers, 5000);   // 연결이 끊긴 친구 정리
-function dropRemote(id){ seaDrop(id); const r = remotes.get(id); if(!r) return; if(r.av.seat >= 0 && seats[r.av.seat].occ === r.av) seats[r.av.seat].occ = null; r.av.dispose(); remotes.delete(id); }
+function dropRemote(id){ seaDrop(id); spaceDrop(id); const r = remotes.get(id); if(!r) return; if(r.av.seat >= 0 && seats[r.av.seat].occ === r.av) seats[r.av.seat].occ = null; r.av.dispose(); remotes.delete(id); }
 function setBotsOn(on){
   if(on === botsOn) return; botsOn = on;
   bots.forEach(b => {
@@ -2393,6 +2437,8 @@ function enterRoom(k){
     cam.yaw = 0; cam.pitch = 0.3; cam.dist = 6; cam.t.copy(diver.g.position);
     $('#seaUI').hidden = false; $('#seaHud').hidden = false; $('#joy').hidden = false; $('#panel').hidden = false;
     updDexBtn(); toast('심해 탐험실! 잠수 버튼을 누르고 있으면 내려가요');
+  } else if(k === 'space'){
+    enterSpace();
   } else {
     if(!ninoScene) buildNino();
     setNino(ninoMode);
@@ -2408,10 +2454,11 @@ function exitRoom(){
   room = 'class'; seaVin = 0;
   camera.clearViewOffset();
   $('#seaUI').hidden = true; $('#seaHud').hidden = true; $('#ninoCard').hidden = true; $('#dexSheet').hidden = true;
+  leaveSpace();
   $('#panel').hidden = false; $('#joy').hidden = false;
   $('#walkUI').hidden = false; $('#walkUI').style.display = 'flex';
   // 들어갔던 문 앞에서 나와요
-  let px = lastRoomDoor === 'sea' ? W/2 - 1.3 : -W/2 + 1.3, pz = -5.9;
+  let px = lastRoomDoor === 'sea' ? W/2 - 1.3 : -W/2 + 1.3, pz = lastRoomDoor === 'space' ? 3 : -5.9;
   for(let r = 0; r < 6 && !freeAt(px, pz); r += 0.5){ px += lastRoomDoor === 'sea' ? -0.5 : 0.5; }
   me.pos.set(px, 0, pz); me.ry = me.targetRy = lastRoomDoor === 'sea' ? -Math.PI/2 : Math.PI/2;
   me.group.visible = true;
@@ -2424,7 +2471,7 @@ $('#ninoExit').addEventListener('click', exitRoom);
 
 function roomCount(k){ let n = room === k ? 1 : 0; remotes.forEach(r => { if(r.av.room === k) n++; }); return n; }
 function roomTick(dt){
-  if(room === 'sea') seaTick(dt); else if(room === 'nino') ninoTick(dt);
+  if(room === 'sea') seaTick(dt); else if(room === 'nino') ninoTick(dt); else if(room === 'space') spaceTick(dt);
 }
 
 /* ===== 심해 탐험실 ===== */
@@ -2889,6 +2936,305 @@ function ninoTick(dt){
   const n = roomCount('nino'); $('#ninoWho').textContent = n > 1 ? '지금 ' + n + '명이 같이 보고 있어요' : '지구를 돌려서 바다 색을 비교해 봐요';
 }
 
+/* ===== 우주 발사장: 로켓 타고 10초 → 우주 (무중력) ===== */
+const spaceDoor = makeDoor(leftWall, -3, 'space', '우주 발사장', '우주 발사장 · 누구나', '#5B3FA8', '#2A2F5A', '#0B0F2A');
+tapTargets.push(spaceDoor);
+$('#btnSpace').addEventListener('click', () => openDoor('space'));
+
+let launchScene = null, spaceScene = null, spacePhase = 'launch', launchT = 0, rocket = null, rFlames = [], smokes = [], launchCamY = 3;
+let astro = null, autoTo = null, nearBody = null, quiz = null;
+const avel = new THREE.Vector3(), spaceDivers = new Map(), bodies = [];
+let spDex = new Set(store.get('class8-space', []));
+const C_SKY = new THREE.Color('#7EC8F5'), C_HIGH = new THREE.Color('#14205A'), C_SPACE = new THREE.Color('#02030A');
+
+// 태양계 (거리는 줄여서 보여줘요. 실제로는 훨씬 멀어요)
+const BODIES = [
+  { id:'sun', name:'태양', d:0, r:8, col:'#FFC93C', size:'지구의 약 109배', light:'-', g:27.9,
+    fact:'태양계 전체 질량의 99.8%를 차지해요. 표면 온도는 약 5500°C예요.' },
+  { id:'mercury', name:'수성', d:22, r:0.5, col:'#A8A29A', size:'지구의 0.38배', light:'약 3분', g:0.38,
+    fact:'태양에서 가장 가깝고 가장 작은 행성이에요. 공기가 거의 없어서 낮엔 430°C, 밤엔 -180°C까지 내려가요.' },
+  { id:'venus', name:'금성', d:32, r:1.15, col:'#E8C27A', size:'지구의 0.95배', light:'약 6분', g:0.91,
+    fact:'가장 뜨거운 행성이에요(약 465°C). 두꺼운 이산화탄소 대기가 열을 가둬요(온실효과). 해가 서쪽에서 떠요.' },
+  { id:'earth', name:'지구', d:44, r:1.2, col:'#2E7FC4', size:'기준 (지름 약 12,700km)', light:'약 8분 20초', g:1,
+    fact:'지금까지 알려진 행성 중 표면에 액체 물이 있고 생명이 사는 유일한 곳이에요.' },
+  { id:'moon', name:'달', d:44, r:0.33, col:'#C9C6C0', size:'지구의 0.27배', light:'약 8분 20초', g:0.165, moon:true,
+    fact:'지구에서 약 38만 km 떨어져 있어요. 자전과 공전 주기가 같아서 지구에서는 항상 같은 면만 보여요.' },
+  { id:'mars', name:'화성', d:57, r:0.7, col:'#C1502E', size:'지구의 0.53배', light:'약 13분', g:0.38,
+    fact:'흙 속 산화철(녹) 때문에 붉게 보여요. 에베레스트보다 약 2.5배 높은 올림푸스 화산이 있어요.' },
+  { id:'jupiter', name:'목성', d:84, r:4.5, col:'#D8B48A', size:'지구의 약 11배', light:'약 43분', g:2.53,
+    fact:'가장 큰 행성으로, 안에 지구가 1300개 넘게 들어가요. 붉은 점(대적점)은 지구보다 큰 폭풍이에요.' },
+  { id:'saturn', name:'토성', d:116, r:3.8, col:'#E3CF95', size:'지구의 약 9.4배', light:'약 1시간 20분', g:1.07,
+    fact:'고리는 얼음과 암석 조각으로 되어 있어요. 평균 밀도가 물보다 낮아요.' },
+  { id:'uranus', name:'천왕성', d:146, r:2.2, col:'#9FE3E6', size:'지구의 약 4배', light:'약 2시간 40분', g:0.89,
+    fact:'자전축이 약 98° 누워 있어서 옆으로 굴러가듯 돌아요.' },
+  { id:'neptune', name:'해왕성', d:172, r:2.1, col:'#3E6FD9', size:'지구의 약 3.9배', light:'약 4시간 10분', g:1.14,
+    fact:'태양계에서 바람이 가장 세게 불어요. 시속 2000km가 넘기도 해요.' }
+];
+const SP_N = BODIES.length;
+const QUIZ = [
+  ['태양계에서 가장 큰 행성은?', ['목성', '토성', '태양', '해왕성'], 0],
+  ['태양계에서 가장 뜨거운 행성은?', ['수성', '금성', '화성', '목성'], 1],
+  ['화성이 붉게 보이는 이유는?', ['용암', '산화철(녹)', '붉은 식물', '태양빛 반사'], 1],
+  ['토성의 고리는 무엇으로 되어 있을까?', ['가스', '얼음과 암석 조각', '금속판', '빛'], 1],
+  ['태양빛이 지구까지 오는 데 걸리는 시간은?', ['약 8초', '약 8분', '약 8시간', '약 8일'], 1],
+  ['지구에서 50kg인 사람은 달에서 몸무게가 약 몇 kg일까?', ['약 8kg', '약 25kg', '약 50kg', '약 100kg'], 0],
+  ['우주 정거장에서 몸이 둥둥 뜨는 진짜 이유는?', ['중력이 0이라서', '함께 계속 떨어지고 있어서(자유 낙하)', '공기가 없어서', '자석 때문에'], 1],
+  ['자전축이 거의 누워서 굴러가듯 도는 행성은?', ['천왕성', '금성', '목성', '수성'], 0],
+  ['지구에서 항상 달의 같은 면만 보이는 이유는?', ['달이 돌지 않아서', '자전 주기와 공전 주기가 같아서', '지구가 안 돌아서', '구름 때문에'], 1],
+  ['태양계에서 바람이 가장 센 행성은?', ['지구', '화성', '해왕성', '수성'], 2],
+  ['태양에서 가장 가까운 행성은?', ['금성', '수성', '지구', '화성'], 1],
+  ['금성에서는 해가 어느 쪽에서 뜰까?', ['동쪽', '서쪽', '남쪽', '안 뜬다'], 1]
+];
+
+function planetTex(b){
+  const c = document.createElement('canvas'); c.width = 512; c.height = 256; const x = c.getContext('2d');
+  x.fillStyle = b.col; x.fillRect(0, 0, 512, 256);
+  const band = (cols, n) => { for(let i=0;i<n;i++){ x.fillStyle = cols[i % cols.length]; x.globalAlpha = 0.55; x.fillRect(0, i*256/n + rand(-4, 4), 512, 256/n*rand(0.4, 0.9)); } x.globalAlpha = 1; };
+  const spots = (col, n, r1, r2) => { x.fillStyle = col; for(let i=0;i<n;i++){ x.globalAlpha = rand(0.2, 0.5); x.beginPath(); x.ellipse(rand(0, 512), rand(20, 236), rand(r1, r2), rand(r1, r2)*0.6, 0, 0, 7); x.fill(); } x.globalAlpha = 1; };
+  if(b.id === 'jupiter'){ band(['#B88A5E', '#EEDCC0', '#A86E44', '#F2E2C8'], 14); x.fillStyle = '#B5422A'; x.beginPath(); x.ellipse(330, 170, 34, 18, 0, 0, 7); x.fill(); }
+  else if(b.id === 'saturn') band(['#D6BE80', '#F0E2B0', '#C9AE6E'], 10);
+  else if(b.id === 'earth'){
+    x.fillStyle = '#1F5FAF'; x.fillRect(0, 0, 512, 256);
+    LANDS.forEach((poly, n) => { x.beginPath(); poly.forEach(([lo, la], i) => { const px = (lo + 180)/360*512, py = (90 - la)/180*256; if(i) x.lineTo(px, py); else x.moveTo(px, py); }); x.closePath(); x.fillStyle = n === 1 ? '#F2F6FA' : '#3F8A4E'; x.fill(); });
+    x.fillStyle = '#F2F6FA'; x.fillRect(0, 236, 512, 20); x.fillRect(0, 0, 512, 8);
+    x.fillStyle = 'rgba(255,255,255,.55)'; for(let i=0;i<40;i++){ x.beginPath(); x.ellipse(rand(0, 512), rand(20, 236), rand(10, 30), rand(3, 8), 0, 0, 7); x.fill(); }
+  }
+  else if(b.id === 'mars'){ spots('#7A2E1A', 25, 8, 30); x.fillStyle = '#F2F6FA'; x.fillRect(0, 0, 512, 10); }
+  else if(b.id === 'moon' || b.id === 'mercury') spots('#6E6A64', 60, 3, 16);
+  else if(b.id === 'venus') band(['#F0D9A0', '#D9AE62'], 8);
+  else if(b.id === 'neptune'){ band(['#2E5BC2', '#4F86E8'], 8); x.fillStyle = '#1A2E7A'; x.beginPath(); x.ellipse(200, 150, 26, 14, 0, 0, 7); x.fill(); }
+  else if(b.id === 'uranus') band(['#A8ECEE', '#8FD6DA'], 6);
+  return new THREE.CanvasTexture(c);
+}
+function makeAstro(shirt){
+  const g = new THREE.Group(), b = new THREE.Group(); g.add(b);
+  const suit = mat('#F4F2FF');
+  addM(b, new THREE.CylinderGeometry(0.32, 0.34, 0.75, 14), suit, 0, 0.85, 0);
+  addM(b, new THREE.BoxGeometry(0.5, 0.6, 0.28), mat('#C9CCD6'), 0, 0.9, -0.3);
+  addM(b, new THREE.BoxGeometry(0.3, 0.16, 0.05), mat(shirt), 0, 0.95, 0.33);
+  addM(b, new THREE.SphereGeometry(0.36, 20, 14), suit, 0, 1.45, 0);
+  addM(b, new THREE.SphereGeometry(0.27, 16, 12, -1.1, 2.2, 0.6, 1.4), Lm('#E5B93C', { emissive:'#4A3A10' }), 0, 1.47, 0.12);
+  const limbs = [];
+  [-1, 1].forEach(s => {
+    const a = new THREE.Group(); a.position.set(s*0.4, 1.1, 0); b.add(a); addM(a, new THREE.CylinderGeometry(0.1, 0.1, 0.6, 8), suit, 0, -0.28, 0); limbs.push(a);
+    const l = new THREE.Group(); l.position.set(s*0.15, 0.5, 0); b.add(l); addM(l, new THREE.CylinderGeometry(0.12, 0.12, 0.65, 8), suit, 0, -0.3, 0); addM(l, new THREE.BoxGeometry(0.2, 0.12, 0.3), mat('#8A8F9E'), 0, -0.66, 0.05); limbs.push(l);
+  });
+  return { g, b, limbs, h:0 };
+}
+function buildLaunch(){
+  launchScene = new THREE.Scene(); launchScene.background = C_SKY.clone();
+  launchScene.add(new THREE.HemisphereLight('#FFFFFF', '#6A7A5A', 0.9));
+  const sun = new THREE.DirectionalLight('#FFFFFF', 0.8); sun.position.set(20, 40, 20); launchScene.add(sun);
+  const gr = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), Lm('#6F8F5A')); gr.rotation.x = -Math.PI/2; launchScene.add(gr);
+  addM(launchScene, new THREE.CylinderGeometry(5, 5.5, 1, 24), Lm('#8A8F9E'), 0, 0.5, 0);
+  for(let i=0;i<10;i++) addM(launchScene, new THREE.BoxGeometry(0.4, 1.4, 0.4), Lm('#D9534F'), -3.2, 1 + i*1.4 + 0.7, -1.2);
+  addM(launchScene, new THREE.BoxGeometry(1.6, 0.3, 0.3), Lm('#D9534F'), -2.4, 11, -1.2);
+  for(let i=0;i<14;i++) addM(launchScene, new THREE.SphereGeometry(rand(3, 6), 10, 8), Lm('#FFFFFF', { transparent:true, opacity:0.85 }), rand(-30, 30), rand(35, 90), rand(-30, -5));
+  rocket = new THREE.Group(); rocket.position.y = 1; launchScene.add(rocket);
+  addM(rocket, new THREE.CylinderGeometry(0.9, 0.9, 8, 20), Lm('#F4F2FF'), 0, 4.5, 0);
+  addM(rocket, new THREE.ConeGeometry(0.9, 2.6, 20), Lm('#D9534F'), 0, 9.8, 0);
+  addM(rocket, new THREE.CylinderGeometry(0.92, 0.92, 0.5, 20), Lm('#2B6CB0'), 0, 6.5, 0);
+  addM(rocket, new THREE.CircleGeometry(0.35, 20), Gm('#9FE6FF'), 0, 7.6, 0.91);
+  for(let i=0;i<4;i++){ const a = i*Math.PI/2, f = addM(rocket, new THREE.BoxGeometry(0.12, 2, 1.3), Lm('#D9534F'), Math.cos(a)*1.0, 1.2, Math.sin(a)*1.0); f.rotation.y = -a; }
+  addM(rocket, new THREE.CylinderGeometry(0.5, 0.75, 0.6, 16), Lm('#4A4F5E'), 0, 0.2, 0);
+  rFlames = [];
+  [['#FFF3B0', 0.45, 2], ['#FFB020', 0.7, 3.4], ['#FF5A1F', 0.9, 4.6]].forEach(([c, r, h]) => { const f = addM(rocket, new THREE.ConeGeometry(r, h, 14), Gm(c, { transparent:true, opacity:0.85, depthWrite:false }), 0, -h/2, 0); f.rotation.x = Math.PI; f.userData.h = h; rFlames.push(f); });
+}
+function buildSpace(){
+  spaceScene = new THREE.Scene(); spaceScene.background = C_SPACE.clone();
+  spaceScene.add(new THREE.AmbientLight('#FFFFFF', 0.28));
+  spaceScene.add(new THREE.PointLight('#FFF4DA', 1.6, 0, 0));
+  const N = 2500, pos = new Float32Array(N*3);
+  for(let i=0;i<N;i++){ const v = new THREE.Vector3(rand(-1, 1), rand(-1, 1), rand(-1, 1)).normalize().multiplyScalar(rand(500, 900)); pos[i*3] = v.x; pos[i*3+1] = v.y; pos[i*3+2] = v.z; }
+  const sg = new THREE.BufferGeometry(); sg.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  spaceScene.add(new THREE.Points(sg, new THREE.PointsMaterial({ color:'#FFFFFF', size:1.6, sizeAttenuation:true })));
+  let earthPos = null;
+  BODIES.forEach((b, i) => {
+    const ang = i*0.75 + 0.4;
+    let p = new THREE.Vector3(Math.cos(ang)*b.d, (i % 2 ? 1 : -1)*rand(0, 2), Math.sin(ang)*b.d);
+    if(b.moon) p = earthPos.clone().add(new THREE.Vector3(3.2, 0.6, 1.2));
+    if(b.id === 'earth') earthPos = p.clone();
+    const g = new THREE.Group(); g.position.copy(p); spaceScene.add(g);
+    const m = new THREE.Mesh(new THREE.SphereGeometry(b.r, 40, 28), b.id === 'sun' ? Gm('#FFD34D') : new THREE.MeshLambertMaterial({ map:planetTex(b) })); g.add(m);
+    if(b.id === 'sun'){ addM(g, new THREE.SphereGeometry(b.r*1.35, 32, 20), Gm('#FFB020', { transparent:true, opacity:0.25, depthWrite:false })); addM(g, new THREE.SphereGeometry(b.r*1.8, 32, 20), Gm('#FF8A3A', { transparent:true, opacity:0.1, depthWrite:false })); }
+    if(b.id === 'saturn'){ const ring = addM(g, new THREE.RingGeometry(b.r*1.3, b.r*2.2, 64), Lm('#E8D7A8', { side:THREE.DoubleSide, transparent:true, opacity:0.75 })); ring.rotation.x = -Math.PI/2 + 0.45; }
+    if(b.id === 'uranus'){ m.rotation.z = 1.7; const ring = addM(g, new THREE.RingGeometry(b.r*1.5, b.r*1.6, 48), Lm('#CFEFF0', { side:THREE.DoubleSide, transparent:true, opacity:0.4 })); ring.rotation.y = Math.PI/2 - 0.1; }
+    if(b.id === 'earth') addM(g, new THREE.SphereGeometry(b.r*1.08, 32, 20), Gm('#7FC8FF', { transparent:true, opacity:0.18, side:THREE.BackSide }));
+    const tag = labelSprite(b.name, '#FFE27A'); tag.position.y = b.r + 0.8; tag.scale.set(2.4, 0.6, 1); g.add(tag);
+    if(b.d && !b.moon){ const orb = new THREE.Mesh(new THREE.RingGeometry(b.d - 0.06, b.d + 0.06, 160), Gm('#5B6699', { side:THREE.DoubleSide, transparent:true, opacity:0.35 })); orb.rotation.x = -Math.PI/2; spaceScene.add(orb); }
+    bodies.push({ b, g, m, tag });
+  });
+  astro = makeAstro(me.shirt); spaceScene.add(astro.g);
+  const lamp = new THREE.PointLight('#FFFFFF', 0.5, 6); lamp.position.set(0, 1.5, 2); astro.g.add(lamp);
+  spaceDivers.forEach(r => { if(!r.obj) addSpaceRemote(r); });
+}
+const earthBody = () => bodies.find(x => x.b.id === 'earth');
+
+function enterSpace(){
+  if(!launchScene) buildLaunch();
+  if(!spaceScene) buildSpace();
+  spacePhase = 'launch'; launchT = 0; launchCamY = 3; autoTo = null; avel.set(0, 0, 0);
+  rocket.position.set(0, 1, 0); rocket.rotation.set(0, 0, 0);
+  camera.far = 2500; camera.updateProjectionMatrix();
+  Object.assign(camLim, { pmin:-1.3, pmax:1.3, dmin:2.5, dmax:30 });
+  $('#panel').hidden = true; $('#joy').hidden = true; $('#launchOv').hidden = false; $('#zeroG').hidden = true; $('#planetCard').hidden = true;
+  $('#launchNum').textContent = '3'; $('#launchSub').textContent = '우주 도착까지 10초';
+}
+function leaveSpace(){
+  camera.far = 100; camera.updateProjectionMatrix();
+  ['#spaceUI', '#launchOv', '#zeroG', '#planetCard', '#spSheet'].forEach(s => { $(s).hidden = true; });
+  $('#fadeOv').style.opacity = 0; autoTo = null;
+}
+function arriveSpace(){
+  spacePhase = 'space';
+  const e = earthBody(); astro.g.position.copy(e.g.position).add(new THREE.Vector3(0, 0.5, 6)); astro.h = Math.PI;
+  cam.yaw = 0.4; cam.pitch = 0.15; cam.dist = 7; cam.t.copy(astro.g.position);
+  $('#launchOv').hidden = true; $('#panel').hidden = false; $('#spaceUI').hidden = false; $('#joy').hidden = false; $('#zeroG').hidden = false;
+  updSpDex(); lastSent = ''; pushPresence();
+}
+$('#zeroGOk').addEventListener('click', () => { $('#zeroG').hidden = true; });
+$('#spExit').addEventListener('click', exitRoom);
+
+function spaceState(){
+  if(room !== 'space' || spacePhase !== 'space' || !astro) return null;
+  const p = astro.g.position; return { x:+p.x.toFixed(1), y:+p.y.toFixed(1), z:+p.z.toFixed(1), h:+astro.h.toFixed(2) };
+}
+function addSpaceRemote(r){ r.obj = makeAstro(r.shirt); r.obj.g.position.set(r.tx, r.ty, r.tz); const tag = nameSprite(r.name); tag.position.y = 2.2; r.obj.g.add(tag); spaceScene.add(r.obj.g); }
+function spaceRemote(uid, s, av){
+  if(s.room !== 'space' || !s.sp || typeof s.sp !== 'object'){ spaceDrop(uid); return; }
+  const x = num(s.sp.x, -400, 400, 0), y = num(s.sp.y, -400, 400, 0), z = num(s.sp.z, -400, 400, 0), h = num(s.sp.h, -50, 50, 0);
+  let r = spaceDivers.get(uid);
+  if(!r){ r = { name:av.name, shirt:okColor(s.shirt) ? s.shirt : '#2C6FD1', obj:null }; spaceDivers.set(uid, r); }
+  r.tx = x; r.ty = y; r.tz = z; r.th = h;
+  if(spaceScene && !r.obj) addSpaceRemote(r);
+}
+function spaceDrop(uid){ const r = spaceDivers.get(uid); if(!r) return; if(r.obj && spaceScene) spaceScene.remove(r.obj.g); spaceDivers.delete(uid); }
+
+holdBtn('#spUp', 1); holdBtn('#spDown', -1);
+function updSpDex(){ $('#spDex').textContent = '도감 ' + spDex.size + '/' + SP_N; }
+function weightTxt(g){ return '지구에서 50kg → ' + (Math.round(50*g*10)/10) + 'kg'; }
+function showSheet(title){ $('#spTitle').textContent = title; const body = $('#spBody'); body.textContent = ''; $('#spSheet').hidden = false; return body; }
+$('#spClose').addEventListener('click', () => { $('#spSheet').hidden = true; });
+$('#spGo').addEventListener('click', () => {
+  const body = showSheet('행성 이동 · 눌러서 날아가기');
+  bodies.forEach(o => { const btn = el('button', 'quizopt'); btn.type = 'button';
+    btn.textContent = (spDex.has(o.b.id) ? '✓ ' : '') + o.b.name + (o.b.d ? ' · 태양에서 빛으로 ' + o.b.light : '');
+    btn.addEventListener('click', () => { autoTo = o; $('#spSheet').hidden = true; toast(o.b.name + '(으)로 날아가요'); }); body.appendChild(btn); });
+});
+$('#spDex').addEventListener('click', () => {
+  const body = showSheet('우주 도감 ' + spDex.size + '/' + SP_N);
+  BODIES.forEach((b, i) => { const got = spDex.has(b.id), r = el('div', 'dexrow' + (got ? '' : ' no'));
+    r.appendChild(el('span', 'n', got ? String(i + 1) : '?'));
+    const tx = el('div'); tx.appendChild(el('b', null, got ? b.name : '아직 안 가 봤어요'));
+    tx.appendChild(el('small', null, got ? '크기 ' + b.size + ' · ' + weightTxt(b.g) + ' · ' + b.fact : '행성 이동으로 가까이 가 보면 열려요')); r.appendChild(tx); body.appendChild(r); });
+});
+$('#spQuiz').addEventListener('click', () => {
+  const pool = QUIZ.slice().sort(() => Math.random() - 0.5).slice(0, 5);
+  quiz = { list:pool, i:0, score:0 }; renderQuiz();
+});
+function renderQuiz(){
+  const body = showSheet('우주 퀴즈 ' + Math.min(quiz.i + 1, 5) + '/5');
+  if(quiz.i >= quiz.list.length){
+    const best = Math.max(store.get('class8-quiz', 0), quiz.score); store.set('class8-quiz', best);
+    $('#spTitle').textContent = '우주 퀴즈 결과';
+    body.appendChild(el('p', 'sv-note', '5문제 중 ' + quiz.score + '문제 맞혔어요! (최고 기록 ' + best + '/5)'));
+    body.appendChild(el('p', 'sv-note', quiz.score === 5 ? '만점이에요! 우주 박사 인정 🚀' : '도감에서 행성 설명을 읽고 다시 도전해 봐요.'));
+    const again = el('button', 'btn primary', '다시 풀기'); again.type = 'button'; again.addEventListener('click', () => $('#spQuiz').click()); body.appendChild(again); return;
+  }
+  const [q, opts, ans] = quiz.list[quiz.i];
+  body.appendChild(el('b', null, q));
+  let done = false;
+  opts.forEach((o, k) => { const b = el('button', 'quizopt', o); b.type = 'button';
+    b.addEventListener('click', () => { if(done) return; done = true;
+      if(k === ans) quiz.score++; else b.classList.add('no');
+      body.querySelectorAll('.quizopt')[ans].classList.add('ok');
+      const nx = el('button', 'btn primary', quiz.i === 4 ? '결과 보기' : '다음 문제'); nx.type = 'button';
+      nx.addEventListener('click', () => { quiz.i++; renderQuiz(); }); body.appendChild(nx); });
+    body.appendChild(b); });
+}
+
+function spaceTick(dt){
+  const t = performance.now()/1000;
+  if(spacePhase === 'launch'){
+    launchT += dt;
+    const lt = launchT;
+    if(lt < 3){ $('#launchNum').textContent = String(3 - Math.floor(lt)); }
+    else $('#launchNum').textContent = lt < 4.2 ? '발사!' : '';
+    $('#launchSub').textContent = '우주 도착까지 ' + Math.max(0, Math.ceil(10 - lt)) + '초';
+    const fire = lt > 2.4, up = Math.max(0, lt - 3);
+    rocket.position.y = 1 + 3*up*up;
+    rocket.position.x = fire ? Math.sin(t*40)*0.04 : 0;
+    rFlames.forEach((f, i) => { f.visible = fire; const s = 0.85 + Math.random()*0.3 + Math.min(1.5, up*0.25); f.scale.set(1, s, 1); f.position.y = -f.userData.h*s/2; });
+    if(fire && Math.random() < dt*30){ const sm = addM(launchScene, new THREE.SphereGeometry(rand(0.8, 1.6), 8, 6), Lm('#E6E6E6', { transparent:true, opacity:0.8 }), rand(-1, 1), rocket.position.y - 2, rand(-1, 1)); smokes.push({ m:sm, t:0, vx:rand(-3, 3), vz:rand(-3, 3) }); }
+    for(let i = smokes.length - 1; i >= 0; i--){ const s = smokes[i]; s.t += dt; s.m.position.x += s.vx*dt; s.m.position.z += s.vz*dt; s.m.scale.setScalar(1 + s.t*1.5); s.m.material.opacity = Math.max(0, 0.8 - s.t*0.35);
+      if(s.t > 2.3){ launchScene.remove(s.m); s.m.geometry.dispose(); s.m.material.dispose(); smokes.splice(i, 1); } }
+    const hk = Math.min(1, rocket.position.y/150);
+    if(hk < 0.5) tmpC.copy(C_SKY).lerp(C_HIGH, hk/0.5); else tmpC.copy(C_HIGH).lerp(C_SPACE, (hk - 0.5)/0.5);
+    launchScene.background.copy(tmpC);
+    launchCamY += (rocket.position.y + 4 - launchCamY)*Math.min(1, dt*3);
+    const shake = fire ? 0.08 + Math.min(0.25, up*0.03) : 0;
+    cam.t.set(rocket.position.x + rand(-shake, shake), launchCamY + rand(-shake, shake), 0);
+    cam.yaw = 0.7; cam.pitch = 0.05; cam.dist = 20;
+    $('#fadeOv').style.opacity = lt > 9.2 ? Math.min(1, (lt - 9.2)/0.6) : 0;
+    if(lt >= 10){ arriveSpace(); setTimeout(() => { $('#fadeOv').style.opacity = 0; }, 50); }
+    return;
+  }
+  const p = astro.g.position;
+  // 조이스틱 = 화면 기준 앞뒤좌우, 버튼 = 위아래. 무중력이라 손을 떼도 천천히 미끄러져요
+  let ix = joy.x, iy = joy.y;
+  if(keys['a'] || keys['arrowleft']) ix -= 1; if(keys['d'] || keys['arrowright']) ix += 1;
+  if(keys['w'] || keys['arrowup']) iy -= 1; if(keys['s'] || keys['arrowdown']) iy += 1;
+  const mag = Math.min(1, Math.hypot(ix, iy)), vin = clamp(seaVin + (keys['e'] ? 1 : 0) - (keys['q'] ? 1 : 0), -1, 1);
+  if(mag >= 0.12 || vin) autoTo = null;
+  const acc = new THREE.Vector3();
+  if(mag >= 0.12){
+    const fx = -Math.sin(cam.yaw), fz = -Math.cos(cam.yaw), rx = Math.cos(cam.yaw), rz = -Math.sin(cam.yaw);
+    let mx = fx*(-iy) + rx*ix, mz = fz*(-iy) + rz*ix; const ml = Math.hypot(mx, mz) || 1; acc.set(mx/ml*mag, 0, mz/ml*mag); astro.h = Math.atan2(acc.x, acc.z);
+  }
+  acc.y = vin;
+  if(autoTo){
+    const tgt = autoTo.g.position, off = p.clone().sub(tgt); off.y = 0; if(off.lengthSq() < 0.01) off.set(0, 0, 1);
+    const goal = tgt.clone().add(off.normalize().multiplyScalar(autoTo.b.r + 3.5)).add(new THREE.Vector3(0, 0.5, 0));
+    const dv = goal.clone().sub(p), dist = dv.length();
+    if(dist < 0.6){ autoTo = null; avel.multiplyScalar(0.2); }
+    else { const want = dv.normalize().multiplyScalar(Math.min(28, dist*1.2 + 2)); avel.lerp(want, Math.min(1, dt*2)); astro.h = Math.atan2(want.x, want.z); }
+  } else {
+    avel.addScaledVector(acc, 7*dt);
+    avel.multiplyScalar(Math.exp(-0.6*dt));
+    if(avel.length() > 9) avel.setLength(9);
+  }
+  p.addScaledVector(avel, dt);
+  p.clampScalar(-260, 260);
+  // 태양 안으로는 못 들어가요
+  if(p.length() < BODIES[0].r + 3) p.setLength(BODIES[0].r + 3);
+  let da = astro.h - astro.g.rotation.y; while(da > Math.PI) da -= Math.PI*2; while(da < -Math.PI) da += Math.PI*2;
+  astro.g.rotation.y += da*Math.min(1, dt*3);
+  // 둥둥 떠 있는 자세
+  astro.b.rotation.x = Math.sin(t*0.7)*0.25; astro.b.rotation.z = Math.sin(t*0.5)*0.2;
+  astro.limbs.forEach((l, i) => { l.rotation.z = (i % 2 ? 0.15 : 0.6)*(i < 2 ? -1 : 1) + Math.sin(t*1.3 + i)*0.15; l.rotation.x = Math.sin(t + i)*0.3; });
+  cam.t.lerp(new THREE.Vector3(p.x, p.y + 1, p.z), 1 - Math.exp(-dt*5));
+  bodies.forEach(o => { o.m.rotation.y += dt*(o.b.id === 'sun' ? 0.02 : 0.15); });
+  // 가까운 천체 설명 + 도감
+  let near = null, nd = 1e9;
+  bodies.forEach(o => { const d = o.g.position.distanceTo(p) - o.b.r; if(d < nd){ nd = d; near = o; } });
+  const showN = nd < (near.b.id === 'sun' ? 10 : 7) ? near : null;
+  if(showN !== nearBody){
+    nearBody = showN; const c = $('#planetCard');
+    if(!showN) c.hidden = true;
+    else { const b = showN.b; c.textContent = '';
+      c.appendChild(el('b', null, b.name));
+      const st = el('div', 'st'); st.appendChild(el('span', null, '크기: ' + b.size)); st.appendChild(el('span', null, weightTxt(b.g)));
+      if(b.d) st.appendChild(el('span', null, '태양빛이 오는 시간: ' + b.light)); c.appendChild(st);
+      c.appendChild(el('p', null, b.fact)); c.hidden = !$('#zeroG').hidden;
+      if(!spDex.has(b.id)){ spDex.add(b.id); store.set('class8-space', [...spDex]); updSpDex(); toast('우주 도감에 ' + b.name + ' 추가! ' + spDex.size + '/' + SP_N); } }
+  }
+  if(nearBody && $('#zeroG').hidden) $('#planetCard').hidden = false;
+  spaceDivers.forEach(r => { if(!r.obj) return; const g = r.obj.g, q = 1 - Math.exp(-dt*6);
+    g.position.x += (r.tx - g.position.x)*q; g.position.y += (r.ty - g.position.y)*q; g.position.z += (r.tz - g.position.z)*q;
+    let d2 = r.th - g.rotation.y; while(d2 > Math.PI) d2 -= Math.PI*2; while(d2 < -Math.PI) d2 += Math.PI*2; g.rotation.y += d2*q;
+    r.obj.b.rotation.x = Math.sin(t*0.7 + 1)*0.25; });
+}
+
 /* ---------- 10. 매 프레임 실행 ---------- */
 const clock3 = new THREE.Clock();
 let sendT = 0, introYaw = 0;
@@ -2926,7 +3272,7 @@ function loop(){
   frontWall.visible = camera.position.z < D/2 - 0.2; backWall.visible = camera.position.z > -D/2 + 0.2;
   leftWall.visible = camera.position.x > -W/2 + 0.2; rightWall.visible = camera.position.x < W/2 - 0.2;
   uiT -= dt; if(uiT <= 0){ uiT = 0.25; updateUI(); }
-  renderer.render(room === 'sea' ? seaScene : room === 'nino' ? ninoScene : scene, camera);
+  renderer.render(room === 'sea' ? seaScene : room === 'nino' ? ninoScene : room === 'space' ? (spacePhase === 'launch' ? launchScene : spaceScene) : scene, camera);
   requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
