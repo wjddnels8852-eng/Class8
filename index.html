@@ -281,6 +281,10 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
 .awaylist span.study{border-color:rgba(255,201,60,.6);color:#FFE7A0}
 .geobtn{position:fixed;z-index:6;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 108px);min-height:50px;padding:0 20px;border:0;border-radius:999px;
   background:linear-gradient(180deg,#7DF0F2,#3FCAD8);color:#0F1426;font:400 18px var(--font-d);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 4px 0 #1E8A96,0 10px 24px rgba(0,0,0,.35);animation:geoBob 1.6s ease-in-out infinite}
+.studybar{position:fixed;z-index:7;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 64px);display:flex;gap:8px;align-items:center;padding:6px;border-radius:999px;background:rgba(15,20,38,.88);border:1px solid rgba(255,255,255,.14);box-shadow:0 10px 24px rgba(0,0,0,.35)}
+.studybar span{color:#FFE7A0;font-weight:800;padding:0 10px;font-variant-numeric:tabular-nums}
+.studybar button{min-height:42px;padding:0 16px;border:0;border-radius:999px;font-weight:800;font-size:15px;color:#0F1426;background:linear-gradient(180deg,#7DF0F2,#3FCAD8);box-shadow:0 3px 0 #1E8A96}
+.studybar button#sbStand{background:linear-gradient(180deg,#FFD66B,#FFB020);box-shadow:0 3px 0 #B97A0C}
 @keyframes geoBob{50%{transform:translateX(-50%) translateY(-4px)}}
 @media (prefers-reduced-motion: reduce){.geobtn{animation:none}}
 #geoCard .tabs3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
@@ -563,6 +567,7 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
 </div>
 
 <button type="button" class="geobtn" id="roomBtn" hidden>🚪 들어가기</button>
+<div class="studybar" id="studyBar" hidden><span id="sbTime">00:00</span><button type="button" id="sbFocus">💡 집중 화면</button><button type="button" id="sbStand">🚶 일어나기</button></div>
 <div class="ninocard" id="geoCard" hidden>
   <div class="ed-head"><div><h2>📐 기하 탐구실 · 이차곡선</h2><div class="who">고2·고3 기하 미리 보기</div></div><button type="button" class="tool" id="geoExit">로비로 ⬆</button></div>
   <div class="tabs3" id="geoTabs"><button type="button" class="tool" data-g="cone" aria-pressed="true">① 원뿔 자르기</button><button type="button" class="tool" data-g="focus" aria-pressed="false">② 초점과 실</button><button type="button" class="tool" data-g="quiz" aria-pressed="false">③ 확인 문제</button></div>
@@ -2150,7 +2155,10 @@ function classToday(){
 }
 function updateFocus(){
   const show = !!me && me.mode === 'sit' && !focusPeek;
-  $('#focus').hidden = !show; if(!show) return;
+  $('#focus').hidden = !show; $('#fPeek').textContent = roomStudy ? '주변 보기' : '교실 보기';
+  const sb = !!me && me.mode === 'sit' && !!roomStudy && focusPeek && room !== 'class'; $('#studyBar').hidden = !sb;
+  if(sb){ const s2 = Math.floor((Date.now() - me.studyStart)/1000); $('#sbTime').textContent = '📖 ' + String(Math.floor(s2/60)).padStart(2, '0') + ':' + String(s2 % 60).padStart(2, '0'); }
+  if(!show) return;
   const s = Math.floor((Date.now() - me.studyStart)/1000), h = Math.floor(s/3600);
   $('#fTimer').textContent = (h ? h + ':' : '') + String(Math.floor(s/60) % 60).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
   $('#fSubj').textContent = (roomStudy ? roomStudy.where + '에서 ' : '') + '집중 중 · ' + me.subject + (wakeLock ? ' · 화면 안 꺼짐' : '');
@@ -2177,9 +2185,11 @@ function updateFocus(){
 }
 { const fs = $('#fSubjects'); SUBJECTS.forEach(sj => { const b = el('button', 'subj', sj); b.type = 'button'; b.setAttribute('aria-pressed', 'false');
     b.addEventListener('click', () => { if(!me) return; me.subject = sj; me.drawLabel(true); syncSubj(); }); fs.appendChild(b); }); }
-$('#fPeek').addEventListener('click', () => { focusPeek = true; updateFocus(); toast('교실을 보는 중이에요. 집중 화면 버튼으로 돌아가요'); });
+$('#fPeek').addEventListener('click', () => { focusPeek = true; updateFocus(); toast(roomStudy ? '주변을 보는 중이에요. 위 버튼으로 집중 화면에 돌아가거나 일어날 수 있어요' : '교실을 보는 중이에요. 집중 화면 버튼으로 돌아가요'); });
+$('#sbFocus').addEventListener('click', () => { focusPeek = false; focusSig = ''; updateFocus(); });
+$('#sbStand').addEventListener('click', () => { focusPeek = false; endRoomStudy(); updateFocus(); });
 $('#btnFocus').addEventListener('click', () => { focusPeek = false; focusSig = ''; updateFocus(); });
-$('#fBreak').addEventListener('click', () => { focusPeek = false; $('#btnStand').click(); updateFocus(); });
+$('#fBreak').addEventListener('click', () => { focusPeek = false; if(roomStudy) endRoomStudy(); else $('#btnStand').click(); updateFocus(); });
 
 // 같이 공부하는 소리: 연필 사각사각, 책장 넘기는 소리. 공부하는 사람이 많을수록 조금씩 풍성해져요
 let actx = null, soundOn = false, nextScratch = 0;
@@ -2798,7 +2808,7 @@ function enterRoom(k){
 }
 function exitRoom(){
   if(room === 'class') return;
-  if(roomStudy){ roomStudy = null; me.mode = 'idle'; }
+  if(roomStudy){ roomStudy = null; me.mode = 'idle'; } showChair(null); spStudy = null; if(astro) astro.g.scale.setScalar(1); $('#studyBar').hidden = true;
   const from = room; seaVin = 0;
   camera.clearViewOffset();
   $('#seaUI').hidden = true; $('#dockUI').hidden = true; $('#seaHud').hidden = true; $('#ninoCard').hidden = true; $('#dexSheet').hidden = true; $('#roomBtn').hidden = true; lobbyNear = ''; roomBtnAct = null;
@@ -2824,7 +2834,9 @@ function makeStudyDesk(){
   const g = new THREE.Group(), wood = mat('#C99A6B'), leg = mat('#5B6170'), seat = mat('#566190');
   const b = (w, h, d, m, x, y, z) => { const o = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); o.position.set(x, y, z); g.add(o); return o; };
   b(1.3, 0.06, 0.7, wood, 0, 0.75, 0); [[-0.58, -0.28], [0.58, -0.28], [-0.58, 0.28], [0.58, 0.28]].forEach(q => b(0.05, 0.75, 0.05, leg, q[0], 0.375, q[1]));
-  b(0.55, 0.06, 0.5, seat, 0, 0.45, 0.85); b(0.55, 0.5, 0.06, seat, 0, 0.72, 1.1); [[-0.24, 0.64], [0.24, 0.64], [-0.24, 1.06], [0.24, 1.06]].forEach(q => b(0.04, 0.45, 0.04, leg, q[0], 0.225, q[1]));
+  const chair = new THREE.Group(); chair.visible = false; g.add(chair); g.userData.chair = chair;
+  const cb = (w, h, d, m, x, y, z) => { const o = b(w, h, d, m, x, y, z); chair.add(o); return o; };
+  cb(0.55, 0.06, 0.5, seat, 0, 0.45, 0.85); cb(0.55, 0.5, 0.06, seat, 0, 0.72, 1.1); [[-0.24, 0.64], [0.24, 0.64], [-0.24, 1.06], [0.24, 1.06]].forEach(q => cb(0.04, 0.45, 0.04, leg, q[0], 0.225, q[1]));
   b(0.34, 0.05, 0.25, mat('#2C6FD1'), -0.3, 0.8, -0.1); const lamp = new THREE.Mesh(new THREE.SphereGeometry(0.09, 10, 8), new THREE.MeshBasicMaterial({ color:'#FFE7A0' })); lamp.position.set(0.45, 1.05, -0.2); g.add(lamp);
   b(0.03, 0.3, 0.03, leg, 0.45, 0.9, -0.2);
   const pl = new THREE.PointLight('#FFE7A0', 0.8, 4); pl.position.set(0.45, 1.1, -0.1); g.add(pl);
@@ -2832,20 +2844,23 @@ function makeStudyDesk(){
   return g;
 }
 function sitPose(o){ o.b.rotation.set(0, 0, 0); o.limbs.forEach((l, i) => { l.rotation.z = 0; l.rotation.x = i % 2 ? -1.45 : -1.0; }); }
+let studyDesk = null;
+function showChair(d){ if(studyDesk){ if(studyDesk.userData.chair) studyDesk.userData.chair.visible = false; if(studyDesk.userData.popAll) studyDesk.visible = false; } studyDesk = d || null;
+  if(d && d.userData.chair){ d.userData.chair.visible = true; d.userData.chairPop = 0; if(d.userData.popAll){ d.visible = true; d.userData.chair.scale.setScalar(1); d.scale.setScalar(0.01); } else d.userData.chair.scale.setScalar(0.01); } }
 function startRoomStudy(where){
   roomStudy = { where }; me.mode = 'sit'; me.seat = -1; me.studyStart = Date.now(); me.rest = false;
   focusPeek = false; focusSig = ''; $('#roomBtn').hidden = true; roomBtnAct = null; lastSent = ''; pushPresence();
   toast(where + '에서 공부 시작! 공부시간이 쌓여요');
 }
 function endRoomStudy(){
-  if(!roomStudy) return; roomStudy = null; me.mode = 'idle'; lastSent = ''; pushPresence();
+  if(!roomStudy) return; roomStudy = null; me.mode = 'idle'; lastSent = ''; pushPresence(); showChair(null); $('#studyBar').hidden = true;
   if(room === 'sea') afterSeaStudy(); else if(room === 'space') afterSpaceStudy();
 }
 function ctxBtn(txt, act){   // 화면 위 상황 버튼 (같은 내용이면 다시 안 그려요)
   const b = $('#roomBtn'); if(!txt){ if(!b.hidden){ b.hidden = true; } roomBtnAct = null; b.dataset.k = ''; return; }
   if(b.dataset.k !== txt){ b.dataset.k = txt; b.textContent = txt; } roomBtnAct = act; b.hidden = false;
 }
-function roomStudyTick(dt){ if(roomStudy){ me.total += dt; me.week = (me.week || 0) + dt; } }
+function roomStudyTick(dt){ if(roomStudy){ me.total += dt; me.week = (me.week || 0) + dt; } if(studyDesk && studyDesk.userData.chairPop < 1){ const c = studyDesk.userData.popAll ? studyDesk : studyDesk.userData.chair, base = studyDesk.userData.popAll || 1; studyDesk.userData.chairPop = Math.min(1, studyDesk.userData.chairPop + dt*3); const k = studyDesk.userData.chairPop; const q = k - 1; c.scale.setScalar(base*Math.max(0.01, 1 + 2.7*q*q*q + 1.7*q*q)); } }
 function roomCount(k){ let n = room === k ? 1 : 0; remotes.forEach(r => { if(r.av.room === k) n++; }); return n; }
 function roomTick(dt){
   roomStudyTick(dt);
@@ -3060,7 +3075,7 @@ function glowSprite(color, scale, opacity){
   const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map:new THREE.CanvasTexture(c), transparent:true, opacity:opacity == null ? 1 : opacity, blending:THREE.AdditiveBlending, depthWrite:false }));
   sp.scale.set(scale, scale, 1); return sp;
 }
-let seaSurf = null, kelps = [], seaBeam = null;
+let seaSurf = null, kelps = [], seaBeam = null, seaSky = null, seaWaveT = null, seaFoam = null;
 function buildSea(){
   seaScene = new THREE.Scene();
   seaScene.background = new THREE.Color('#2A8FD0');
@@ -3068,7 +3083,18 @@ function buildSea(){
   seaAmb = new THREE.HemisphereLight('#BFE8FF', '#0A1A2A', 1); seaScene.add(seaAmb);
   seaSun = new THREE.DirectionalLight('#DFF4FF', 0.8); seaSun.position.set(5, 40, 10); seaScene.add(seaSun);
   // 수면과 햇빛 줄기
-  const surf = new THREE.Mesh(new THREE.PlaneGeometry(140, 140, 40, 40), Gm('#8FDBFF', { transparent:true, opacity:0.55, side:THREE.DoubleSide })); surf.rotation.x = -Math.PI/2; seaScene.add(surf); seaSurf = surf;
+  const wc = document.createElement('canvas'); wc.width = wc.height = 256; { const w2 = wc.getContext('2d'); w2.fillStyle = '#FFFFFF'; w2.fillRect(0, 0, 256, 256);
+    for(let i=0;i<260;i++){ w2.strokeStyle = 'rgba(' + (Math.random() < 0.5 ? '170,220,245' : '120,180,225') + ',' + (0.25 + Math.random()*0.4) + ')'; w2.lineWidth = 1 + Math.random()*2.5;
+      const x0 = Math.random()*256, y0 = Math.random()*256, L = 10 + Math.random()*30; w2.beginPath(); w2.moveTo(x0, y0); w2.quadraticCurveTo(x0 + L/2, y0 - 3, x0 + L, y0); w2.stroke(); } }
+  const waveT = new THREE.CanvasTexture(wc); waveT.wrapS = waveT.wrapT = THREE.RepeatWrapping; waveT.repeat.set(14, 14); seaWaveT = waveT;
+  const surf = new THREE.Mesh(new THREE.PlaneGeometry(400, 400, 60, 60), new THREE.MeshPhongMaterial({ color:'#1F8FCC', map:waveT, specular:'#FFFFFF', shininess:90, transparent:true, opacity:0.82, side:THREE.DoubleSide, depthWrite:false }));
+  surf.rotation.x = -Math.PI/2; surf.renderOrder = 2; seaScene.add(surf); seaSurf = surf;
+  seaSky = (() => { const c = document.createElement('canvas'); c.width = 16; c.height = 256; const x = c.getContext('2d'); const gr = x.createLinearGradient(0, 0, 0, 256);
+    gr.addColorStop(0, '#2E7FD6'); gr.addColorStop(0.42, '#7EC3F2'); gr.addColorStop(0.5, '#D9F0FF'); gr.addColorStop(0.52, '#7FBEE3'); gr.addColorStop(1, '#1D6FA8'); x.fillStyle = gr; x.fillRect(0, 0, 16, 256);
+    const m = new THREE.Mesh(new THREE.SphereGeometry(125, 24, 16), new THREE.MeshBasicMaterial({ map:new THREE.CanvasTexture(c), side:THREE.BackSide, fog:false, depthWrite:false })); m.renderOrder = -1; seaScene.add(m); return m; })();
+  { const sc = document.createElement('canvas'); sc.width = sc.height = 128; const x = sc.getContext('2d'); const gr = x.createRadialGradient(64, 64, 0, 64, 64, 64); gr.addColorStop(0, 'rgba(255,250,225,1)'); gr.addColorStop(0.25, 'rgba(255,240,190,.8)'); gr.addColorStop(1, 'rgba(255,240,190,0)'); x.fillStyle = gr; x.fillRect(0, 0, 128, 128);
+    const s = new THREE.Sprite(new THREE.SpriteMaterial({ map:new THREE.CanvasTexture(sc), fog:false, depthWrite:false, transparent:true })); s.scale.set(30, 30, 1); s.position.set(65, 50, -55); seaSky.add(s);
+    for(let i=0;i<9;i++){ const cl = new THREE.Sprite(new THREE.SpriteMaterial({ map:new THREE.CanvasTexture(sc), color:'#FFFFFF', fog:false, depthWrite:false, transparent:true, opacity:0.75 })); const a = i/9*Math.PI*2 + rand(0, 0.5); cl.position.set(Math.cos(a)*110, rand(18, 40), Math.sin(a)*110); cl.scale.set(rand(26, 46), rand(7, 12), 1); seaSky.add(cl); } }
   for(let i=0;i<8;i++){ const c = addM(seaScene, new THREE.ConeGeometry(1.4, 22, 8, 1, true), Gm('#BFEFFF', { transparent:true, opacity:0.05, depthWrite:false, side:THREE.DoubleSide }), rand(-20, 20), -11, rand(-20, 20)); c.rotation.z = 0.15; }
   // 바닥 (4000m)
   const sandC = document.createElement('canvas'); sandC.width = sandC.height = 256; { const sx = sandC.getContext('2d'); sx.fillStyle = '#5A5244'; sx.fillRect(0, 0, 256, 256);
@@ -3113,9 +3139,29 @@ function buildSea(){
   seaBeam.rotation.x = -Math.PI/2;
   // 해변 · 부두 · 얕은 모래 바닥(약 40m) · 잠수함
   { const sandM = Lm('#FFFFFF', { map:sandT });
-    const beach = new THREE.Mesh(new THREE.BoxGeometry(44, 1, 140), Lm('#E6CF9A')); beach.position.set(-48, -0.15, 0); seaScene.add(beach);
-    const shelf = new THREE.Mesh(new THREE.BoxGeometry(BEACH_X*-1 + SHELF_X, 1, 140), sandM); shelf.position.set((BEACH_X + SHELF_X)/2, SHELF_Y - 0.5, 0); seaScene.add(shelf);
+    const bc = document.createElement('canvas'); bc.width = bc.height = 256; { const x = bc.getContext('2d'); x.fillStyle = '#EED8A4'; x.fillRect(0, 0, 256, 256);
+      for(let i=0;i<5000;i++){ x.fillStyle = ['rgba(200,170,115,.5)', 'rgba(255,245,215,.6)', 'rgba(180,150,100,.35)'][i % 3]; x.fillRect(Math.random()*256, Math.random()*256, 1.5, 1.5); }
+      x.strokeStyle = 'rgba(190,160,105,.25)'; x.lineWidth = 2; for(let i=0;i<10;i++){ x.beginPath(); for(let q=0;q<=256;q+=8) x.lineTo(q, i*26 + Math.sin(q*0.04 + i*1.7)*6); x.stroke(); } }
+    const beachT = new THREE.CanvasTexture(bc); beachT.wrapS = beachT.wrapT = THREE.RepeatWrapping; beachT.repeat.set(8, 24);
+    const beach = new THREE.Mesh(new THREE.BoxGeometry(44, 1, 140), Lm('#FFFFFF', { map:beachT })); beach.position.set(-48, -0.15, 0); seaScene.add(beach);
+    const wet = new THREE.Mesh(new THREE.PlaneGeometry(3.5, 140), Lm('#C9A86E', { map:beachT })); wet.rotation.x = -Math.PI/2; wet.position.set(BEACH_X - 1.75, 0.36, 0); seaScene.add(wet);
+    { const fc = document.createElement('canvas'); fc.width = 64; fc.height = 256; const x = fc.getContext('2d'); for(let i=0;i<70;i++){ x.fillStyle = 'rgba(255,255,255,' + (0.4 + Math.random()*0.5) + ')'; x.beginPath(); x.ellipse(20 + Math.random()*24, Math.random()*256, 3 + Math.random()*10, 2 + Math.random()*6, 0, 0, Math.PI*2); x.fill(); }
+      const ft = new THREE.CanvasTexture(fc); ft.wrapT = THREE.RepeatWrapping; ft.repeat.set(1, 20);
+      seaFoam = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 140), new THREE.MeshBasicMaterial({ map:ft, transparent:true, opacity:0.85, depthWrite:false })); seaFoam.rotation.x = -Math.PI/2; seaFoam.position.set(BEACH_X + 0.9, 0.06, 0); seaFoam.renderOrder = 3; seaScene.add(seaFoam); }
     const wallB = new THREE.Mesh(new THREE.BoxGeometry(1, 8.4, 140), Lm('#C9B27A')); wallB.position.set(BEACH_X - 0.5, -4, 0); seaScene.add(wallB);
+    // 야자수 · 비치 타월 · 선베드
+    const palm = (x, z, s) => { const pg = new THREE.Group(); pg.position.set(x, 0.35, z); pg.scale.setScalar(s); seaScene.add(pg); let px = 0, py = 0;
+      for(let k=0;k<7;k++){ const seg = addM(pg, new THREE.CylinderGeometry(0.17 - k*0.012, 0.2 - k*0.012, 0.75, 8), Lm(k % 2 ? '#8B6A45' : '#7A5B3A'), px, py + 0.37, 0); seg.rotation.z = -0.05*k; px += 0.05*k*0.75; py += 0.72; }
+      for(let k=0;k<7;k++){ const lf = new THREE.Group(); lf.position.set(px, py, 0); lf.rotation.y = k/7*Math.PI*2; pg.add(lf);
+        const leaf = addM(lf, new THREE.PlaneGeometry(0.55, 2.6), Lm(k % 2 ? '#3E9B4A' : '#4FB257', { side:THREE.DoubleSide }), 0, 0, 1.2); leaf.rotation.x = Math.PI/2 + 0.55; }
+      for(let k=0;k<3;k++) addM(pg, new THREE.SphereGeometry(0.16, 8, 6), Lm('#6B4A2E'), px + Math.cos(k*2.1)*0.18, py - 0.15, Math.sin(k*2.1)*0.18); };
+    [[-34, -14, 1.1], [-46, 18, 1.25], [-58, -5, 1.0], [-31, 24, 0.9], [-52, -26, 1.15], [-64, 12, 1.2]].forEach(a => palm(a[0], a[1], a[2]));
+    [['#FF7C93', -36, -5], ['#5CE1E6', -42, 6], ['#FFC93C', -48, -9]].forEach(([c, x, z], i) => {
+      const tw = addM(seaScene, new THREE.BoxGeometry(1.0, 0.03, 2.0), Lm(c), x + 1.4, 0.36, z); tw.rotation.y = 0.2*i - 0.2;
+      addM(seaScene, new THREE.BoxGeometry(1.0, 0.035, 0.18), Lm('#FFFFFF'), x + 1.4, 0.365, z - 0.5).rotation.y = tw.rotation.y; });
+    const bed = (x, z) => { const bg = new THREE.Group(); bg.position.set(x, 0.35, z); bg.rotation.y = Math.PI/2; seaScene.add(bg); addM(bg, new THREE.BoxGeometry(0.7, 0.08, 1.4), Lm('#FFFFFF'), 0, 0.3, 0); const bk = addM(bg, new THREE.BoxGeometry(0.7, 0.08, 0.7), Lm('#FFFFFF'), 0, 0.5, -0.85); bk.rotation.x = 0.7;
+      [[-0.3, -0.6], [0.3, -0.6], [-0.3, 0.6], [0.3, 0.6]].forEach(q => addM(bg, new THREE.CylinderGeometry(0.03, 0.03, 0.3, 6), Lm('#9AA3B5'), q[0], 0.15, q[1])); };
+    bed(-39, -2); bed(-39, 2); bed(-45, 12);
     for(let i=0;i<14;i++){ const s = rand(0.8, 2); addM(seaScene, new THREE.DodecahedronGeometry(s, 0), Lm('#6A6E72'), rand(-24, -4), SHELF_Y + s*0.3, rand(-25, 25)).rotation.set(rand(0, 3), rand(0, 3), 0); }
     for(let i=0;i<30;i++){ const sg = addM(seaScene, new THREE.ConeGeometry(0.12, rand(0.6, 1.6), 5), Lm(i % 2 ? '#4E8F3A' : '#6BAA4E'), rand(-25, -3), SHELF_Y + 0.4, rand(-25, 25)); sg.rotation.z = rand(-0.3, 0.3); }
     for(let i=0;i<8;i++){ const pc = ['#FF7C93', '#FFB020', '#C9A8FF', '#FFD34D'][i % 4]; addM(seaScene, new THREE.SphereGeometry(rand(0.3, 0.6), 10, 8), Lm(pc), rand(-22, -4), SHELF_Y + 0.2, rand(-20, 20)).scale.y = 0.6; }
@@ -3125,7 +3171,10 @@ function buildSea(){
     for(let x=-25; x<=-12; x+=1) addM(seaScene, new THREE.BoxGeometry(0.06, 0.02, 2.4), Lm('#7A5638'), x, 0.61, 0);
     const sign = labelSprite('🤿 잠수 포인트', '#FFE27A'); sign.position.set(-12.6, 2.2, 0); sign.scale.set(2.4, 0.6, 1); seaScene.add(sign);
     for(let i=0;i<6;i++){ const um = new THREE.Group(); um.position.set(-38 - (i % 3)*6, 0.35, -8 + Math.floor(i/3)*16); seaScene.add(um);
-      addM(um, new THREE.CylinderGeometry(0.04, 0.04, 2.2, 6), Lm('#E8ECF6'), 0, 1.1, 0); addM(um, new THREE.ConeGeometry(1.2, 0.5, 8), Lm(['#FF7C93', '#5CE1E6', '#FFC93C'][i % 3]), 0, 2.2, 0); } }
+      addM(um, new THREE.CylinderGeometry(0.06, 0.06, 2.3, 8), Lm('#FFFFFF'), 0, 1.15, 0); const uc = ['#FF7C93', '#5CE1E6', '#FFC93C'][i % 3];
+      for(let k=0;k<8;k++) addM(um, new THREE.ConeGeometry(1.35, 0.55, 8, 1, true, k/8*Math.PI*2, Math.PI/4), Lm(k % 2 ? '#FFFFFF' : uc, { side:THREE.DoubleSide }), 0, 2.3, 0);
+      addM(um, new THREE.SphereGeometry(0.08, 8, 6), Lm(uc), 0, 2.6, 0);
+      const sh = addM(um, new THREE.CircleGeometry(1.2, 20), new THREE.MeshBasicMaterial({ color:'#000000', transparent:true, opacity:0.14, depthWrite:false }), 0.35, 0.02, 0.2); sh.rotation.x = -Math.PI/2; } }
   // 잠수함 (하루 4시간 공부하면 탈 수 있어요)
   sub = { g:new THREE.Group(), h:Math.PI/2, home:new THREE.Vector3(-10.4, -0.4, 3.4) }; seaScene.add(sub.g);
   subHull(sub);
@@ -3140,7 +3189,7 @@ function buildSea(){
   { const rock = addM(seaScene, new THREE.DodecahedronGeometry(2.2, 0), Lm('#5A6B7A'), -15, SHELF_Y + 0.6, -16); rock.scale.y = 0.75;
     const d = makeStudyDesk(); d.position.set(-15, SHELF_Y + 2.15, -16); seaScene.add(d); seaDesks.push({ d, name:'바위 위 책상' }); }
   // 해변을 걷는 나
-  walker = makeAstro(me.shirt); seaScene.add(walker.g); walker.h = Math.PI/2;
+  walker = makeSwimmer(me.shirt, me.hair); seaScene.add(walker.g); walker.h = Math.PI/2;
   seaDivers.forEach(r => { if(!r.obj) addRemoteDiver(r); });
 }
 function addRemoteDiver(r){ r.obj = makeDiver(r.shirt, r.hair); r.obj.g.position.set(r.tx, r.ty, r.tz); const tag = nameSprite(r.name); tag.position.y = 1.0; r.obj.g.add(tag); seaScene.add(r.obj.g); }
@@ -3299,7 +3348,7 @@ function seaTick(dt){
     let ride = null; if(seaPhase === 'swim') seaDivers.forEach((r, uid) => { if(r.ph === 'sub' && r.sobj && r.sobj.position.distanceTo(p) < 5 && subCrew(uid).length < 3) ride = [uid, r]; });
     if(ride && !desk){ const [uid, r] = ride; ctxBtn('🚢 ' + r.name + ' 잠수함 타기 (' + (subCrew(uid).length + 1) + '/4)', () => seaJoinSub(uid, r)); } else
     ctxBtn(desk ? '🪑 ' + desk.name + '에서 공부하기' : '', desk ? () => {
-      seaPhase = 'study'; desk.d.userData.seat.getWorldPosition(seaStudyAt); walker.g.position.copy(seaStudyAt); walker.g.rotation.y = desk.d.rotation.y + Math.PI; walker.h = walker.g.rotation.y; sitPose(walker);
+      seaPhase = 'study'; showChair(desk.d); desk.d.userData.seat.getWorldPosition(seaStudyAt); walker.g.position.copy(seaStudyAt); walker.g.rotation.y = desk.d.rotation.y + Math.PI; walker.h = walker.g.rotation.y; sitPose(walker);
       seaUIFor('study'); startRoomStudy('🌊 ' + desk.name); } : null);
   }
   if(seaPhase === 'dock'){ sub.g.position.y = sub.home.y + Math.sin(t*1.3)*0.08; sub.prop.rotation.z += dt*0.5;
@@ -3311,13 +3360,14 @@ function seaTick(dt){
   // 깊어질수록 어두워져요 (햇빛은 약 1000m까지)
   const depth = Math.max(0, -p.y), dk = Math.min(1, depthM(depth)/1000), sun = Math.pow(1 - dk, 1.6), above = p.y > 0.1;
   if(dk < 0.4) tmpC.copy(C_SURF).lerp(C_MID, dk/0.4); else tmpC.copy(C_MID).lerp(C_DEEP, (dk - 0.4)/0.6);
-  if(above) tmpC.set('#9FD8F5');
-  seaScene.background.copy(tmpC); seaScene.fog.color.copy(tmpC); seaScene.fog.density = above ? 0.006 : 0.03 + (seaPhase === 'swim' ? 0.07 : 0.025)*dk;   // 맨몸은 깊을수록 더 뿌옇게
-  seaAmb.intensity = 0.14 + 0.9*sun; seaSun.intensity = 0.9*sun; seaLamp.intensity = 0.6 + 1.0*dk; seaLamp.distance = 14; subLamp.intensity = 1 + 3*dk; sub.beam.material.opacity = seaPhase === 'sub' ? 0.02 + 0.08*dk : 0;
+  if(above) tmpC.set('#BFE3F7'); seaSky.visible = above; seaSky.position.copy(camera.position); seaSurf.material.color.set(above ? '#1F8FCC' : '#7FD3FF'); seaSurf.material.opacity = above ? 0.86 : 0.55; seaWaveT.offset.x += dt*0.01; seaWaveT.offset.y += dt*0.006;
+  if(seaFoam){ seaFoam.material.opacity = 0.55 + Math.sin(t*1.2)*0.3; seaFoam.position.x = BEACH_X + 0.9 + Math.sin(t*1.2)*0.5; }
+  seaScene.background.copy(tmpC); seaScene.fog.color.copy(tmpC); seaScene.fog.density = above ? 0.0035 : 0.03 + (seaPhase === 'swim' ? 0.07 : 0.025)*dk;   // 맨몸은 깊을수록 더 뿌옇게
+  seaAmb.intensity = above ? 0.75 : 0.14 + 0.9*sun; seaSun.intensity = above ? 1.1 : 0.9*sun; seaLamp.intensity = 0.6 + 1.0*dk; seaLamp.distance = 14; subLamp.intensity = 1 + 3*dk; sub.beam.material.opacity = seaPhase === 'sub' ? 0.02 + 0.08*dk : 0;
   seaBeam.material.opacity = 0.015 + 0.075*dk;
   kelps.forEach(k => k.segs.forEach((s, i) => { s.rotation.z = Math.sin(t*0.9 + k.ph + i*0.5)*0.12; s.rotation.x = Math.cos(t*0.7 + k.ph + i*0.4)*0.08; }));
   if(depth < 20){ const pa = seaSurf.geometry.attributes.position, ar = pa.array;   // 수면이 출렁여요
-    for(let i=0;i<ar.length;i+=3) ar[i+2] = Math.sin(ar[i]*0.25 + t*1.4)*0.25 + Math.cos(ar[i+1]*0.3 + t*1.1)*0.2;
+    for(let i=0;i<ar.length;i+=3) ar[i+2] = Math.sin(ar[i]*0.25 + t*1.4)*0.14 + Math.cos(ar[i+1]*0.3 + t*1.1)*0.11;
     pa.needsUpdate = true; }
   // 바다눈은 나를 따라다녀요
   const a = snow.geometry.attributes.position, arr = a.array;
@@ -3344,7 +3394,7 @@ function seaTick(dt){
   });
   // 같이 잠수한 친구들
   seaDivers.forEach(r => { if(!r.obj) return;
-    if(!r.wobj){ r.wobj = makeAstro(r.shirt); const tg = nameSprite(r.name); tg.position.y = 2.2; r.wobj.g.add(tg); seaScene.add(r.wobj.g); }
+    if(!r.wobj){ r.wobj = makeSwimmer(r.shirt, r.hair); const tg = nameSprite(r.name); tg.position.y = 2.2; r.wobj.g.add(tg); seaScene.add(r.wobj.g); }
     if(!r.sobj){ const o = { g:new THREE.Group() }; subHull(o); r.sobj = o.g; r.sprop = o.prop; const tg = nameSprite(r.name + ' 잠수함'); tg.position.y = 2; r.sobj.add(tg); seaScene.add(r.sobj); }
     if(r.sprop) r.sprop.rotation.z += dt*3;
     const walk = r.ph === 'dock' || r.ph === 'study';
@@ -3771,6 +3821,26 @@ function planetTex(b){
   else if(b.id === 'uranus') band(['#A8ECEE', '#8FD6DA'], 6);
   return new THREE.CanvasTexture(c);
 }
+function makeSwimmer(shirt, hair){   // 바다에서는 잠수복 차림
+  const g = new THREE.Group(), b = new THREE.Group(); g.add(b);
+  const suit = mat('#22304F'), skin = mat('#F2C4A0');
+  addM(b, new THREE.CylinderGeometry(0.27, 0.3, 0.72, 14), suit, 0, 0.86, 0);
+  [-1, 1].forEach(s => addM(b, new THREE.BoxGeometry(0.06, 0.66, 0.1), mat(shirt), s*0.27, 0.86, 0.04));
+  addM(b, new THREE.BoxGeometry(0.22, 0.2, 0.04), mat(shirt), 0, 1.0, 0.29);
+  const tank = addM(b, new THREE.CylinderGeometry(0.13, 0.13, 0.62, 12), mat('#E5B93C'), 0, 0.92, -0.36);
+  addM(b, new THREE.SphereGeometry(0.13, 10, 8), mat('#C9CCD6'), 0, 1.25, -0.36);
+  addM(b, new THREE.SphereGeometry(0.3, 20, 14), skin, 0, 1.45, 0);
+  const hr = addM(b, new THREE.SphereGeometry(0.315, 20, 10, 0, Math.PI*2, 0, Math.PI*0.5), mat(hair || '#2A2230'), 0, 1.47, -0.02); hr.rotation.x = -0.35;
+  addM(b, new THREE.TorusGeometry(0.31, 0.03, 6, 24), mat('#22304F'), 0, 1.6, 0).rotation.x = Math.PI/2 - 0.35;
+  addM(b, new THREE.BoxGeometry(0.4, 0.12, 0.1), Lm('#9FE6FF', { emissive:'#1A4A5A' }), 0, 1.66, 0.22).rotation.x = -0.6;
+  [-0.1, 0.1].forEach(x => addM(b, new THREE.SphereGeometry(0.035, 8, 6), mat('#1B1F3B'), x, 1.47, 0.28));
+  const limbs = [];
+  [-1, 1].forEach(s => {
+    const a = new THREE.Group(); a.position.set(s*0.36, 1.12, 0); b.add(a); addM(a, new THREE.CylinderGeometry(0.085, 0.08, 0.55, 8), suit, 0, -0.26, 0); addM(a, new THREE.SphereGeometry(0.08, 8, 6), skin, 0, -0.56, 0); limbs.push(a);
+    const l = new THREE.Group(); l.position.set(s*0.14, 0.52, 0); b.add(l); addM(l, new THREE.CylinderGeometry(0.11, 0.1, 0.62, 8), suit, 0, -0.29, 0); addM(l, new THREE.BoxGeometry(0.2, 0.08, 0.34), mat('#1B1F3B'), 0, -0.63, 0.06); limbs.push(l);
+  });
+  return { g, b, limbs, h:0 };
+}
 function makeAstro(shirt){
   const g = new THREE.Group(), b = new THREE.Group(); g.add(b);
   const suit = mat('#F4F2FF');
@@ -3860,7 +3930,8 @@ function buildSpace(){
     const o = { b, g, m, tag, ang, oy:p.y };
     if(b.id !== 'sun'){   // 행성 위 공부 책상 (가스 행성은 둥둥 떠 있는 정거장)
       const gas = ['jupiter', 'saturn', 'uranus', 'neptune'].indexOf(b.id) >= 0, d = makeStudyDesk(); d.scale.setScalar(0.5);
-      if(gas){ const pf = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.75, 0.08, 20), Lm('#C9CCD6')); pf.position.y = b.r + 1.2; g.add(pf); d.position.y = b.r + 1.24; }
+      d.userData.popAll = 0.5; d.visible = false;   // 공부하기 누르면 책상·의자가 짠 하고 생겨요
+      if(gas){ const pf = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.75, 0.08, 20), Lm('#C9CCD6')); pf.position.y = -0.04/0.5; pf.scale.setScalar(2); d.add(pf); d.position.y = b.r + 1.24; }
       else d.position.y = b.r - 0.02;
       g.add(d); o.desk = d; }
     bodies.push(o);
@@ -3966,8 +4037,8 @@ function arriveSpace(){
 $('#zeroGOk').addEventListener('click', () => { $('#zeroG').hidden = true; });
 $('#spExit').addEventListener('click', exitRoom);
 let spStudy = null;
-$('#spStudy').addEventListener('click', () => { if(!nearBody || !nearBody.desk) return; spStudy = nearBody; startRoomStudy('🪐 ' + nearBody.b.name); });
-function afterSpaceStudy(){ const d = spStudy; spStudy = null; if(d){ d.g.getWorldPosition(astro.g.position); astro.g.position.add(new THREE.Vector3(0, d.b.r + 2, d.b.r + 3)); } $('#panel').hidden = false; $('#joy').hidden = false; }
+$('#spStudy').addEventListener('click', () => { if(!nearBody || !nearBody.desk) return; spStudy = nearBody; showChair(nearBody.desk); startRoomStudy('🪐 ' + nearBody.b.name); });
+function afterSpaceStudy(){ const d = spStudy; spStudy = null; astro.g.scale.setScalar(1); if(d){ d.g.getWorldPosition(astro.g.position); astro.g.position.add(new THREE.Vector3(0, d.b.r + 2, d.b.r + 3)); } $('#panel').hidden = false; $('#joy').hidden = false; }
 
 function spaceState(){
   if(room !== 'space') return null;
@@ -4010,7 +4081,7 @@ $('#spGo').addEventListener('click', () => {
   const body = showSheet('행성 이동 · 눌러서 날아가기');
   bodies.forEach(o => { const btn = el('button', 'quizopt'); btn.type = 'button';
     btn.textContent = (spDex.has(o.b.id) ? '✓ ' : '') + o.b.name + (o.b.d ? ' · 태양에서 빛으로 ' + o.b.light : '');
-    btn.addEventListener('click', () => { autoTo = o; $('#spSheet').hidden = true; toast(o.b.name + '(으)로 날아가요'); }); body.appendChild(btn); });
+    btn.addEventListener('click', () => { if(spStudy){ endRoomStudy(); focusPeek = false; updateFocus(); } autoTo = o; $('#spSheet').hidden = true; toast(o.b.name + '(으)로 날아가요'); }); body.appendChild(btn); });
 });
 $('#spDex').addEventListener('click', () => {
   const body = showSheet('우주 도감 ' + spDex.size + '/' + SP_N);
@@ -4079,7 +4150,7 @@ function spaceTick(dt){
     return;
   }
   const p = astro.g.position;
-  if(spStudy){ spStudy.desk.userData.seat.getWorldPosition(p); avel.set(0, 0, 0); autoTo = null; sitPose(astro); astro.g.rotation.set(0, Math.PI, 0); }
+  if(spStudy){ spStudy.desk.userData.seat.getWorldPosition(p); avel.set(0, 0, 0); autoTo = null; sitPose(astro); astro.g.rotation.set(0, Math.PI, 0); astro.g.scale.setScalar(0.5); }
   // 조이스틱 = 화면 기준 앞뒤좌우, 버튼 = 위아래. 무중력이라 손을 떼도 천천히 미끄러져요
   let ix = joy.x, iy = joy.y;
   if(keys['a'] || keys['arrowleft']) ix -= 1; if(keys['d'] || keys['arrowright']) ix += 1;
