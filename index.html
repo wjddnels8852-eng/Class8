@@ -621,7 +621,7 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
   <div class="ed-card" role="dialog" aria-label="심해 탐험실 잠김" style="max-width:420px">
     <div class="lockico" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#FFF4E0" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2" fill="#FFF4E0"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div>
     <h2 style="margin:0;text-align:center">아직 들어갈 수 없어요</h2>
-    <p style="margin:0;text-align:center;font-size:14px;color:var(--muted);line-height:1.6">하루에 6시간 공부하면 심해 탐험실이 열려요.<br>한 번 열리면 계속 들어갈 수 있어요.</p>
+    <p style="margin:0;text-align:center;font-size:14px;color:var(--muted);line-height:1.6">하루에 3시간 공부하면 심해 탐험실이 열려요.<br>한 번 열리면 계속 들어갈 수 있어요.</p>
     <div class="prog"><i id="lockBar" style="width:0"></i></div>
     <p id="lockTxt" style="margin:0;text-align:center;font-weight:700;color:var(--accent);font-size:14px"></p>
     <div class="btns"><button type="button" class="btn" id="lockClose">닫기</button><button type="button" class="btn primary" id="lockStudy">공부하러 가기</button></div>
@@ -2614,8 +2614,8 @@ function updateUI(){
   }
 }
 
-/* ---------- 11. 옆방: 심해 탐험실 (하루 6시간 공부) · 엘니뇨 탐구실 (누구나) ---------- */
-const SEA_NEED = 21600;   // 하루 6시간 = 21600초. 한 번 채우면 계속 들어가요
+/* ---------- 11. 옆방: 심해 탐험실 (하루 3시간 공부) · 엘니뇨 탐구실 (누구나) ---------- */
+const SEA_NEED = 10800;   // 하루 3시간 = 10800초. 한 번 채우면 계속 들어가요
 const seaOpen = () => !!me && Math.max(me.total || 0, me.best || 0) >= SEA_NEED;
 const camLim = { pmin:0.22, pmax:1.35, dmin:3.5, dmax:13 };
 const CLASS_LIM = { pmin:0.22, pmax:1.35, dmin:3.5, dmax:13 };
@@ -2662,7 +2662,7 @@ const lobbyRight = lwall(LZ*2, LX1, 0, -Math.PI/2, '#46518A'), lobbyBack = lwall
   const title = new THREE.Mesh(new THREE.PlaneGeometry(5.6, 0.7), signMat('체험관 · 가고 싶은 방의 문으로 들어가요', '#1B1F3B', '#FFE27A', 1120, 140, '800 60px "Noto Sans KR", sans-serif')); title.position.set(0, 2.7, 0.05); lobbyBack.add(title); }
 const DOOR_Z = { sea:-5.25, space:-1.75, nino:1.75, geo:5.25 };   // 로비 문 위치 (z)
 const DOOR_NAME = { sea:'심해 탐험실', space:'우주 발사장', nino:'엘니뇨 탐구실', geo:'기하 탐구실' };
-const seaDoor = makeDoor(lobbyWall, 5.25, 'sea', '심해 탐험실', '6시간공부후출입가능', '#B83B4E', '#1F4F7A', '#0A3A66');
+const seaDoor = makeDoor(lobbyWall, 5.25, 'sea', '심해 탐험실', '3시간공부후출입가능', '#B83B4E', '#1F4F7A', '#0A3A66');
 const ninoDoor = makeDoor(lobbyWall, -1.75, 'nino', '엘니뇨 탐구실', '엘니뇨 탐구실 · 누구나', '#2B6CB0', '#2B5E4A', '#2E86DE');
 const geoDoor = makeDoor(lobbyWall, -5.25, 'geo', '기하 탐구실', '📐 기하 탐구실 · 지하 ↓', '#2E8F7F', '#1E3A4A', '#0B1530');
 const exitDoor = makeDoor(lobbyRight, 0, 'class', '교실', '⬅ 교실로 돌아가기', '#2FA36B', '#2B5E4A', '#A9D3FF');
