@@ -2425,16 +2425,16 @@ function makeDoor(wallG, localX, kind, title, signText, signBg, doorColor, winCo
   const add = (geo, m, x, y, z) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); g.add(o); return o; };
   add(new THREE.PlaneGeometry(1.5, 2.55), mat('#7A5638'), 0, 1.27, 0);
   add(new THREE.PlaneGeometry(1.25, 2.4), mat(doorColor), 0, 1.2, 0.01);
-  add(new THREE.CircleGeometry(0.3, 28), new THREE.MeshBasicMaterial({ color:winColor }), 0, 1.7, 0.02);
-  add(new THREE.RingGeometry(0.3, 0.36, 28), mat('#C9D6E8'), 0, 1.7, 0.025);
+  g.userData.win = add(new THREE.CircleGeometry(0.4, 32), new THREE.MeshBasicMaterial({ color:winColor }), 0, 1.65, 0.02);
+  add(new THREE.RingGeometry(0.4, 0.48, 32), mat('#C9D6E8'), 0, 1.65, 0.025);
   add(new THREE.SphereGeometry(0.06, 12, 8), mat('#E5B93C'), 0.45, 1.1, 0.06);
   add(new THREE.PlaneGeometry(1.0, 0.3), signMat(title, '#0F1426', '#8FCBFF', 400, 120, '700 50px "Noto Sans KR", sans-serif'), 0, 0.95, 0.02);
   add(new THREE.PlaneGeometry(2.1, 0.42), signMat(signText, signBg, '#FFF4E0', 840, 168, '800 64px "Noto Sans KR", sans-serif'), 0, 2.88, 0.02);
   g.traverse(o => { o.userData.door = kind; });
   return g;
 }
-const seaDoor = makeDoor(rightWall, -5.9, 'sea', '심해 탐험실', '6시간공부후출입가능', '#B83B4E', '#1F4F7A', '#0A3A66');
-const ninoDoor = makeDoor(leftWall, 5.9, 'nino', '엘니뇨 탐구실', '엘니뇨 탐구실 · 누구나', '#2B6CB0', '#2B5E4A', '#2E86DE');
+const seaDoor = makeDoor(leftWall, 3.5, 'sea', '심해 탐험실', '6시간공부후출입가능', '#B83B4E', '#1F4F7A', '#0A3A66');
+const ninoDoor = makeDoor(leftWall, -3.5, 'nino', '엘니뇨 탐구실', '엘니뇨 탐구실 · 누구나', '#2B6CB0', '#2B5E4A', '#2E86DE');
 tapTargets.push(seaDoor, ninoDoor);
 
 function openDoor(k){
@@ -2489,14 +2489,15 @@ function exitRoom(){
   $('#panel').hidden = false; $('#joy').hidden = false;
   $('#walkUI').hidden = false; $('#walkUI').style.display = 'flex';
   // 들어갔던 문 앞에서 나와요
-  let px = lastRoomDoor === 'sea' ? W/2 - 1.3 : -W/2 + 1.3, pz = lastRoomDoor === 'space' ? 3 : -5.9;
-  for(let r = 0; r < 6 && !freeAt(px, pz); r += 0.5){ px += lastRoomDoor === 'sea' ? -0.5 : 0.5; }
-  me.pos.set(px, 0, pz); me.ry = me.targetRy = lastRoomDoor === 'sea' ? -Math.PI/2 : Math.PI/2;
+  let px = -W/2 + 1.6, pz = DOOR_Z[lastRoomDoor] || 0;   // 문 세 개는 왼쪽 벽에 나란히 있어요
+  for(let r = 0; r < 6 && !freeAt(px, pz); r += 0.5){ px += 0.5; }
+  me.pos.set(px, 0, pz); me.ry = me.targetRy = Math.PI/2;
   me.group.visible = true;
   Object.assign(camLim, CLASS_LIM); resetView(); cam.t.set(me.pos.x, 1, me.pos.z);
   lastSent = ''; pushPresence();
 }
 let lastRoomDoor = 'sea';
+const DOOR_Z = { sea:-3.5, space:0, nino:3.5 };   // 교실 기준 z 위치
 $('#seaExit').addEventListener('click', exitRoom);
 $('#ninoExit').addEventListener('click', exitRoom);
 
@@ -2968,7 +2969,7 @@ function ninoTick(dt){
 }
 
 /* ===== 우주 발사장: 로켓 타고 10초 → 우주 (무중력) ===== */
-const spaceDoor = makeDoor(leftWall, -3, 'space', '우주 발사장', '우주 발사장 · 누구나', '#5B3FA8', '#2A2F5A', '#0B0F2A');
+const spaceDoor = makeDoor(leftWall, 0, 'space', '우주 발사장', '우주 발사장 · 누구나', '#5B3FA8', '#2A2F5A', '#0B0F2A');
 tapTargets.push(spaceDoor);
 $('#btnSpace').addEventListener('click', () => openDoor('space'));
 
@@ -3381,6 +3382,106 @@ function fusLoop(now){
   requestAnimationFrame(fusLoop);
 }
 
+/* ===== 문 앞 미리보기 효과: 문만 봐도 안이 궁금해지게 ===== */
+const DX = -W/2;   // 왼쪽 벽
+const doorFx = { t:0, winT:0, fish:[], ripples:[], sparks:[], clouds:[], wins:[] };
+function winCanvas(door, draw){
+  const c = document.createElement('canvas'); c.width = c.height = 128;
+  const tex = new THREE.CanvasTexture(c); door.userData.win.material = new THREE.MeshBasicMaterial({ map:tex });
+  doorFx.wins.push({ c, tex, draw });
+}
+function gapGlow(door, color){   // 문 밑 틈으로 새어 나오는 빛
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 0.07), new THREE.MeshBasicMaterial({ color })); m.position.set(0, 0.04, 0.03); door.add(m);
+  return m;
+}
+// --- 심해: 문 밑으로 물이 새고, 물웅덩이에서 물고기가 헤엄쳐요 ---
+{
+  const z = DOOR_Z.sea;
+  gapGlow(seaDoor, '#5CE1E6');
+  const puddle = new THREE.Mesh(new THREE.CircleGeometry(1, 40), new THREE.MeshBasicMaterial({ color:'#3FA9E8', transparent:true, opacity:0.55, depthWrite:false }));
+  puddle.rotation.x = -Math.PI/2; puddle.position.set(DX + 0.75, 0.012, z); puddle.scale.set(0.85, 1.25, 1); scene.add(puddle);
+  const stream = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 1.2), new THREE.MeshBasicMaterial({ color:'#7FD3FF', transparent:true, opacity:0.5, depthWrite:false }));
+  stream.rotation.x = -Math.PI/2; stream.rotation.z = Math.PI/2; stream.position.set(DX + 0.25, 0.014, z); scene.add(stream);
+  for(let i=0;i<3;i++){ const r = new THREE.Mesh(new THREE.RingGeometry(0.15, 0.19, 32), new THREE.MeshBasicMaterial({ color:'#DFF6FF', transparent:true, opacity:0, depthWrite:false }));
+    r.rotation.x = -Math.PI/2; r.position.set(DX + 0.75 + rand(-0.3, 0.3), 0.016, z + rand(-0.6, 0.6)); scene.add(r); doorFx.ripples.push({ m:r, t:i*0.7, cz:z }); }
+  ['#FF8A3A', '#FFD34D', '#5CE1E6'].forEach((c, i) => {
+    const f = fish(0.32, 0.06, c); f.scale.setScalar(1.3); scene.add(f);
+    doorFx.fish.push({ g:f, a:i*2.1, r:0.35 + i*0.15, sp:1.2 + i*0.4, cx:DX + 0.8, cz:z });
+  });
+  const bub = [...Array(6)].map(() => ({ x:rand(20, 108), y:rand(0, 128), s:rand(0.4, 1) }));
+  const fs = [...Array(3)].map((_, i) => ({ x:rand(0, 128), y:30 + i*28, v:rand(14, 26)*(i % 2 ? -1 : 1), c:['#FFB020', '#7FF7FF', '#FF7C93'][i] }));
+  winCanvas(seaDoor, (x, dt) => {
+    const g = x.createLinearGradient(0, 0, 0, 128); g.addColorStop(0, '#1E6FA8'); g.addColorStop(1, '#03142C'); x.fillStyle = g; x.fillRect(0, 0, 128, 128);
+    fs.forEach(f => { f.x += f.v*dt; if(f.x > 150) f.x = -20; if(f.x < -20) f.x = 150; const d = Math.sign(f.v);
+      x.fillStyle = f.c; x.beginPath(); x.ellipse(f.x, f.y, 11, 6, 0, 0, 7); x.fill();
+      x.beginPath(); x.moveTo(f.x - d*9, f.y); x.lineTo(f.x - d*18, f.y - 6); x.lineTo(f.x - d*18, f.y + 6); x.closePath(); x.fill(); });
+    x.strokeStyle = 'rgba(223,246,255,.8)'; x.lineWidth = 2;
+    bub.forEach(b => { b.y -= 22*dt*b.s; if(b.y < -6){ b.y = 134; b.x = rand(20, 108); } x.beginPath(); x.arc(b.x, b.y, 3*b.s + 1, 0, 7); x.stroke(); });
+  });
+  doorFx.sea = { puddle, stream };
+}
+// --- 우주: 문 틈으로 별빛이 새어 나오고, 작은 행성이 둥둥 떠 있어요 ---
+{
+  const z = DOOR_Z.space;
+  doorFx.spaceGlow = gapGlow(spaceDoor, '#B79CFF');
+  for(let i=0;i<16;i++){ const s = new THREE.Mesh(new THREE.OctahedronGeometry(0.035), new THREE.MeshBasicMaterial({ color:i % 3 ? '#FFFFFF' : '#FFE27A', transparent:true }));
+    scene.add(s); doorFx.sparks.push({ m:s, t:rand(0, 3), x:rand(0.05, 0.9), z:z + rand(-0.6, 0.6) }); }
+  const pl = new THREE.Group(); scene.add(pl);
+  pl.add(new THREE.Mesh(new THREE.SphereGeometry(0.16, 20, 14), mat('#E3CF95')));
+  const ring = new THREE.Mesh(new THREE.RingGeometry(0.22, 0.32, 32), new THREE.MeshBasicMaterial({ color:'#F0E2B0', side:THREE.DoubleSide, transparent:true, opacity:0.8 })); ring.rotation.x = -Math.PI/2 + 0.4; pl.add(ring);
+  doorFx.planet = { g:pl, z };
+  const stars = [...Array(40)].map(() => ({ x:rand(0, 128), y:rand(0, 128), p:rand(0, 6) }));
+  let rk = -30;
+  winCanvas(spaceDoor, (x, dt, t) => {
+    x.fillStyle = '#050818'; x.fillRect(0, 0, 128, 128);
+    stars.forEach(s => { x.globalAlpha = 0.4 + 0.6*Math.abs(Math.sin(t*2 + s.p)); x.fillStyle = '#FFFFFF'; x.fillRect(s.x, s.y, 2, 2); }); x.globalAlpha = 1;
+    x.fillStyle = '#3E6FD9'; x.beginPath(); x.arc(92, 34, 14, 0, 7); x.fill();
+    rk -= 40*dt; if(rk < -40) rk = 170;
+    x.save(); x.translate(44, rk); x.fillStyle = '#F4F2FF'; x.fillRect(-5, -14, 10, 24); x.fillStyle = '#D9534F'; x.beginPath(); x.moveTo(-5, -14); x.lineTo(0, -24); x.lineTo(5, -14); x.fill();
+    x.fillStyle = '#FFB020'; x.beginPath(); x.moveTo(-4, 10); x.lineTo(0, 20 + Math.random()*8); x.lineTo(4, 10); x.fill(); x.restore();
+  });
+}
+// --- 엘니뇨: 창문 속 지구가 돌고, 문 밑으로 따뜻한 바람·차가운 바람이 번갈아 나와요 ---
+{
+  const z = DOOR_Z.nino;
+  doorFx.ninoGlow = gapGlow(ninoDoor, '#FF9B5C');
+  for(let i=0;i<5;i++){ const c = new THREE.Mesh(new THREE.SphereGeometry(0.16, 10, 8), new THREE.MeshBasicMaterial({ color:'#FFFFFF', transparent:true, opacity:0 }));
+    c.scale.set(1.4, 0.6, 1); scene.add(c); doorFx.clouds.push({ m:c, t:i*0.8, z:z + rand(-0.5, 0.5) }); }
+  const map = document.createElement('canvas'); map.width = 256; map.height = 128; const mx = map.getContext('2d');
+  mx.fillStyle = '#1F5FAF'; mx.fillRect(0, 0, 256, 128); mx.fillStyle = '#3F8A4E';
+  LANDS.forEach(poly => { mx.beginPath(); poly.forEach(([lo, la], i) => { const px = (lo + 180)/360*256, py = (90 - la)/180*128; if(i) mx.lineTo(px, py); else mx.moveTo(px, py); }); mx.closePath(); mx.fill(); });
+  let off = 0;
+  winCanvas(ninoDoor, (x, dt) => {
+    x.fillStyle = '#060A18'; x.fillRect(0, 0, 128, 128);
+    off = (off + dt*24) % 256;
+    x.save(); x.beginPath(); x.arc(64, 64, 50, 0, 7); x.clip();
+    x.drawImage(map, -off, -0, 256, 128); x.drawImage(map, 256 - off, 0, 256, 128);
+    const sh = x.createRadialGradient(48, 46, 10, 64, 64, 54); sh.addColorStop(0, 'rgba(255,255,255,.15)'); sh.addColorStop(1, 'rgba(0,0,20,.55)'); x.fillStyle = sh; x.fillRect(0, 0, 128, 128);
+    x.restore();
+    x.strokeStyle = 'rgba(127,200,255,.6)'; x.lineWidth = 3; x.beginPath(); x.arc(64, 64, 51, 0, 7); x.stroke();
+  });
+}
+const C_WARM = new THREE.Color('#FF9B5C'), C_COLD = new THREE.Color('#5CB8FF');
+function doorFxTick(dt){
+  const F = doorFx; F.t += dt; const t = F.t;
+  // 창문 그림은 1초에 20번만 다시 그려요
+  F.winT -= dt; if(F.winT <= 0){ F.winT = 0.05; F.wins.forEach(w => { w.draw(w.c.getContext('2d'), 0.05, t); w.tex.needsUpdate = true; }); }
+  // 심해: 물웅덩이가 살짝 일렁이고, 물고기가 빙글빙글
+  F.sea.puddle.scale.set(0.85 + Math.sin(t*1.3)*0.04, 1.25 + Math.sin(t*1.1)*0.05, 1);
+  F.sea.stream.material.opacity = 0.4 + Math.sin(t*4)*0.1;
+  F.ripples.forEach(r => { r.t += dt; const k = (r.t % 2.1)/2.1; r.m.scale.setScalar(1 + k*3); r.m.material.opacity = 0.7*(1 - k);
+    if(r.t % 2.1 < dt){ r.m.position.x = DX + 0.75 + rand(-0.3, 0.3); r.m.position.z = r.cz + rand(-0.6, 0.6); } });
+  F.fish.forEach(f => { f.a += f.sp*dt; const x = f.cx + Math.cos(f.a)*f.r*0.8, z = f.cz + Math.sin(f.a)*f.r*1.3;
+    f.g.rotation.y = Math.atan2(x - f.g.position.x, z - f.g.position.z); f.g.position.set(x, 0.05, z); f.g.userData.tail.rotation.y = Math.sin(t*16 + f.a)*0.6; });
+  // 우주: 별 조각이 문 밑에서 떠올라요
+  F.sparks.forEach(s => { s.t += dt*0.6; const k = s.t % 3/3; s.m.position.set(DX + 0.1 + s.x*k*1.6, 0.05 + k*2.4, s.z + Math.sin(t + s.x*9)*0.15); s.m.rotation.y += dt*3; s.m.material.opacity = k < 0.15 ? k/0.15 : 1 - (k - 0.15)/0.85; });
+  F.spaceGlow.material.color.setHSL(0.72, 0.9, 0.7 + Math.sin(t*3)*0.12);
+  F.planet.g.position.set(DX + 0.9, 2.2 + Math.sin(t*1.2)*0.15, F.planet.z + Math.cos(t*0.8)*0.35); F.planet.g.rotation.y += dt*0.8;
+  // 엘니뇨: 따뜻한 바람 ↔ 차가운 바람
+  const w = (Math.sin(t*0.7) + 1)/2; F.ninoGlow.material.color.copy(C_COLD).lerp(C_WARM, w);
+  F.clouds.forEach(c => { c.t += dt*0.5; const k = c.t % 4/4; c.m.position.set(DX + 0.15 + k*1.8, 0.25 + k*0.6, c.z + Math.sin(t*0.9 + c.z)*0.2); c.m.material.opacity = 0.75*Math.sin(Math.PI*k); c.m.material.color.copy(C_COLD).lerp(C_WARM, w).lerp(new THREE.Color('#FFFFFF'), 0.55); });
+}
+
 /* ---------- 10. 매 프레임 실행 ---------- */
 const clock3 = new THREE.Clock();
 let sendT = 0, introYaw = 0;
@@ -3388,7 +3489,7 @@ const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: 
 function loop(){
   const dt = Math.min(clock3.getDelta(), 0.05);
   if(botsOn){ bots.forEach(b => { botBrain(b, dt); b.update(dt); }); botCheer(dt); }
-  updateBlasts(dt);
+  updateBlasts(dt); if(room === 'class') doorFxTick(dt);
   soundTick(); qGroup.visible = frontWall.visible;
   surveyDot.visible = !!me && (!myPreDone || (postOpen() && !myPostDone));
   if(surveyDot.visible){ const sc = 0.3 + Math.sin(performance.now()/250)*0.04; surveyDot.scale.set(sc, sc, 1); }
