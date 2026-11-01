@@ -242,6 +242,8 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
 }
 @media (prefers-reduced-motion: reduce){.hint{transition:none}}
 /* 옆방 공통 */
+#lobbyUI{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+#lobbyUI .btn{min-height:46px;padding:0 4px;font-size:14px;white-space:nowrap}
 #seaUI{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 #seaUI .btn{min-height:50px;padding:0 6px;font-size:14px;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:none}
 .seahud{position:fixed;inset:0;pointer-events:none;z-index:4}
@@ -344,7 +346,7 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
 .cheer::before,.pose::before,#btnJump::before,#btnBoard::before,#btnSeat::before,#btnStand::before,#btnView2::before{font-size:15px;line-height:1}
 #btnJump::before,#btnBoard::before,#btnSeat::before,#btnStand::before,#btnView2::before{margin-right:6px;display:inline-block}
 .cheer[data-say="파이팅!"]::before{content:"💪"}.cheer[data-say="같이 하자"]::before{content:"🤝"}.cheer[data-say="조금만 더!"]::before{content:"🔥"}.cheer[data-say="안녕!"]::before{content:"👋"}
-#btnSurvey::before{content:"📝"}#btnCal::before{content:"📅"}#btnQ::before{content:"❓"}#btnSea::before{content:"🌊"}#btnNino::before{content:"🌏"}#btnSpace::before{content:"🚀"}#btnFocus::before{content:"💡"}
+#btnHub::before{content:"🚪"}#btnSurvey::before{content:"📝"}#btnCal::before{content:"📅"}#btnQ::before{content:"❓"}#btnSea::before{content:"🌊"}#btnNino::before{content:"🌏"}#btnSpace::before{content:"🚀"}#btnFocus::before{content:"💡"}
 [data-pose="wave"]::before{content:"👋"}[data-pose="hooray"]::before{content:"🙌"}[data-pose="clap"]::before{content:"👏"}[data-pose="dance"]::before{content:"💃"}[data-pose="bow"]::before{content:"🙇"}
 [data-fly]::before{content:"🕊️"}[data-skill="blast"]::before{content:"💨"}[data-skill="ice"]::before{content:"❄️"}[data-skill="fire"]::before{content:"🔥"}[data-skill="slap"]::before{content:"✋"}
 .flybtn[aria-disabled="true"]::before{content:"🔒"}
@@ -394,10 +396,7 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
       <button type="button" class="pose flybtn" id="btnSurvey">설문하기</button>
       <button type="button" class="pose flybtn" id="btnCal">수행평가 달력</button>
       <button type="button" class="pose flybtn" id="btnQ">질문 게시판</button>
-      <button type="button" class="pose flybtn" id="btnSea">심해 탐험실</button>
-      <button type="button" class="pose flybtn" id="btnNino">엘니뇨 탐구실</button>
-      <button type="button" class="pose flybtn" id="btnSpace">우주 발사장</button>
-      <button type="button" class="pose flybtn" id="btnGeo">기하 탐구실</button>
+      <button type="button" class="pose flybtn" id="btnHub">체험관</button>
     </div>
     <div class="scroller" aria-label="포즈">
       <button class="pose flybtn" data-fly="1">공중부양</button>
@@ -417,15 +416,22 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
       <button class="btn primary" id="btnSeat">자리에 앉기</button>
     </div>
   </div>
+  <div id="lobbyUI" hidden>
+    <button type="button" class="btn" data-go="sea">🌊 심해</button>
+    <button type="button" class="btn" data-go="space">🚀 우주</button>
+    <button type="button" class="btn" data-go="nino">🌏 엘니뇨</button>
+    <button type="button" class="btn" data-go="geo">📐 기하</button>
+    <button type="button" class="btn warm" id="lobbyBack" style="grid-column:1/-1">⬅ 교실로</button>
+  </div>
   <div id="seaUI" hidden>
     <button type="button" class="btn" id="seaUp">⬆ 떠오르기</button>
     <button type="button" class="btn primary" id="seaDown">⬇ 잠수</button>
     <button type="button" class="btn" id="seaDex">도감 0/12</button>
-    <button type="button" class="btn warm" id="seaExit">교실로</button>
+    <button type="button" class="btn warm" id="seaExit">로비로</button>
   </div>
   <div id="padUI" hidden>
     <button type="button" class="btn primary" id="padGo">🚀 로켓으로 걸어가기</button>
-    <button type="button" class="btn warm" id="padExit">교실로</button>
+    <button type="button" class="btn warm" id="padExit">로비로</button>
   </div>
   <div id="boardUI" hidden>
     <button type="button" class="btn primary" id="boardGo">🚀 바로 출발</button>
@@ -438,7 +444,7 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
     <button type="button" class="btn primary" id="spGo">행성 이동</button>
     <button type="button" class="btn" id="spDex">도감 0/10</button>
     <button type="button" class="btn" id="spQuiz">우주 퀴즈</button>
-    <button type="button" class="btn warm" id="spExit">교실로</button>
+    <button type="button" class="btn warm" id="spExit">로비로</button>
   </div>
   <div id="sitUI" hidden style="display:flex;flex-direction:column;gap:12px">
     <div class="timer">
@@ -542,9 +548,9 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
   <div class="seamsg" id="seaMsg" hidden></div>
 </div>
 
-<button type="button" class="geobtn" id="geoBtn" hidden>⬇ 기하 탐구실로 내려가기</button>
+<button type="button" class="geobtn" id="roomBtn" hidden>🚪 들어가기</button>
 <div class="ninocard" id="geoCard" hidden>
-  <div class="ed-head"><div><h2>📐 기하 탐구실 · 이차곡선</h2><div class="who">고2·고3 기하 미리 보기</div></div><button type="button" class="tool" id="geoExit">교실로 ⬆</button></div>
+  <div class="ed-head"><div><h2>📐 기하 탐구실 · 이차곡선</h2><div class="who">고2·고3 기하 미리 보기</div></div><button type="button" class="tool" id="geoExit">로비로 ⬆</button></div>
   <div class="tabs3" id="geoTabs"><button type="button" class="tool" data-g="cone" aria-pressed="true">① 원뿔 자르기</button><button type="button" class="tool" data-g="focus" aria-pressed="false">② 초점과 실</button><button type="button" class="tool" data-g="quiz" aria-pressed="false">③ 확인 문제</button></div>
   <div id="geoP_cone" style="display:flex;flex-direction:column;gap:10px">
     <div class="fusrow"><span>평면 기울기</span><input type="range" id="geoTheta" min="0" max="85" step="0.5" value="25" aria-label="평면 기울기"><b id="geoTval">25°</b></div>
@@ -563,7 +569,7 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
   <p class="sv-note" style="margin:0;background:rgba(255,201,60,.08);border-radius:10px;padding:8px 10px"><b style="color:var(--warm)">기하 진도</b> <span id="geoProg"></span></p>
 </div>
 <div class="ninocard" id="ninoCard" hidden>
-  <div class="ed-head"><div><h2>엘니뇨 탐구실</h2><div class="who" id="ninoWho"></div></div><button type="button" class="tool" id="ninoExit">교실로</button></div>
+  <div class="ed-head"><div><h2>엘니뇨 탐구실</h2><div class="who" id="ninoWho"></div></div><button type="button" class="tool" id="ninoExit">로비로</button></div>
   <div class="opts" id="ninoTabs">
     <button type="button" class="tool" data-nino="normal" aria-pressed="true">평년</button>
     <button type="button" class="tool" data-nino="nino" aria-pressed="false">엘니뇨</button>
@@ -992,7 +998,11 @@ function paintOutdoor(night, eve){
   outMats.bld.forEach((m, i) => m.color.set(night ? ['#1E2444', '#232A4E', '#2A2850'][i] : eve ? ['#9C8AA8', '#8C7E9E', '#A795B0'][i] : ['#B9C4D6', '#A9B9CC', '#C7BFD6'][i]));
   outMats.bwin.color.set(night ? '#FFE08A' : eve ? '#FFD9B0' : '#DCEBFF'); outMats.line.color.set(night ? '#6A6F95' : '#FFFFFF');
 }
+// 창문 모양으로 '구멍 표시'를 하고, 바깥 풍경은 그 구멍 안에만 그려요 → 위에서 내려다봐도 영화 스크린처럼 안 보여요
+outdoor.traverse(o => { if(o.isMesh){ o.renderOrder = 10; Object.assign(o.material, { stencilWrite:true, stencilRef:1, stencilFunc:THREE.EqualStencilFunc, stencilFail:THREE.KeepStencilOp, stencilZFail:THREE.KeepStencilOp, stencilZPass:THREE.KeepStencilOp }); } });
+const stencilMat = new THREE.MeshBasicMaterial({ colorWrite:false, depthWrite:false, stencilWrite:true, stencilRef:1, stencilFunc:THREE.AlwaysStencilFunc, stencilZPass:THREE.ReplaceStencilOp });
 [-3.5, 0.5, 4.2].forEach((z, wi) => {
+  const sw = new THREE.Mesh(new THREE.PlaneGeometry(2.4, 1.5), stencilMat); sw.position.set(W/2 - 0.015, 2.05, z); sw.rotation.y = -Math.PI/2; sw.renderOrder = 5; scene.add(sw);
   box(0.25, 0.06, 2.6, '#E8ECF6', W/2 - 0.12, 1.27, z);   // 창턱
   const win = new THREE.Mesh(new THREE.PlaneGeometry(2.4, 1.5), new THREE.MeshBasicMaterial({ color:'#CFEAFF', transparent:true, opacity:0.08, depthWrite:false }));   // 유리
   win.position.set(W/2 - 0.02, 2.05, z); win.rotation.y = -Math.PI/2; scene.add(win);
@@ -1509,7 +1519,8 @@ function handlePlayers(){
     av.studyStart = num(s.studyStart, 0, now, now);
     av.total = (s.date === todayStr && s.v === DATA_VER) ? num(s.total, 0, 86400, 0) : 0; av.flying = s.fly === true;
     av.streak = Math.floor(num(s.streak, 0, 999, 0)); av.steady = s.steady === true; av.geo = s.geo === true; av.best = num(s.best, 0, 86400, 0);
-    av.room = (s.room === 'sea' || s.room === 'nino' || s.room === 'space' || s.room === 'geo') ? s.room : 'class'; av.group.visible = av.room === 'class';
+    av.room = (s.room === 'sea' || s.room === 'nino' || s.room === 'space' || s.room === 'geo' || s.room === 'lobby') ? s.room : 'class';
+    { const want = av.room === 'lobby' ? lobbyScene : scene; if(av.group.parent !== want) want.add(av.group); } av.group.visible = av.room === 'class' || av.room === 'lobby';
     seaRemote(uid, s, av); spaceRemote(uid, s, av);
     const seat = (av.room === 'class' && Number.isInteger(s.seat) && s.seat >= 0 && s.seat < seats.length) ? s.seat : -1;
     if(seat !== av.seat){
@@ -1735,13 +1746,19 @@ canvas.addEventListener('wheel', e => { e.preventDefault(); cam.dist = clamp(cam
 const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
 const tapTargets = deskGroups.concat([vipGroup, surveyGroup, calGroup, qGroup, board, floor]);
 function tap(x, y){
+  if(me && room === 'lobby'){
+    ndc.set(x / window.innerWidth * 2 - 1, -(y / window.innerHeight) * 2 + 1); ray.setFromCamera(ndc, camera);
+    for(const h of ray.intersectObjects(lobbyTargets, true)){
+      if(h.object.userData.door){ openDoor(h.object.userData.door); return; }
+      if(h.object === lobbyFloor){ lobbyGo = { x:clamp(h.point.x, LX0 + 0.6, LX1 - 0.6), z:clamp(h.point.z, -LZ + 0.6, LZ - 0.6) }; return; } }
+    return;
+  }
   if(!me || room !== 'class') return;
   ndc.set(x / window.innerWidth * 2 - 1, -(y / window.innerHeight) * 2 + 1);
   ray.setFromCamera(ndc, camera);
   const hits = ray.intersectObjects(tapTargets, true);
   for(const h of hits){
     if(h.object.userData.door){ openDoor(h.object.userData.door); return; }
-    if(h.object.userData.geoHole){ geoTapHole(); return; }
     if(h.object.userData.survey){ openSurvey(); return; }
     if(h.object.userData.cal){ openCal(); return; }
     if(h.object.userData.q){ if(qGroup.visible) openQ(); return; }
@@ -2467,7 +2484,7 @@ function castSkill(av, k, x, z, dx, dz){
   if(k === 'slap'){
     av.pose = 'slap'; av.poseT = 0; av.poseDur = 0.45; av.say('싸대기!');
     let best = null, bd = 1.5;
-    allAvatars.forEach(a => { if(a === av || !a.group.visible) return; const ox = a.pos.x - av.pos.x, oz = a.pos.z - av.pos.z, d = Math.hypot(ox, oz);
+    allAvatars.forEach(a => { if(a === av || !a.group.visible || a.group.parent !== scene) return; const ox = a.pos.x - av.pos.x, oz = a.pos.z - av.pos.z, d = Math.hypot(ox, oz);
       if(d < bd && (ox*dx + oz*dz)/(d || 1) > 0.3){ best = a; bd = d; } });
     if(best) setTimeout(() => onHit(best, 'slap', dx, dz), 180);
     return;
@@ -2483,7 +2500,7 @@ function updateBlasts(dt){
     b.ring.rotation.y += dt*8; b.ring.rotation.x += dt*5; b.g.scale.setScalar(1 + Math.sin(b.dist*6)*0.08);
     if(b.kind === 'ice'){ b.g.children[0].rotation.y += dt*10; if(Math.random() < dt*20) puff(b.g.position.x, 1.1, b.g.position.z, '#DFF6FF', 0.4); }
     let hit = null;
-    for(const a of allAvatars){ if(a !== b.owner && a.group.visible && Math.hypot(a.pos.x - b.g.position.x, a.pos.z - b.g.position.z) < 0.7){ hit = a; break; } }
+    for(const a of allAvatars){ if(a !== b.owner && a.group.visible && a.group.parent === scene && Math.hypot(a.pos.x - b.g.position.x, a.pos.z - b.g.position.z) < 0.7){ hit = a; break; } }
     if(hit || b.dist > 11 || Math.abs(b.g.position.x) > W/2 || Math.abs(b.g.position.z) > D/2){
       if(hit){
         onHit(hit, b.kind, b.dx, b.dz);
@@ -2503,7 +2520,7 @@ function updateBlasts(dt){
         m.position.set(o.pos.x + f.dx*0.55, o.group.position.y + 1.05, o.pos.z + f.dz*0.55); scene.add(m);
         puffs.push({ m, t:0, life:0.55, vx:vx*7, vz:vz*7, vy:rand(-0.3, 0.6), grow:true });
       }
-      allAvatars.forEach(a => { if(a === o || !a.group.visible || f.hit.has(a)) return;
+      allAvatars.forEach(a => { if(a === o || !a.group.visible || a.group.parent !== scene || f.hit.has(a)) return;
         const ox = a.pos.x - o.pos.x, oz = a.pos.z - o.pos.z, d = Math.hypot(ox, oz);
         if(d < 4 && d > 0.01 && (ox*f.dx + oz*f.dz)/d > 0.88 && f.t > d/7){ f.hit.add(a); onHit(a, 'fire', f.dx, f.dz); } });
     }
@@ -2628,12 +2645,88 @@ function makeDoor(wallG, localX, kind, title, signText, signBg, doorColor, winCo
   g.traverse(o => { o.userData.door = kind; });
   return g;
 }
-const seaDoor = makeDoor(leftWall, 3.5, 'sea', '심해 탐험실', '6시간공부후출입가능', '#B83B4E', '#1F4F7A', '#0A3A66');
-const ninoDoor = makeDoor(leftWall, -3.5, 'nino', '엘니뇨 탐구실', '엘니뇨 탐구실 · 누구나', '#2B6CB0', '#2B5E4A', '#2E86DE');
-tapTargets.push(seaDoor, ninoDoor);
+/* ===== 체험관 로비: 교실엔 문 하나, 들어가면 로비에서 방을 골라요 (교실과 같은 좌표를 써요) ===== */
+const LX0 = -W/2, LX1 = -W/2 + 9, LZ = 7;
+const lobbyScene = new THREE.Scene(); lobbyScene.background = new THREE.Color('#0F1426');
+lobbyScene.add(new THREE.HemisphereLight('#E4ECFF', '#5A4636', 0.95));
+{ const ls = new THREE.DirectionalLight('#FFF4E0', 0.6); ls.position.set(2, 10, 4); lobbyScene.add(ls); }
+const lobbyFloor = new THREE.Mesh(new THREE.PlaneGeometry(LX1 - LX0, LZ*2), mat('#ffffff', { map:floorTex })); lobbyFloor.rotation.x = -Math.PI/2; lobbyFloor.position.set((LX0 + LX1)/2, 0, 0); lobbyScene.add(lobbyFloor);
+function lwall(w, x, z, ry, color){ const g = new THREE.Group(); g.position.set(x, 0, z); g.rotation.y = ry; lobbyScene.add(g);
+  const up = new THREE.Mesh(new THREE.PlaneGeometry(w, H), mat(color)); up.position.y = H/2; g.add(up);
+  const low = new THREE.Mesh(new THREE.PlaneGeometry(w, 1.0), mat('#3A4470')); low.position.set(0, 0.5, 0.01); g.add(low);
+  const tr = new THREE.Mesh(new THREE.BoxGeometry(w, 0.1, 0.06), mat('#2E3766')); tr.position.set(0, H - 0.05, 0.03); g.add(tr); return g; }
+const lobbyWall = lwall(LZ*2, LX0, 0, Math.PI/2, '#46518A');   // 방 문 4개가 있는 벽
+const lobbyRight = lwall(LZ*2, LX1, 0, -Math.PI/2, '#46518A'), lobbyBack = lwall(LX1 - LX0, (LX0 + LX1)/2, -LZ, 0, '#4F5B8E'), lobbyFront = lwall(LX1 - LX0, (LX0 + LX1)/2, LZ, Math.PI, '#4F5B8E');
+{ const rug = new THREE.Mesh(new THREE.PlaneGeometry(3.2, 11), mat('#3B2F6E')); rug.rotation.x = -Math.PI/2; rug.position.set(LX0 + 2.6, 0.01, 0); lobbyScene.add(rug);
+  const rb = new THREE.Mesh(new THREE.PlaneGeometry(2.9, 10.7), mat('#5B3FA8')); rb.rotation.x = -Math.PI/2; rb.position.set(LX0 + 2.6, 0.012, 0); lobbyScene.add(rb);
+  const title = new THREE.Mesh(new THREE.PlaneGeometry(5.6, 0.7), signMat('체험관 · 가고 싶은 방의 문으로 들어가요', '#1B1F3B', '#FFE27A', 1120, 140, '800 60px "Noto Sans KR", sans-serif')); title.position.set(0, 2.7, 0.05); lobbyBack.add(title); }
+const DOOR_Z = { sea:-5.25, space:-1.75, nino:1.75, geo:5.25 };   // 로비 문 위치 (z)
+const DOOR_NAME = { sea:'심해 탐험실', space:'우주 발사장', nino:'엘니뇨 탐구실', geo:'기하 탐구실' };
+const seaDoor = makeDoor(lobbyWall, 5.25, 'sea', '심해 탐험실', '6시간공부후출입가능', '#B83B4E', '#1F4F7A', '#0A3A66');
+const ninoDoor = makeDoor(lobbyWall, -1.75, 'nino', '엘니뇨 탐구실', '엘니뇨 탐구실 · 누구나', '#2B6CB0', '#2B5E4A', '#2E86DE');
+const geoDoor = makeDoor(lobbyWall, -5.25, 'geo', '기하 탐구실', '📐 기하 탐구실 · 지하 ↓', '#2E8F7F', '#1E3A4A', '#0B1530');
+const exitDoor = makeDoor(lobbyRight, 0, 'class', '교실', '⬅ 교실로 돌아가기', '#2FA36B', '#2B5E4A', '#A9D3FF');
+const lobbyTargets = [seaDoor, ninoDoor, geoDoor, exitDoor, lobbyFloor];
+// 교실 왼쪽 벽: 체험관 문 하나
+const hubDoor = makeDoor(leftWall, 0, 'hub', '체험관', '🚪 체험관 · 4개의 방', '#5B3FA8', '#2A2F5A', '#0B0F2A');
+tapTargets.push(hubDoor);
+const hubCv = document.createElement('canvas'); hubCv.width = hubCv.height = 128; const hubTex = new THREE.CanvasTexture(hubCv);
+hubDoor.userData.win.material = new THREE.MeshBasicMaterial({ map:hubTex });
+let hubT = 0, hubI = -1;
+function hubTick(dt){   // 체험관 문 창문에 방 아이콘이 번갈아 떠요
+  hubT += dt; const i = Math.floor(hubT/1.4) % 4; if(i === hubI) return; hubI = i;
+  const x = hubCv.getContext('2d'), cols = ['#0A3A66', '#0B0F2A', '#123E6E', '#0B1530'];
+  x.fillStyle = cols[i]; x.fillRect(0, 0, 128, 128); x.font = '72px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(['🌊', '🚀', '🌏', '📐'][i], 64, 70); hubTex.needsUpdate = true;
+}
+let lobbyGo = null;
+function enterLobby(from){
+  if(!me) return;
+  if(me.mode === 'sit') me.standUp();
+  if(me.flying) setFly(false);
+  me.path = []; me.goSeat = null; me.manual = false; me.mode = 'idle'; me.kvx = me.kvz = 0; me.jumpY = 0;
+  room = 'lobby'; lobbyScene.add(me.group); me.group.visible = true; hideHint(); lobbyGo = null;
+  ['#calSheet', '#qSheet', '#surveySheet', '#rankSheet', '#boardEd', '#lockSheet'].forEach(s => { const e = $(s); if(e) e.hidden = true; });
+  $('#walkUI').hidden = true; $('#walkUI').style.display = 'none'; $('#sitUI').style.display = 'none';
+  $('#panel').hidden = false; $('#joy').hidden = false; $('#lobbyUI').hidden = false;
+  const fromClass = from === 'class';
+  me.pos.set(fromClass ? LX1 - 2.8 : LX0 + 2.4, 0, fromClass ? 0 : (DOOR_Z[from] || 0)); me.ry = me.targetRy = fromClass ? -Math.PI/2 : Math.PI/2;
+  Object.assign(camLim, CLASS_LIM); cam.yaw = Math.PI/2; cam.pitch = 0.5; cam.dist = 7.5; cam.t.set(me.pos.x, 1, me.pos.z);
+  lastSent = ''; pushPresence();
+  if(fromClass) toast('체험관이에요! 가고 싶은 방의 문으로 걸어가요');
+}
+let lobbyNear = '';
+function lobbyTick(dt){
+  let ix = joy.x, iy = joy.y;
+  if(keys['a'] || keys['arrowleft']) ix -= 1; if(keys['d'] || keys['arrowright']) ix += 1;
+  if(keys['w'] || keys['arrowup']) iy -= 1; if(keys['s'] || keys['arrowdown']) iy += 1;
+  const mag = Math.min(1, Math.hypot(ix, iy)); let mx = 0, mz = 0, sp = 0;
+  if(mag >= 0.12){ lobbyGo = null; const fx = -Math.sin(cam.yaw), fz = -Math.cos(cam.yaw), rx = Math.cos(cam.yaw), rz = -Math.sin(cam.yaw);
+    mx = fx*(-iy) + rx*ix; mz = fz*(-iy) + rz*ix; const ml = Math.hypot(mx, mz) || 1; mx /= ml; mz /= ml; sp = 2.8*mag; }
+  else if(lobbyGo){ const dx = lobbyGo.x - me.pos.x, dz = lobbyGo.z - me.pos.z, dl = Math.hypot(dx, dz); if(dl > 0.12){ mx = dx/dl; mz = dz/dl; sp = 2.6; } else lobbyGo = null; }
+  if(sp){ me.pos.x = clamp(me.pos.x + mx*sp*dt, LX0 + 0.6, LX1 - 0.6); me.pos.z = clamp(me.pos.z + mz*sp*dt, -LZ + 0.6, LZ - 0.6); me.targetRy = Math.atan2(mx, mz); me.mode = 'walk'; me.manual = true; }
+  else if(me.mode === 'walk'){ me.mode = 'idle'; me.manual = false; }
+  me.update(dt);
+  cam.t.lerp(new THREE.Vector3(me.pos.x, isLand() ? 1.5 : 1, me.pos.z), 1 - Math.exp(-dt*6));
+  lobbyWall.visible = camera.position.x > LX0 + 0.2; lobbyRight.visible = camera.position.x < LX1 - 0.2;
+  lobbyBack.visible = camera.position.z > -LZ + 0.2; lobbyFront.visible = camera.position.z < LZ - 0.2;
+  // 문 앞에 서면 "들어가기" 버튼
+  let near = '';
+  if(me.pos.x < LX0 + 2.2) Object.keys(DOOR_Z).forEach(k => { if(Math.abs(me.pos.z - DOOR_Z[k]) < 1) near = k; });
+  if(me.pos.x > LX1 - 2.2 && Math.abs(me.pos.z) < 1) near = 'class';
+  if(near !== lobbyNear){ lobbyNear = near; const b = $('#roomBtn'); b.hidden = !near; if(near) b.textContent = near === 'class' ? '⬅ 교실로 돌아가기' : '🚪 ' + DOOR_NAME[near] + ' 들어가기'; }
+}
+$('#roomBtn').addEventListener('click', () => { if(lobbyNear) openDoor(lobbyNear); });
+document.querySelectorAll('#lobbyUI [data-go]').forEach(b => b.addEventListener('click', () => openDoor(b.dataset.go)));
+$('#lobbyBack').addEventListener('click', () => openDoor('class'));
+$('#btnHub').addEventListener('click', () => openDoor('hub'));
 
 function openDoor(k){
   if(!me) return;
+  if(k === 'hub'){ enterLobby('class'); return; }
+  if(k === 'class'){ exitRoom(); return; }
+  if(k === 'geo'){   // 기하 탐구실은 지하라서 계단을 내려가요
+    $('#roomBtn').hidden = true; lobbyNear = ''; $('#fadeOv').style.background = '#000'; $('#fadeOv').style.opacity = 1; toast('계단을 내려가요…');
+    setTimeout(() => { enterRoom('geo'); $('#fadeOv').style.opacity = 0; setTimeout(() => { $('#fadeOv').style.background = ''; }, 700); }, 650); return; }
   if(k === 'sea' && !seaOpen()){
     const p = Math.min(1, (me.total || 0)/SEA_NEED);
     $('#lockBar').style.width = (p*100) + '%';
@@ -2644,8 +2737,6 @@ function openDoor(k){
 }
 $('#lockClose').addEventListener('click', () => { $('#lockSheet').hidden = true; });
 $('#lockStudy').addEventListener('click', () => { $('#lockSheet').hidden = true; $('#btnSeat').click(); });
-$('#btnSea').addEventListener('click', () => openDoor('sea'));
-$('#btnNino').addEventListener('click', () => openDoor('nino'));
 
 function enterRoom(k){
   if(!me || room === k) return;
@@ -2653,7 +2744,7 @@ function enterRoom(k){
   if(me.mode === 'sit') me.standUp();
   if(me.flying) setFly(false);
   me.path = []; me.goSeat = null; me.manual = false; me.mode = 'idle'; me.kvx = me.kvz = 0;
-  room = k; me.group.visible = false; hideHint();
+  room = k; me.group.visible = false; hideHint(); $('#lobbyUI').hidden = true; $('#roomBtn').hidden = true; lobbyNear = '';
   ['#calSheet', '#qSheet', '#surveySheet', '#rankSheet', '#boardEd', '#lockSheet'].forEach(s => { const e = $(s); if(e) e.hidden = true; });
   $('#walkUI').hidden = true; $('#walkUI').style.display = 'none'; $('#sitUI').style.display = 'none';
   if(k === 'sea'){
@@ -2679,29 +2770,28 @@ function enterRoom(k){
 }
 function exitRoom(){
   if(room === 'class') return;
-  room = 'class'; seaVin = 0;
+  const from = room; seaVin = 0;
   camera.clearViewOffset();
-  $('#seaUI').hidden = true; $('#seaHud').hidden = true; $('#ninoCard').hidden = true; $('#dexSheet').hidden = true;
+  $('#seaUI').hidden = true; $('#seaHud').hidden = true; $('#ninoCard').hidden = true; $('#dexSheet').hidden = true; $('#roomBtn').hidden = true; lobbyNear = '';
   leaveSpace(); leaveGeo();
+  if(from !== 'lobby'){ enterLobby(from); return; }   // 방에서 나오면 로비로
+  room = 'class'; scene.add(me.group); $('#lobbyUI').hidden = true;
   $('#panel').hidden = false; $('#joy').hidden = false;
   $('#walkUI').hidden = false; $('#walkUI').style.display = 'flex';
-  // 들어갔던 문 앞에서 나와요
-  let px = -W/2 + 1.6, pz = DOOR_Z[lastRoomDoor] || 0;
-  if(lastRoomDoor === 'geo'){ px = HOLE.x + 1.4; pz = HOLE.z - 0.8; }   // 구멍 옆으로 올라와요   // 문 세 개는 왼쪽 벽에 나란히 있어요
+  let px = -W/2 + 1.6, pz = 0;   // 체험관 문 앞으로 나와요
   for(let r = 0; r < 6 && !freeAt(px, pz); r += 0.5){ px += 0.5; }
-  me.pos.set(px, 0, pz); me.ry = me.targetRy = Math.PI/2;
+  me.pos.set(px, 0, pz); me.ry = me.targetRy = Math.PI/2; me.mode = 'idle'; me.manual = false;
   me.group.visible = true;
   Object.assign(camLim, CLASS_LIM); resetView(); cam.t.set(me.pos.x, 1, me.pos.z);
   lastSent = ''; pushPresence();
 }
 let lastRoomDoor = 'sea';
-const DOOR_Z = { sea:-3.5, space:0, nino:3.5 };   // 교실 기준 z 위치
 $('#seaExit').addEventListener('click', exitRoom);
 $('#ninoExit').addEventListener('click', exitRoom);
 
 function roomCount(k){ let n = room === k ? 1 : 0; remotes.forEach(r => { if(r.av.room === k) n++; }); return n; }
 function roomTick(dt){
-  if(room === 'sea') seaTick(dt); else if(room === 'nino') ninoTick(dt); else if(room === 'space') spaceTick(dt); else if(room === 'geo') geoTick(dt);
+  if(room === 'lobby') lobbyTick(dt); else if(room === 'sea') seaTick(dt); else if(room === 'nino') ninoTick(dt); else if(room === 'space') spaceTick(dt); else if(room === 'geo') geoTick(dt);
 }
 
 /* ===== 심해 탐험실 ===== */
@@ -3239,50 +3329,13 @@ function ninoTick(dt){
 }
 
 /* ===== 우주 발사장: 로켓 타고 10초 → 우주 (무중력) ===== */
-const spaceDoor = makeDoor(leftWall, 0, 'space', '우주 발사장', '우주 발사장 · 누구나', '#5B3FA8', '#2A2F5A', '#0B0F2A');
-tapTargets.push(spaceDoor);
+const spaceDoor = makeDoor(lobbyWall, 1.75, 'space', '우주 발사장', '우주 발사장 · 누구나', '#5B3FA8', '#2A2F5A', '#0B0F2A');
+lobbyTargets.push(spaceDoor);
 
 /* ===== 📐 기하 탐구실 (지하): 교실 구석 구멍으로 내려가요 ===== */
 const HOLE = { x:-8.6, z:5.9 };
 let geoNear = false, geoDesc = 0, geoScene = null, geoTab = 'cone', geoTheta = 25, geoCurve = null, geoPlane = null, geoQuiz = null, geoFocus = 'ellipse';
 let geoDone = !!store.get('class8-geo', false);
-// 교실 바닥 구멍 + 사다리 + 떠오르는 도형
-const holeG = new THREE.Group(); holeG.position.set(HOLE.x, 0, HOLE.z); scene.add(holeG);
-{ const hole = new THREE.Mesh(new THREE.CircleGeometry(0.85, 40), new THREE.MeshBasicMaterial({ color:'#04060E' })); hole.rotation.x = -Math.PI/2; hole.position.y = 0.012; holeG.add(hole);
-  const rim = new THREE.Mesh(new THREE.RingGeometry(0.85, 1.02, 40), mat('#8A8F9E')); rim.rotation.x = -Math.PI/2; rim.position.y = 0.015; holeG.add(rim);
-  for(let i=0;i<16;i++){ if(i % 2) continue; const st = new THREE.Mesh(new THREE.RingGeometry(0.86, 1.01, 6, 1, i/16*Math.PI*2, Math.PI*2/16), new THREE.MeshBasicMaterial({ color:'#FFC93C' })); st.rotation.x = -Math.PI/2; st.position.y = 0.017; holeG.add(st); }
-  [-0.22, 0.22].forEach(x => { const r = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.9, 0.05), mat('#C9CCD6')); r.position.set(x, 0.05, -0.55); holeG.add(r); });
-  [0.25, 0.45].forEach(y => { const r = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.04, 0.04), mat('#C9CCD6')); r.position.set(0, y, -0.55); holeG.add(r); });
-  const glow = new THREE.Mesh(new THREE.RingGeometry(0.6, 0.84, 40), new THREE.MeshBasicMaterial({ color:'#5CE1E6', transparent:true, opacity:0.4, depthWrite:false })); glow.rotation.x = -Math.PI/2; glow.position.y = 0.014; holeG.add(glow); holeG.userData.glow = glow;
-  const sign = labelSprite('📐 기하 탐구실 (지하) ↓', '#5CE1E6'); sign.position.set(0, 2.1, 0); sign.scale.set(2.8, 0.7, 1); holeG.add(sign); holeG.userData.sign = sign;
-  holeG.userData.shapes = [new THREE.TetrahedronGeometry(0.13), new THREE.BoxGeometry(0.16, 0.16, 0.16), new THREE.OctahedronGeometry(0.13), new THREE.IcosahedronGeometry(0.12)].map((g, i) => {
-    const m = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color:['#5CE1E6', '#FFC93C', '#C9A8FF', '#FF7C93'][i], wireframe:true, transparent:true })); holeG.add(m); return { m, t:i*0.8 }; });
-  hole.userData.geoHole = true; holeG.traverse(o => { o.userData.geoHole = true; }); }
-tapTargets.push(holeG);
-function geoHoleTick(dt){
-  const t = performance.now()/1000;
-  holeG.userData.glow.material.opacity = 0.25 + Math.sin(t*2.5)*0.15;
-  holeG.userData.sign.position.y = 2.1 + Math.sin(t*2)*0.08;
-  holeG.userData.shapes.forEach(s => { s.t += dt*0.45; const k = s.t % 3.2/3.2; s.m.position.set(Math.sin(s.t*2)*0.3, k*1.8, Math.cos(s.t*2)*0.3); s.m.rotation.x += dt*2; s.m.rotation.y += dt*1.5; s.m.material.opacity = Math.sin(Math.PI*k); });
-  if(!me || room !== 'class') return;
-  if(geoDesc > 0){   // 구멍으로 내려가는 중
-    geoDesc += dt; const k = Math.min(1, geoDesc/1.1);
-    me.pos.x += (HOLE.x - me.pos.x)*Math.min(1, dt*6); me.pos.z += (HOLE.z - me.pos.z)*Math.min(1, dt*6); me.jumpY = -2.2*k*k;
-    $('#fadeOv').style.background = '#000'; $('#fadeOv').style.opacity = Math.max(0, (k - 0.4)/0.6);
-    if(geoDesc >= 1.15){ geoDesc = 0; me.jumpY = 0; enterRoom('geo'); setTimeout(() => { $('#fadeOv').style.opacity = 0; setTimeout(() => { $('#fadeOv').style.background = ''; }, 700); }, 80); }
-    return;
-  }
-  const near = Math.hypot(me.pos.x - HOLE.x, me.pos.z - HOLE.z) < 2.0 && me.mode !== 'sit';
-  if(near !== geoNear){ geoNear = near; $('#geoBtn').hidden = !near; }
-}
-function geoGoDown(){
-  if(!me || room !== 'class' || geoDesc > 0) return;
-  if(me.flying) setFly(false);
-  me.path = []; me.goSeat = null; me.manual = false; me.mode = 'idle'; geoDesc = 0.001; $('#geoBtn').hidden = true; geoNear = false;
-}
-$('#geoBtn').addEventListener('click', geoGoDown);
-$('#btnGeo').addEventListener('click', () => { if(!me) return; if(Math.hypot(me.pos.x - HOLE.x, me.pos.z - HOLE.z) < 2.0) geoGoDown(); else { goTo(HOLE.x + 1.3, HOLE.z - 0.6); toast('구멍 앞으로 걸어가요'); } });
-function geoTapHole(){ if(Math.hypot(me.pos.x - HOLE.x, me.pos.z - HOLE.z) < 2.0) geoGoDown(); else goTo(HOLE.x + 1.3, HOLE.z - 0.6); }
 
 // --- 지하 탐구실 3D: 원뿔 자르기 ---
 const CONE_H = 3, CONE_R = 1.5, CONE_K = CONE_R/CONE_H, BETA = Math.atan(CONE_H/CONE_R)*180/Math.PI;   // 모선 기울기 ≈ 63.4°
@@ -3439,7 +3492,7 @@ $('#geoExit').addEventListener('click', exitRoom);
 
 function enterGeo(){
   if(!geoScene) buildGeo();
-  $('#panel').hidden = true; $('#joy').hidden = true; $('#geoCard').hidden = false; $('#geoBtn').hidden = true; geoNear = false;
+  $('#panel').hidden = true; $('#joy').hidden = true; $('#geoCard').hidden = false;
   Object.assign(camLim, { pmin:-0.6, pmax:1.2, dmin:5, dmax:24 });
   cam.yaw = 0.5; cam.pitch = 0.25; cam.t.set(0, 0, 0);
   setGeoTab('cone'); renderGeoProgress(); updateConic();
@@ -3454,7 +3507,6 @@ function geoView(){
 }
 function geoTick(dt){ geoView(); cam.t.set(0, 0, 0); }
 
-$('#btnSpace').addEventListener('click', () => openDoor('space'));
 
 let earthClouds = null, spaceBelt = null;
 let padAstro = null, padSign = null, padRamp = null, padAuto = false;
@@ -3961,13 +4013,13 @@ function gapGlow(door, color){   // 문 밑 틈으로 새어 나오는 빛
   const z = DOOR_Z.sea;
   gapGlow(seaDoor, '#5CE1E6');
   const puddle = new THREE.Mesh(new THREE.CircleGeometry(1, 40), new THREE.MeshBasicMaterial({ color:'#3FA9E8', transparent:true, opacity:0.55, depthWrite:false }));
-  puddle.rotation.x = -Math.PI/2; puddle.position.set(DX + 0.75, 0.012, z); puddle.scale.set(0.85, 1.25, 1); scene.add(puddle);
+  puddle.rotation.x = -Math.PI/2; puddle.position.set(DX + 0.75, 0.012, z); puddle.scale.set(0.85, 1.25, 1); lobbyScene.add(puddle);
   const stream = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 1.2), new THREE.MeshBasicMaterial({ color:'#7FD3FF', transparent:true, opacity:0.5, depthWrite:false }));
-  stream.rotation.x = -Math.PI/2; stream.rotation.z = Math.PI/2; stream.position.set(DX + 0.25, 0.014, z); scene.add(stream);
+  stream.rotation.x = -Math.PI/2; stream.rotation.z = Math.PI/2; stream.position.set(DX + 0.25, 0.014, z); lobbyScene.add(stream);
   for(let i=0;i<3;i++){ const r = new THREE.Mesh(new THREE.RingGeometry(0.15, 0.19, 32), new THREE.MeshBasicMaterial({ color:'#DFF6FF', transparent:true, opacity:0, depthWrite:false }));
-    r.rotation.x = -Math.PI/2; r.position.set(DX + 0.75 + rand(-0.3, 0.3), 0.016, z + rand(-0.6, 0.6)); scene.add(r); doorFx.ripples.push({ m:r, t:i*0.7, cz:z }); }
+    r.rotation.x = -Math.PI/2; r.position.set(DX + 0.75 + rand(-0.3, 0.3), 0.016, z + rand(-0.6, 0.6)); lobbyScene.add(r); doorFx.ripples.push({ m:r, t:i*0.7, cz:z }); }
   ['#FF8A3A', '#FFD34D', '#5CE1E6'].forEach((c, i) => {
-    const f = fish(0.32, 0.06, c); f.scale.setScalar(1.3); scene.add(f);
+    const f = fish(0.32, 0.06, c); f.scale.setScalar(1.3); lobbyScene.add(f);
     doorFx.fish.push({ g:f, a:i*2.1, r:0.35 + i*0.15, sp:1.2 + i*0.4, cx:DX + 0.8, cz:z });
   });
   const bub = [...Array(6)].map(() => ({ x:rand(20, 108), y:rand(0, 128), s:rand(0.4, 1) }));
@@ -3987,8 +4039,8 @@ function gapGlow(door, color){   // 문 밑 틈으로 새어 나오는 빛
   const z = DOOR_Z.space;
   doorFx.spaceGlow = gapGlow(spaceDoor, '#B79CFF');
   for(let i=0;i<16;i++){ const s = new THREE.Mesh(new THREE.OctahedronGeometry(0.035), new THREE.MeshBasicMaterial({ color:i % 3 ? '#FFFFFF' : '#FFE27A', transparent:true }));
-    scene.add(s); doorFx.sparks.push({ m:s, t:rand(0, 3), x:rand(0.05, 0.9), z:z + rand(-0.6, 0.6) }); }
-  const pl = new THREE.Group(); scene.add(pl);
+    lobbyScene.add(s); doorFx.sparks.push({ m:s, t:rand(0, 3), x:rand(0.05, 0.9), z:z + rand(-0.6, 0.6) }); }
+  const pl = new THREE.Group(); lobbyScene.add(pl);
   pl.add(new THREE.Mesh(new THREE.SphereGeometry(0.16, 20, 14), mat('#E3CF95')));
   const ring = new THREE.Mesh(new THREE.RingGeometry(0.22, 0.32, 32), new THREE.MeshBasicMaterial({ color:'#F0E2B0', side:THREE.DoubleSide, transparent:true, opacity:0.8 })); ring.rotation.x = -Math.PI/2 + 0.4; pl.add(ring);
   doorFx.planet = { g:pl, z };
@@ -4008,7 +4060,7 @@ function gapGlow(door, color){   // 문 밑 틈으로 새어 나오는 빛
   const z = DOOR_Z.nino;
   doorFx.ninoGlow = gapGlow(ninoDoor, '#FF9B5C');
   for(let i=0;i<5;i++){ const c = new THREE.Mesh(new THREE.SphereGeometry(0.16, 10, 8), new THREE.MeshBasicMaterial({ color:'#FFFFFF', transparent:true, opacity:0 }));
-    c.scale.set(1.4, 0.6, 1); scene.add(c); doorFx.clouds.push({ m:c, t:i*0.8, z:z + rand(-0.5, 0.5) }); }
+    c.scale.set(1.4, 0.6, 1); lobbyScene.add(c); doorFx.clouds.push({ m:c, t:i*0.8, z:z + rand(-0.5, 0.5) }); }
   const map = document.createElement('canvas'); map.width = 256; map.height = 128; const mx = map.getContext('2d');
   mx.fillStyle = '#1F5FAF'; mx.fillRect(0, 0, 256, 128); mx.fillStyle = '#3F8A4E';
   LANDS.forEach(poly => { mx.beginPath(); poly.forEach(([lo, la], i) => { const px = (lo + 180)/360*256, py = (90 - la)/180*128; if(i) mx.lineTo(px, py); else mx.moveTo(px, py); }); mx.closePath(); mx.fill(); });
@@ -4024,6 +4076,21 @@ function gapGlow(door, color){   // 문 밑 틈으로 새어 나오는 빛
   });
 }
 const C_WARM = new THREE.Color('#FF9B5C'), C_COLD = new THREE.Color('#5CB8FF');
+// --- 기하: 창문 속 도형이 돌고, 문 앞에 철사 도형들이 떠 있어요 ---
+{
+  const z = DOOR_Z.geo;
+  doorFx.geoGlow = gapGlow(geoDoor, '#5CE1E6');
+  doorFx.shapes = [new THREE.TetrahedronGeometry(0.16), new THREE.BoxGeometry(0.2, 0.2, 0.2), new THREE.OctahedronGeometry(0.16), new THREE.IcosahedronGeometry(0.15), new THREE.ConeGeometry(0.14, 0.3, 16)].map((g, i) => {
+    const m = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color:['#5CE1E6', '#FFC93C', '#C9A8FF', '#FF7C93', '#6EE7A8'][i], wireframe:true, transparent:true })); lobbyScene.add(m); return { m, t:i*0.7, z }; });
+  let ang = 0;
+  winCanvas(geoDoor, (x, dt) => {
+    x.fillStyle = '#0B1530'; x.fillRect(0, 0, 128, 128); ang += dt*0.9;
+    const V = [[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]], E = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+    const pr = v => { const c = Math.cos(ang), s = Math.sin(ang), x1 = v[0]*c - v[2]*s, z1 = v[0]*s + v[2]*c, y1 = v[1]*Math.cos(0.5) - z1*Math.sin(0.5); return [64 + x1*26, 64 + y1*26]; };
+    x.strokeStyle = '#5CE1E6'; x.lineWidth = 3; E.forEach(([a, b]) => { const p = pr(V[a]), q = pr(V[b]); x.beginPath(); x.moveTo(p[0], p[1]); x.lineTo(q[0], q[1]); x.stroke(); });
+    x.strokeStyle = '#FFC93C'; x.lineWidth = 2; x.beginPath(); x.ellipse(64, 64, 52, 22, ang*0.5, 0, 7); x.stroke();
+  });
+}
 function doorFxTick(dt){
   const F = doorFx; F.t += dt; const t = F.t;
   // 창문 그림은 1초에 20번만 다시 그려요
@@ -4039,6 +4106,7 @@ function doorFxTick(dt){
   F.sparks.forEach(s => { s.t += dt*0.6; const k = s.t % 3/3; s.m.position.set(DX + 0.1 + s.x*k*1.6, 0.05 + k*2.4, s.z + Math.sin(t + s.x*9)*0.15); s.m.rotation.y += dt*3; s.m.material.opacity = k < 0.15 ? k/0.15 : 1 - (k - 0.15)/0.85; });
   F.spaceGlow.material.color.setHSL(0.72, 0.9, 0.7 + Math.sin(t*3)*0.12);
   F.planet.g.position.set(DX + 0.9, 2.2 + Math.sin(t*1.2)*0.15, F.planet.z + Math.cos(t*0.8)*0.35); F.planet.g.rotation.y += dt*0.8;
+  if(F.shapes) F.shapes.forEach(s => { s.t += dt*0.45; const k = s.t % 3.2/3.2; s.m.position.set(DX + 0.6 + Math.sin(s.t*2)*0.3, 0.2 + k*2.2, s.z + Math.cos(s.t*2)*0.4); s.m.rotation.x += dt*2; s.m.rotation.y += dt*1.5; s.m.material.opacity = Math.sin(Math.PI*k); });
   // 엘니뇨: 따뜻한 바람 ↔ 차가운 바람
   const w = (Math.sin(t*0.7) + 1)/2; F.ninoGlow.material.color.copy(C_COLD).lerp(C_WARM, w);
   F.clouds.forEach(c => { c.t += dt*0.5; const k = c.t % 4/4; c.m.position.set(DX + 0.15 + k*1.8, 0.25 + k*0.6, c.z + Math.sin(t*0.9 + c.z)*0.2); c.m.material.opacity = 0.75*Math.sin(Math.PI*k); c.m.material.color.copy(C_COLD).lerp(C_WARM, w).lerp(new THREE.Color('#FFFFFF'), 0.55); });
@@ -4051,7 +4119,7 @@ const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: 
 function loop(){
   const dt = Math.min(clock3.getDelta(), 0.05);
   if(botsOn){ bots.forEach(b => { botBrain(b, dt); b.update(dt); }); botCheer(dt); }
-  updateBlasts(dt); if(room === 'class') doorFxTick(dt); geoHoleTick(dt);
+  updateBlasts(dt); if(room === 'lobby') doorFxTick(dt); if(room === 'class') hubTick(dt);
   soundTick(); qGroup.visible = frontWall.visible;
   surveyDot.visible = !!me && (!myPreDone || (postOpen() && !myPostDone));
   if(surveyDot.visible){ const sc = 0.3 + Math.sin(performance.now()/250)*0.04; surveyDot.scale.set(sc, sc, 1); }
@@ -4081,7 +4149,7 @@ function loop(){
   frontWall.visible = camera.position.z < D/2 - 0.2; backWall.visible = camera.position.z > -D/2 + 0.2;
   leftWall.visible = camera.position.x > -W/2 + 0.2; rightWall.visible = camera.position.x < W/2 - 0.2; outdoor.visible = rightWall.visible;
   uiT -= dt; if(uiT <= 0){ uiT = 0.25; updateUI(); }
-  renderer.render(room === 'sea' ? seaScene : room === 'nino' ? ninoScene : room === 'space' ? (spacePhase === 'space' ? spaceScene : launchScene) : room === 'geo' ? geoScene : scene, camera);
+  renderer.render(room === 'sea' ? seaScene : room === 'nino' ? ninoScene : room === 'space' ? (spacePhase === 'space' ? spaceScene : launchScene) : room === 'geo' ? geoScene : room === 'lobby' ? lobbyScene : scene, camera);
   requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
