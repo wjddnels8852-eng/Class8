@@ -274,6 +274,13 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
 .dexrow b{font-size:14px}
 /* 우주 */
 #spaceUI{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+#padUI{display:grid;grid-template-columns:2fr 1fr;gap:8px}
+#padUI .btn{min-height:50px}
+#fusCv{width:100%;height:240px;border-radius:12px;display:block;background:#28140F}
+.fusrow{display:flex;align-items:center;gap:10px;font-size:13px}
+.fusrow input{flex:1;accent-color:#FF8A3A;height:28px}
+#fusState{margin:0;font-size:14px;line-height:1.6;font-weight:700;color:var(--warm)}
+#fusStepBox ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:14px;line-height:1.6}
 #spaceUI .btn{min-height:46px;padding:0 6px;font-size:14px;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:none}
 .launchov{position:fixed;inset:0;z-index:7;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;pointer-events:none;text-align:center}
 .launchov b{font-family:var(--font-d);font-weight:400;font-size:clamp(72px,22vw,140px);line-height:1;color:#FFFFFF;text-shadow:0 4px 0 rgba(0,0,0,.35)}
@@ -358,7 +365,12 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
     <button type="button" class="btn" id="seaDex">도감 0/12</button>
     <button type="button" class="btn warm" id="seaExit">교실로</button>
   </div>
+  <div id="padUI" hidden>
+    <button type="button" class="btn primary" id="padGo">🚀 로켓으로 걸어가기</button>
+    <button type="button" class="btn warm" id="padExit">교실로</button>
+  </div>
   <div id="spaceUI" hidden>
+    <button type="button" class="btn warm" id="spFusion" hidden style="grid-column:1/-1">☀ 핵융합 보기</button>
     <button type="button" class="btn" id="spUp">⬆ 위로</button>
     <button type="button" class="btn" id="spDown">⬇ 아래로</button>
     <button type="button" class="btn primary" id="spGo">행성 이동</button>
@@ -495,6 +507,25 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
   <div class="ed-card sv-card" role="dialog" aria-label="우주">
     <div class="ed-head"><h2 id="spTitle">행성 이동</h2><button type="button" class="tool" id="spClose">닫기</button></div>
     <div id="spBody" class="sv-body" style="gap:8px"></div>
+  </div>
+</div>
+
+<div class="board-ed" id="fusionSheet" hidden>
+  <div class="ed-card sv-card" role="dialog" aria-label="태양 핵융합">
+    <div class="ed-head"><h2>태양 속 핵융합</h2><button type="button" class="tool" id="fusClose">닫기</button></div>
+    <p class="sv-note" style="margin:0">빨간 공은 수소 원자핵(양성자)이에요. 둘 다 +전기를 띠어서 서로 밀어내요. 온도를 올려 봐요!</p>
+    <canvas id="fusCv" aria-label="수소 원자핵이 움직이는 모습"></canvas>
+    <div class="fusrow"><span>온도</span><input type="range" id="fusTemp" min="1" max="15" step="0.5" value="3" aria-label="온도"><b id="fusTval" style="white-space:nowrap">약 300만°C</b></div>
+    <p id="fusState"></p>
+    <p class="sv-note" style="margin:0" id="fusCount">합쳐진 횟수 0번</p>
+    <div class="ninotext"><div class="kr">수소가 합쳐져 헬륨이 되면 무게가 아주 조금(약 0.7%) 줄어들어요. 사라진 질량이 E=mc²에 따라 엄청난 에너지(빛과 열)로 바뀌어요. 태양은 1초에 약 6억 톤의 수소를 헬륨으로 바꾸고 있어요.</div></div>
+    <button type="button" class="btn" id="fusSteps">실제 태양 속 4단계 보기</button>
+    <div id="fusStepBox" hidden><ol>
+      <li>수소 원자핵 2개가 합쳐져 <b>중수소</b>가 돼요.</li>
+      <li>중수소에 수소 1개가 더 붙어 <b>헬륨-3</b>이 되고 빛(감마선)이 나와요.</li>
+      <li>헬륨-3 두 개가 만나 <b>헬륨-4</b>가 되고 수소 2개는 다시 튀어나와요.</li>
+      <li>결국 <b>수소 4개 → 헬륨 1개 + 에너지</b>. 이 에너지가 약 8분 20초 걸려 지구에 햇빛으로 와요.</li>
+    </ol><p class="sv-note" style="margin:6px 0 0">이 그림은 원리를 보여주려고 단순하게 만든 거예요. 실제로는 아주 드물게 일어나는데, 태양 안에 수소가 엄청나게 많아서 계속 빛날 수 있어요.</p></div>
   </div>
 </div>
 
@@ -2941,7 +2972,8 @@ const spaceDoor = makeDoor(leftWall, -3, 'space', '우주 발사장', '우주 �
 tapTargets.push(spaceDoor);
 $('#btnSpace').addEventListener('click', () => openDoor('space'));
 
-let launchScene = null, spaceScene = null, spacePhase = 'launch', launchT = 0, rocket = null, rFlames = [], smokes = [], launchCamY = 3;
+let padAstro = null, padSign = null, padRamp = null, padAuto = false;
+let launchScene = null, spaceScene = null, spacePhase = 'pad', launchT = 0, rocket = null, rFlames = [], smokes = [], launchCamY = 3;
 let astro = null, autoTo = null, nearBody = null, quiz = null;
 const avel = new THREE.Vector3(), spaceDivers = new Map(), bodies = [];
 let spDex = new Set(store.get('class8-space', []));
@@ -2972,6 +3004,8 @@ const BODIES = [
 ];
 const SP_N = BODIES.length;
 const QUIZ = [
+  ['태양이 빛을 내는 이유는?', ['석탄이 타서', '수소가 합쳐지는 핵융합', '번개', '지구빛 반사'], 1],
+  ['수소 원자핵끼리 합쳐지려면 왜 아주 뜨거워야 할까?', ['둘 다 +라서 밀어내기 때문', '얼어붙지 않게', '빛을 보려고', '산소가 필요해서'], 0],
   ['태양계에서 가장 큰 행성은?', ['목성', '토성', '태양', '해왕성'], 0],
   ['태양계에서 가장 뜨거운 행성은?', ['수성', '금성', '화성', '목성'], 1],
   ['화성이 붉게 보이는 이유는?', ['용암', '산화철(녹)', '붉은 식물', '태양빛 반사'], 1],
@@ -3026,11 +3060,18 @@ function buildLaunch(){
   launchScene.add(new THREE.HemisphereLight('#FFFFFF', '#6A7A5A', 0.9));
   const sun = new THREE.DirectionalLight('#FFFFFF', 0.8); sun.position.set(20, 40, 20); launchScene.add(sun);
   const gr = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), Lm('#6F8F5A')); gr.rotation.x = -Math.PI/2; launchScene.add(gr);
-  addM(launchScene, new THREE.CylinderGeometry(5, 5.5, 1, 24), Lm('#8A8F9E'), 0, 0.5, 0);
+  addM(launchScene, new THREE.CylinderGeometry(5, 5.5, 0.3, 24), Lm('#8A8F9E'), 0, 0.15, 0);
+  addM(launchScene, new THREE.RingGeometry(4.6, 4.9, 40), Gm('#FFC93C'), 0, 0.31, 0).rotation.x = -Math.PI/2;
   for(let i=0;i<10;i++) addM(launchScene, new THREE.BoxGeometry(0.4, 1.4, 0.4), Lm('#D9534F'), -3.2, 1 + i*1.4 + 0.7, -1.2);
   addM(launchScene, new THREE.BoxGeometry(1.6, 0.3, 0.3), Lm('#D9534F'), -2.4, 11, -1.2);
   for(let i=0;i<14;i++) addM(launchScene, new THREE.SphereGeometry(rand(3, 6), 10, 8), Lm('#FFFFFF', { transparent:true, opacity:0.85 }), rand(-30, 30), rand(35, 90), rand(-30, -5));
-  rocket = new THREE.Group(); rocket.position.y = 1; launchScene.add(rocket);
+  rocket = new THREE.Group(); rocket.position.y = 0.3; launchScene.add(rocket);
+  // 탑승구 + 경사로 + 안내 표시
+  addM(rocket, new THREE.PlaneGeometry(0.8, 1.5), Gm('#FFE7A0'), 0, 1.35, 0.92);
+  addM(rocket, new THREE.PlaneGeometry(0.66, 1.36), Gm('#2A2F48'), 0, 1.35, 0.925);
+  const ramp = addM(rocket, new THREE.BoxGeometry(0.9, 0.08, 2.2), Lm('#B8BCC8'), 0, 0.3, 1.9); ramp.rotation.x = 0.26; padRamp = ramp;
+  padSign = labelSprite('탑승구 ▼ 여기로 들어가요', '#FFE27A'); padSign.scale.set(3.2, 0.8, 1); padSign.position.set(0, 3.3, 1.4); rocket.add(padSign);
+  padAstro = makeAstro(me.shirt); launchScene.add(padAstro.g);
   addM(rocket, new THREE.CylinderGeometry(0.9, 0.9, 8, 20), Lm('#F4F2FF'), 0, 4.5, 0);
   addM(rocket, new THREE.ConeGeometry(0.9, 2.6, 20), Lm('#D9534F'), 0, 9.8, 0);
   addM(rocket, new THREE.CylinderGeometry(0.92, 0.92, 0.5, 20), Lm('#2B6CB0'), 0, 6.5, 0);
@@ -3073,16 +3114,55 @@ const earthBody = () => bodies.find(x => x.b.id === 'earth');
 function enterSpace(){
   if(!launchScene) buildLaunch();
   if(!spaceScene) buildSpace();
-  spacePhase = 'launch'; launchT = 0; launchCamY = 3; autoTo = null; avel.set(0, 0, 0);
-  rocket.position.set(0, 1, 0); rocket.rotation.set(0, 0, 0);
+  spacePhase = 'pad'; launchT = 0; launchCamY = 3; autoTo = null; padAuto = false; avel.set(0, 0, 0);
+  rocket.position.set(0, 0.3, 0); rocket.rotation.set(0, 0, 0); rFlames.forEach(f => { f.visible = false; }); padSign.visible = true;
+  launchScene.background.copy(C_SKY);
+  padAstro.g.visible = true; padAstro.g.position.set(rand(-2, 2), 0, 15); padAstro.h = Math.PI; padAstro.g.rotation.y = Math.PI;
   camera.far = 2500; camera.updateProjectionMatrix();
-  Object.assign(camLim, { pmin:-1.3, pmax:1.3, dmin:2.5, dmax:30 });
-  $('#panel').hidden = true; $('#joy').hidden = true; $('#launchOv').hidden = false; $('#zeroG').hidden = true; $('#planetCard').hidden = true;
-  $('#launchNum').textContent = '3'; $('#launchSub').textContent = '우주 도착까지 10초';
+  Object.assign(camLim, { pmin:0.05, pmax:1.3, dmin:4, dmax:22 });
+  cam.yaw = 0; cam.pitch = 0.3; cam.dist = 10; cam.t.copy(padAstro.g.position);
+  $('#panel').hidden = false; $('#padUI').hidden = false; $('#joy').hidden = false;
+  $('#launchOv').hidden = true; $('#zeroG').hidden = true; $('#planetCard').hidden = true;
+  toast('발사대에 왔어요! 로켓 탑승구로 걸어 들어가면 출발해요');
+}
+function startLaunch(){
+  spacePhase = 'launch'; launchT = 0; padAuto = false;
+  padAstro.g.visible = false; padSign.visible = false;
+  $('#padUI').hidden = true; $('#panel').hidden = true; $('#joy').hidden = true;
+  $('#launchOv').hidden = false; $('#launchNum').textContent = '3'; $('#launchSub').textContent = '우주 도착까지 10초';
+}
+$('#padGo').addEventListener('click', () => { padAuto = true; });
+$('#padExit').addEventListener('click', exitRoom);
+// 발사대에서 걸어 다니기 (로켓에 가까이 가면 탑승)
+function padTick(dt){
+  const t = performance.now()/1000, p = padAstro.g.position;
+  let ix = joy.x, iy = joy.y;
+  if(keys['a'] || keys['arrowleft']) ix -= 1; if(keys['d'] || keys['arrowright']) ix += 1;
+  if(keys['w'] || keys['arrowup']) iy -= 1; if(keys['s'] || keys['arrowdown']) iy += 1;
+  const mag = Math.min(1, Math.hypot(ix, iy)); let mx = 0, mz = 0, sp = 0;
+  if(mag >= 0.12){ padAuto = false;
+    const fx = -Math.sin(cam.yaw), fz = -Math.cos(cam.yaw), rx = Math.cos(cam.yaw), rz = -Math.sin(cam.yaw);
+    mx = fx*(-iy) + rx*ix; mz = fz*(-iy) + rz*ix; const ml = Math.hypot(mx, mz) || 1; mx /= ml; mz /= ml; sp = 3.4*mag; }
+  else if(padAuto){ const dx = 0 - p.x, dz = 3.2 - p.z, dl = Math.hypot(dx, dz);
+    if(dl > 0.3){ mx = dx/dl; mz = dz/dl; sp = 3.4; } else { mx = 0; mz = -1; sp = 2.4; } }
+  if(sp){ p.x = clamp(p.x + mx*sp*dt, -40, 40); p.z = clamp(p.z + mz*sp*dt, -40, 40); padAstro.h = Math.atan2(mx, mz); }
+  p.y = Math.hypot(p.x, p.z) < 5.1 ? 0.3 : 0;
+  if(p.z > 0.9 && p.z < 3.1 && Math.abs(p.x) < 0.5) p.y = 0.3 + (3.1 - p.z)*0.27;   // 경사로
+  let da = padAstro.h - padAstro.g.rotation.y; while(da > Math.PI) da -= Math.PI*2; while(da < -Math.PI) da += Math.PI*2;
+  padAstro.g.rotation.y += da*Math.min(1, dt*8);
+  const sw = sp ? Math.sin(t*9) : 0;
+  padAstro.b.rotation.set(0, 0, 0);
+  padAstro.limbs.forEach((l, i) => { l.rotation.z = 0; l.rotation.x = (i % 2 ? -1 : 1)*(i < 2 ? 1 : -1)*sw*0.5; });
+  padSign.position.y = 3.3 + Math.sin(t*3)*0.15;
+  cam.t.lerp(new THREE.Vector3(p.x, p.y + 1.2, p.z), 1 - Math.exp(-dt*6));
+  // 로켓 몸통에는 못 들어가고, 탑승구 앞에 오면 탑승!
+  const r = Math.hypot(p.x, p.z);
+  if(r < 1.6 && p.z > 0.6 && Math.abs(p.x) < 0.7) startLaunch();
+  else if(r < 1.4){ p.x *= 1.4/r; p.z *= 1.4/r; }
 }
 function leaveSpace(){
   camera.far = 100; camera.updateProjectionMatrix();
-  ['#spaceUI', '#launchOv', '#zeroG', '#planetCard', '#spSheet'].forEach(s => { $(s).hidden = true; });
+  ['#spaceUI', '#padUI', '#launchOv', '#zeroG', '#planetCard', '#spSheet', '#fusionSheet'].forEach(s => { $(s).hidden = true; });
   $('#fadeOv').style.opacity = 0; autoTo = null;
 }
 function arriveSpace(){
@@ -3155,6 +3235,7 @@ function renderQuiz(){
 
 function spaceTick(dt){
   const t = performance.now()/1000;
+  if(spacePhase === 'pad'){ padTick(dt); return; }
   if(spacePhase === 'launch'){
     launchT += dt;
     const lt = launchT;
@@ -3162,7 +3243,7 @@ function spaceTick(dt){
     else $('#launchNum').textContent = lt < 4.2 ? '발사!' : '';
     $('#launchSub').textContent = '우주 도착까지 ' + Math.max(0, Math.ceil(10 - lt)) + '초';
     const fire = lt > 2.4, up = Math.max(0, lt - 3);
-    rocket.position.y = 1 + 3*up*up;
+    rocket.position.y = 0.3 + 3*up*up;
     rocket.position.x = fire ? Math.sin(t*40)*0.04 : 0;
     rFlames.forEach((f, i) => { f.visible = fire; const s = 0.85 + Math.random()*0.3 + Math.min(1.5, up*0.25); f.scale.set(1, s, 1); f.position.y = -f.userData.h*s/2; });
     if(fire && Math.random() < dt*30){ const sm = addM(launchScene, new THREE.SphereGeometry(rand(0.8, 1.6), 8, 6), Lm('#E6E6E6', { transparent:true, opacity:0.8 }), rand(-1, 1), rocket.position.y - 2, rand(-1, 1)); smokes.push({ m:sm, t:0, vx:rand(-3, 3), vz:rand(-3, 3) }); }
@@ -3226,13 +3307,78 @@ function spaceTick(dt){
       const st = el('div', 'st'); st.appendChild(el('span', null, '크기: ' + b.size)); st.appendChild(el('span', null, weightTxt(b.g)));
       if(b.d) st.appendChild(el('span', null, '태양빛이 오는 시간: ' + b.light)); c.appendChild(st);
       c.appendChild(el('p', null, b.fact)); c.hidden = !$('#zeroG').hidden;
+      if(b.id === 'sun') c.appendChild(el('p', null, '태양 중심에서는 수소가 합쳐져 헬륨이 되는 "핵융합"이 일어나요. 아래 ☀ 핵융합 보기를 눌러봐요!'));
       if(!spDex.has(b.id)){ spDex.add(b.id); store.set('class8-space', [...spDex]); updSpDex(); toast('우주 도감에 ' + b.name + ' 추가! ' + spDex.size + '/' + SP_N); } }
   }
   if(nearBody && $('#zeroG').hidden) $('#planetCard').hidden = false;
+  $('#spFusion').hidden = !(nearBody && nearBody.b.id === 'sun');
   spaceDivers.forEach(r => { if(!r.obj) return; const g = r.obj.g, q = 1 - Math.exp(-dt*6);
     g.position.x += (r.tx - g.position.x)*q; g.position.y += (r.ty - g.position.y)*q; g.position.z += (r.tz - g.position.z)*q;
     let d2 = r.th - g.rotation.y; while(d2 > Math.PI) d2 -= Math.PI*2; while(d2 < -Math.PI) d2 += Math.PI*2; g.rotation.y += d2*q;
     r.obj.b.rotation.x = Math.sin(t*0.7 + 1)*0.25; });
+}
+
+/* ===== 태양 핵융합 체험: 온도를 올리면 수소 원자핵이 합쳐져요 ===== */
+let fus = null;
+$('#spFusion').addEventListener('click', openFusion);
+$('#fusClose').addEventListener('click', () => { $('#fusionSheet').hidden = true; if(fus) fus.on = false; });
+$('#fusTemp').addEventListener('input', () => { if(fus) fus.T = +$('#fusTemp').value; updFusTxt(); });
+$('#fusSteps').addEventListener('click', () => { const s = $('#fusStepBox'); s.hidden = !s.hidden; $('#fusSteps').textContent = s.hidden ? '실제 태양 속 4단계 보기' : '4단계 접기'; });
+function fusNew(cv){ const s = 0.9*Math.sqrt(fus.T/15), g = () => (Math.random() + Math.random() + Math.random() - 1.5)*1.4;
+  return { x:rand(20, cv.width - 20), y:rand(20, cv.height - 20), vx:g()*s, vy:g()*s, born:performance.now() }; }
+function openFusion(){
+  $('#fusionSheet').hidden = false;
+  const cv = $('#fusCv'); cv.width = cv.clientWidth*2; cv.height = cv.clientHeight*2;
+  fus = { on:true, T:+$('#fusTemp').value, ps:[], fx:[], n:0, recent:[], energy:0, last:performance.now() };
+  for(let i=0;i<22;i++) fus.ps.push(fusNew(cv));
+  updFusTxt(); requestAnimationFrame(fusLoop);
+}
+function updFusTxt(){
+  $('#fusTval').textContent = fus.T >= 15 ? '약 1500만°C (태양 중심)' : '약 ' + Math.round(fus.T*100) + '만°C';
+  const rate = fus.recent.length;
+  $('#fusState').textContent = fus.T < 6 ? '너무 차가워요. 둘 다 +전기를 띠어서 서로 밀어내고 튕겨 나가요.'
+    : rate === 0 ? '조금씩 빨라지고 있어요. 아직 밀어내는 힘을 이기지 못해요.'
+    : '충분히 뜨겁고 빨라서 밀어내는 힘을 이기고 합쳐지고 있어요! 합쳐질 때마다 빛 에너지가 나와요.';
+}
+function fusLoop(now){
+  if(!fus || !fus.on || $('#fusionSheet').hidden) return;
+  const cv = $('#fusCv'), x = cv.getContext('2d'), W2 = cv.width, H2 = cv.height, R = 13*2/2*1.6;
+  const dt = Math.min(0.05, (now - fus.last)/1000); fus.last = now;
+  const sig = 0.9*Math.sqrt(fus.T/15)*60;
+  // 온도에 맞춰 속도를 천천히 맞춰요
+  fus.ps.forEach(p => { const s = Math.hypot(p.vx, p.vy)*60 || 1, want = sig*(0.6 + ((p.born % 997)/997)*0.9); const k = 1 + (want/s - 1)*Math.min(1, dt*1.5); p.vx *= k; p.vy *= k;
+    p.x += p.vx*dt*60; p.y += p.vy*dt*60;
+    if(p.x < R){ p.x = R; p.vx = Math.abs(p.vx); } if(p.x > W2 - R){ p.x = W2 - R; p.vx = -Math.abs(p.vx); }
+    if(p.y < R){ p.y = R; p.vy = Math.abs(p.vy); } if(p.y > H2 - R){ p.y = H2 - R; p.vy = -Math.abs(p.vy); } });
+  // 부딪힘: 아주 빠르면 합쳐지고, 아니면 튕겨 나가요
+  const TH = 1.3*60;
+  for(let i=0;i<fus.ps.length;i++) for(let j=i+1;j<fus.ps.length;j++){
+    const a = fus.ps[i], b = fus.ps[j], dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy);
+    if(d < R*2.6 && d > 0){
+      const nx = dx/d, ny = dy/d, rel = ((a.vx - b.vx)*nx + (a.vy - b.vy)*ny)*60;
+      if(rel <= 0) continue;
+      if(d < R*2 && rel > TH && fus.T >= 6){
+        fus.fx.push({ x:(a.x + b.x)/2, y:(a.y + b.y)/2, t:0 }); fus.n++; fus.recent.push(now); fus.energy = Math.min(1, fus.energy + 0.12);
+        fus.ps.splice(j, 1); fus.ps.splice(i, 1); setTimeout(() => { if(fus) fus.ps.push(fusNew(cv)); }, 500); setTimeout(() => { if(fus) fus.ps.push(fusNew(cv)); }, 900);
+        i = fus.ps.length; break;
+      }
+      // 같은 +끼리 밀어내는 힘 (가까울수록 세게)
+      const push = 700/(d*d)*dt; a.vx -= nx*push; a.vy -= ny*push; b.vx += nx*push; b.vy += ny*push;
+    }
+  }
+  fus.recent = fus.recent.filter(q => now - q < 3000); fus.energy = Math.max(0, fus.energy - dt*0.08);
+  // 그리기
+  const glow = fus.energy;
+  x.fillStyle = 'rgb(' + Math.round(40 + 120*glow) + ',' + Math.round(14 + 40*glow) + ',' + Math.round(20) + ')'; x.fillRect(0, 0, W2, H2);
+  fus.fx.forEach(f => { f.t += dt; const r = 20 + f.t*260, al = Math.max(0, 1 - f.t*1.6);
+    const g = x.createRadialGradient(f.x, f.y, 0, f.x, f.y, r); g.addColorStop(0, 'rgba(255,250,210,' + al + ')'); g.addColorStop(1, 'rgba(255,180,40,0)'); x.fillStyle = g; x.beginPath(); x.arc(f.x, f.y, r, 0, 7); x.fill();
+    x.globalAlpha = al; x.fillStyle = '#FFFFFF'; x.font = '700 26px "Noto Sans KR", sans-serif'; x.textAlign = 'center'; x.fillText('합쳐짐! + 빛', f.x, f.y - 30 - f.t*40); x.globalAlpha = 1; });
+  fus.fx = fus.fx.filter(f => f.t < 0.7);
+  fus.ps.forEach(p => { x.fillStyle = '#FF5A4E'; x.beginPath(); x.arc(p.x, p.y, R, 0, 7); x.fill(); x.strokeStyle = '#FFD0C8'; x.lineWidth = 3; x.stroke();
+    x.fillStyle = '#FFFFFF'; x.font = '700 28px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('+', p.x, p.y + 1); });
+  $('#fusCount').textContent = '합쳐진 횟수 ' + fus.n + '번';
+  if(Math.random() < 0.05) updFusTxt();
+  requestAnimationFrame(fusLoop);
 }
 
 /* ---------- 10. 매 프레임 실행 ---------- */
@@ -3272,7 +3418,7 @@ function loop(){
   frontWall.visible = camera.position.z < D/2 - 0.2; backWall.visible = camera.position.z > -D/2 + 0.2;
   leftWall.visible = camera.position.x > -W/2 + 0.2; rightWall.visible = camera.position.x < W/2 - 0.2;
   uiT -= dt; if(uiT <= 0){ uiT = 0.25; updateUI(); }
-  renderer.render(room === 'sea' ? seaScene : room === 'nino' ? ninoScene : room === 'space' ? (spacePhase === 'launch' ? launchScene : spaceScene) : scene, camera);
+  renderer.render(room === 'sea' ? seaScene : room === 'nino' ? ninoScene : room === 'space' ? (spacePhase === 'space' ? spaceScene : launchScene) : scene, camera);
   requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
