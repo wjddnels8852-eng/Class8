@@ -414,7 +414,7 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
       <button class="pose flybtn" data-skill="blast">장풍</button>
       <button class="pose flybtn" data-skill="ice" aria-disabled="true">빙결 · 하루 1시간 공부</button>
       <button class="pose flybtn" data-skill="fire" aria-disabled="true">화염방사 · 하루 2시간 공부</button>
-      <button class="pose flybtn" data-skill="slap" aria-disabled="true">싸대기 · 하루 5시간 공부</button>
+      <button class="pose flybtn" data-skill="slap" aria-disabled="true">싸대기 · 하루 4시간 공부</button>
       <button class="pose" data-pose="wave">손 흔들기</button>
       <button class="pose" data-pose="hooray">만세</button>
       <button class="pose" data-pose="clap">박수</button>
@@ -507,7 +507,7 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
       <button type="button" class="btn" id="copyLink">주소 복사하기</button>
     </div>
     <div id="authOk" class="auth" hidden>
-      <p><b id="whoAcct" style="display:block;margin-bottom:4px"></b>로그인됐어요. 닉네임과 색을 고르고 들어가요. 실명은 쓰지 마세요. <button type="button" class="linkbtn" id="logoutBtn">로그아웃</button></p>
+      <p><b id="whoAcct" style="display:block;margin-bottom:6px;padding:8px 12px;border-radius:12px;background:rgba(110,231,168,.15);color:#6EE7A8;font-size:15px"></b>로그인됐어요. 닉네임과 색을 고르고 들어가요. 실명은 쓰지 마세요. <button type="button" class="linkbtn" id="logoutBtn">로그아웃</button></p>
     </div>
     <div id="charFields" hidden style="display:flex;flex-direction:column;gap:14px">
     <div class="field">
@@ -524,6 +524,7 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
     </div>
     </div>
     <button class="btn primary" type="submit" id="enterBtn" hidden>교실 입장</button>
+    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 42</p>
   </form>
 </div>
 
@@ -1808,6 +1809,7 @@ swatches('#shirtRow', SHIRT, 'shirt', 'shirt', ['파란 옷','초록 옷','노�
 $('#setupForm').addEventListener('submit', e => {
   e.preventDefault();
   if(!myUid){ toast('먼저 구글로 로그인해요'); return; }
+  setTimeout(() => { const u = auth && auth.currentUser; if(u) toast(u.isAnonymous ? '👤 익명 계정으로 접속 중 (이 기기에서만)' : '✅ ' + (u.email || u.displayName || '구글') + ' 계정으로 접속 중'); }, 2500);
   const nick = ($('#nick').value || '').trim().slice(0, 8) || '익명';
   store.set('class8-avatar', { nick, hair:choice.hair, shirt:choice.shirt });
   me = new Avatar({ name:nick, hair:choice.hair, shirt:choice.shirt, x:-6, z:6.2, ry:Math.PI, isMe:true }); me.geo = !!store.get('class8-geo', false);
@@ -1915,7 +1917,7 @@ function renderRankList(){
   });
   const rk = ranking(), r = $('#reward'); r.textContent = '';
   const b = document.createElement('b'), s = document.createElement('span');
-  b.textContent = '공부할수록 열리는 기술'; s.textContent = '공중부양·장풍은 누구나 · 하루에 1시간 공부하면 빙결, 2시간 화염방사, 5시간 싸대기가 열리고, 한 번 열리면 계속 써요. 자리에 앉아 공부 중일 땐 어떤 기술도 안 맞아요(면역).';
+  b.textContent = '공부할수록 열리는 기술'; s.textContent = '공중부양·장풍은 누구나 · 하루에 1시간 공부하면 빙결, 2시간 화염방사, 4시간 싸대기가 열리고, 한 번 열리면 계속 써요. 자리에 앉아 공부 중일 땐 어떤 기술도 안 맞아요(면역).';
   r.append(b, s);
   document.querySelectorAll('#rankTabs [data-tab]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.tab === rankTab)));
 }
@@ -2457,7 +2459,7 @@ const SKILLS = {
   blast:{ name:'장풍', need:0, cd:2500 },
   ice:{ name:'빙결', need:3600, cd:3000 },         // 오늘 1시간 공부하면
   fire:{ name:'화염방사', need:7200, cd:4000 },    // 오늘 2시간
-  slap:{ name:'싸대기', need:18000, cd:3000 }      // 오늘 5시간
+  slap:{ name:'싸대기', need:14400, cd:3000 }      // 하루 4시간
 };
 const skillOk = (av, k) => Math.max(av.total || 0, av.best || 0) >= SKILLS[k].need;   // 하루라도 그만큼 공부했으면 계속 써요
 const blastGeo = new THREE.SphereGeometry(0.26, 16, 12), glowGeo = new THREE.SphereGeometry(0.5, 16, 12), ringGeo = new THREE.TorusGeometry(0.42, 0.05, 8, 24);
@@ -2508,7 +2510,7 @@ function burn(av){
 function unburn(av){ (av.burnSave || []).forEach(([o, m]) => { o.material.dispose(); o.material = m; }); av.burnSave = null; av.burnT = 0; }
 function slapHit(av, dx, dz){
   popText(av, '짝!', '#FF7C93');
-  if(!av.remote){ av.path = []; av.goSeat = null; av.flying = false; av.mode = 'idle'; av.kvx = dx*4; av.kvz = dz*4; av.spinT = 0.6; }
+  if(!av.remote){ av.path = []; av.goSeat = null; av.flying = false; av.mode = 'idle'; av.kvx = dx*12; av.kvz = dz*12; av.vy = 3.5; av.jumpY = Math.max(av.jumpY, 0.01); av.spinT = 1.0; }
   av.say('아야!'); if(av === me) toast('싸대기를 맞았어요!');
 }
 function onHit(av, kind, dx, dz){
