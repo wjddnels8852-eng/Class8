@@ -2915,34 +2915,69 @@ function nameSprite(name){
   const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map:new THREE.CanvasTexture(c), depthTest:false, transparent:true }));
   sp.scale.set(1.6, 0.4, 1); return sp;
 }
-function fish(len, r, color, finColor){
-  const g = new THREE.Group();
-  const body = addM(g, new THREE.SphereGeometry(r, 14, 10), Lm(color)); body.scale.set(0.8, 1, len/(2*r));
-  const tail = addM(g, new THREE.ConeGeometry(r*0.9, r*1.6, 4), Lm(finColor || color), 0, 0, -len/2 - r*0.5); tail.rotation.x = Math.PI/2; tail.scale.x = 0.2;
-  [-1, 1].forEach(s => addM(g, new THREE.SphereGeometry(r*0.18, 8, 6), Gm('#111111'), s*r*0.55, r*0.25, len*0.32));
+function fishMesh(o){   // 유선형 몸통 + 등/배 색 + 지느러미 + 반짝이는 눈
+  const len = o.len, h = o.h, w = o.w || h*0.6, g = new THREE.Group();
+  const pts = []; for(let i=0;i<=16;i++){ const u = i/16, y = len/2 - u*len;
+    const r = u < 0.32 ? Math.pow(Math.sin(u/0.32*Math.PI/2), 0.65) : 1 - Math.pow((u - 0.32)/0.68, 1.4)*0.86; pts.push(new THREE.Vector2(Math.max(0.001, r*h/2), y)); }
+  pts.reverse();
+  const geo = new THREE.LatheGeometry(pts, 18); geo.rotateX(Math.PI/2); geo.scale(w/h, 1, 1);
+  const back = new THREE.Color(o.back), belly = new THREE.Color(o.belly || '#FFFFFF'), cc = new THREE.Color(), pa = geo.attributes.position, cols = new Float32Array(pa.count*3);
+  for(let i=0;i<pa.count;i++){ const y = pa.getY(i), z = pa.getZ(i), k = Math.min(1, Math.max(0, (y/(h/2) + 0.35)/0.9)); cc.copy(belly).lerp(back, k*k*(3 - 2*k));
+    if(o.bands) o.bands.forEach(bd => { const zz = (0.5 - bd[0])*len; if(Math.abs(z - zz) < bd[1]*len){ cc.set(Math.abs(z - zz) > bd[1]*len*0.7 && bd[3] ? bd[3] : bd[2]); } });
+    cols[i*3] = cc.r; cols[i*3+1] = cc.g; cols[i*3+2] = cc.b; }
+  geo.setAttribute('color', new THREE.BufferAttribute(cols, 3));
+  g.add(new THREE.Mesh(geo, new THREE.MeshPhongMaterial({ vertexColors:true, shininess:o.shine == null ? 70 : o.shine, specular:'#666666', emissive:o.glow || '#000000' })));
+  const finM = new THREE.MeshPhongMaterial({ color:o.fin || o.back, side:THREE.DoubleSide, transparent:true, opacity:0.88, shininess:30 });
+  const shp = arr => { const s = new THREE.Shape(); s.moveTo(arr[0], arr[1]); for(let i=2;i<arr.length;i+=2) s.lineTo(arr[i], arr[i+1]); const sg = new THREE.ShapeGeometry(s); sg.rotateY(Math.PI/2); return sg; };
+  const tail = new THREE.Group(); tail.position.z = -len/2 + len*0.04; g.add(tail);
+  const tl = len*(o.tailL || 0.32), th = h*(o.tailH || 0.62);
+  tail.add(new THREE.Mesh(shp([0, 0, tl, th, tl*0.62, 0, tl, -th]), o.tailC ? new THREE.MeshPhongMaterial({ color:o.tailC, side:THREE.DoubleSide, shininess:30 }) : finM));
+  const dh = h*(o.dorsal || 0.45); const dor = new THREE.Mesh(shp([0, 0, len*0.08, dh, len*0.32, dh*0.35, len*0.42, 0]), finM); dor.position.set(0, h*0.42, len*0.18); g.add(dor);
+  g.userData.pecs = [];
+  if(o.lite){ [-1, 1].forEach(s => addM(g, new THREE.SphereGeometry(h*0.1, 8, 6), Gm('#0A0C14'), s*w*0.4, h*0.12, len*0.31)); g.userData.tail = tail; return g; }
+  const an = new THREE.Mesh(shp([0, 0, len*0.06, -h*0.25, len*0.2, 0]), finM); an.position.set(0, -h*0.38, -len*0.12); g.add(an);
+  [-1, 1].forEach(s => { const pf = new THREE.Group(); pf.position.set(s*w*0.42, -h*0.08, len*0.14); g.add(pf);
+    const m = new THREE.Mesh(new THREE.CircleGeometry(h*0.2, 10), finM); m.scale.set(1, 0.55, 1); m.position.z = -h*0.18; m.rotation.y = s*Math.PI/2.4; pf.add(m); pf.userData.s = s; g.userData.pecs.push(pf);
+    const ey = h*(o.eye || 0.13); addM(g, new THREE.SphereGeometry(ey, 12, 10), Lm('#F7F7F2'), s*w*0.36, h*0.12, len*0.31);
+    addM(g, new THREE.SphereGeometry(ey*0.62, 10, 8), Gm('#0A0C14'), s*(w*0.36 + ey*0.5), h*0.12, len*0.31 + ey*0.25);
+    addM(g, new THREE.SphereGeometry(ey*0.18, 6, 4), Gm('#FFFFFF'), s*(w*0.36 + ey*0.85), h*0.12 + ey*0.28, len*0.31 + ey*0.4); });
   g.userData.tail = tail; return g;
 }
-const schoolAnim = (g, t) => g.userData.kids.forEach(f => { f.userData.tail.rotation.y = Math.sin(t*14 + f.userData.ph)*0.5; });
+function fish(len, r, color, finColor){
+  const c = new THREE.Color(color);
+  return fishMesh({ len, h:r*2.1, w:r*1.3, back:'#' + c.clone().multiplyScalar(0.62).getHexString(), belly:'#' + c.clone().lerp(new THREE.Color('#FFFFFF'), 0.65).getHexString(), fin:finColor || color });
+}
+const schoolAnim = (g, t) => g.userData.kids.forEach(f => { f.userData.tail.rotation.y = Math.sin(t*12 + f.userData.ph)*0.45; f.rotation.y = Math.sin(t*12 + f.userData.ph - 1)*0.08; f.userData.pecs.forEach(p => { p.rotation.y = p.userData.s*Math.sin(t*8 + f.userData.ph)*0.4; }); });
 
 // 수심: 1칸 = 40m → 바닥(-100) = 4000m
 const SPECIES = [
   { id:'sardine', name:'정어리 떼', depth:'0~200m', y:[-1.5, -4], near:6, r:6, sp:2.4, bob:0.4,
     fact:'수백 마리가 한 몸처럼 움직여서 큰 물고기를 헷갈리게 해요.',
     build(){ const g = new THREE.Group(); g.userData.kids = [];
-      for(let i=0;i<34;i++){ const f = fish(0.42, 0.07, '#B8C7D6', '#8FA3B8'); f.position.set(rand(-1.8, 1.8), rand(-0.8, 0.8), rand(-1.4, 1.4)); f.userData.ph = rand(0, 6.28); g.add(f); g.userData.kids.push(f); }
+      for(let i=0;i<34;i++){ const f = fishMesh({ len:0.46, h:0.13, w:0.08, back:'#2F5E86', belly:'#EEF3F8', fin:'#9FB3C8', shine:120, lite:true }); f.position.set(rand(-1.8, 1.8), rand(-0.8, 0.8), rand(-1.4, 1.4)); f.userData.ph = rand(0, 6.28); g.add(f); g.userData.kids.push(f); }
       return g; }, anim:schoolAnim },
   { id:'turtle', name:'푸른바다거북', depth:'0~100m', y:[-1, -3], near:5, r:7, sp:1.2, bob:0.5,
     fact:'숨을 쉬러 수면으로 올라와야 해요. 다 자라면 주로 해초를 먹어요.',
     build(){ const g = new THREE.Group();
-      addM(g, new THREE.SphereGeometry(0.8, 18, 12), Lm('#5E7D3A')).scale.set(1, 0.42, 1.25);
-      addM(g, new THREE.SphereGeometry(0.75, 16, 8), Lm('#C9B27A'), 0, -0.08, 0).scale.set(1, 0.2, 1.2);
-      addM(g, new THREE.SphereGeometry(0.26, 12, 10), Lm('#8DA35A'), 0, 0.05, 1.15).scale.z = 1.3;
-      g.userData.fl = [];
-      [[-1, 0.45], [1, 0.45], [-1, -0.7], [1, -0.7]].forEach(([s, z], i) => { const p = new THREE.Group(); p.position.set(s*0.75, 0, z); g.add(p);
-        const f = addM(p, new THREE.BoxGeometry(i < 2 ? 0.9 : 0.45, 0.06, i < 2 ? 0.35 : 0.3), Lm('#7C9A4A'), s*(i < 2 ? 0.4 : 0.2), 0, 0); f.rotation.y = s*(i < 2 ? -0.4 : 0.3);
+      const sc = document.createElement('canvas'); sc.width = sc.height = 256; { const x = sc.getContext('2d'); x.fillStyle = '#4E6B2E'; x.fillRect(0, 0, 256, 256);
+        const hex = (cx, cy, r, c) => { x.fillStyle = c; x.beginPath(); for(let k=0;k<6;k++){ const a = k/6*Math.PI*2 + Math.PI/6; x.lineTo(cx + Math.cos(a)*r, cy + Math.sin(a)*r); } x.closePath(); x.fill(); x.strokeStyle = '#E6D29A'; x.lineWidth = 4; x.stroke(); };
+        for(let row=0;row<6;row++) for(let col=0;col<6;col++) hex(col*48 + (row % 2)*24, row*42, 22, ['#7A5A2E', '#8E6A36', '#6E5228'][(row + col) % 3]); }
+      const shellT = new THREE.CanvasTexture(sc);
+      addM(g, new THREE.SphereGeometry(0.8, 28, 16, 0, Math.PI*2, 0, Math.PI/2), new THREE.MeshPhongMaterial({ map:shellT, shininess:40 })).scale.set(1, 0.5, 1.25);
+      addM(g, new THREE.SphereGeometry(0.78, 24, 8, 0, Math.PI*2, Math.PI/2, Math.PI/2), Lm('#E8D9A6')).scale.set(1, 0.18, 1.22);
+      const skin = new THREE.MeshPhongMaterial({ color:'#8FA35A', shininess:25 });
+      const head = new THREE.Group(); head.position.set(0, 0.05, 1.0); g.add(head);
+      addM(head, new THREE.SphereGeometry(0.17, 12, 10), skin, 0, 0, 0.05).scale.set(1, 0.9, 1.3);
+      addM(head, new THREE.SphereGeometry(0.24, 16, 12), skin, 0, 0.04, 0.32).scale.set(1, 0.85, 1.15);
+      [-1, 1].forEach(s => { addM(head, new THREE.SphereGeometry(0.06, 10, 8), Gm('#0A0C14'), s*0.17, 0.1, 0.42); addM(head, new THREE.SphereGeometry(0.018, 6, 4), Gm('#FFFFFF'), s*0.2, 0.13, 0.46); });
+      g.userData.head = head; g.userData.fl = [];
+      [[-1, 0.45], [1, 0.45], [-1, -0.7], [1, -0.7]].forEach(([s, z], i) => { const p = new THREE.Group(); p.position.set(s*0.72, -0.02, z); g.add(p);
+        const fs = new THREE.Shape(); const L = i < 2 ? 1.1 : 0.5, W = i < 2 ? 0.34 : 0.26; fs.moveTo(0, -W*0.5); fs.quadraticCurveTo(L*0.6, -W*0.7, L, -W*0.1); fs.quadraticCurveTo(L*0.5, W*0.6, 0, W*0.5);
+        const fg = new THREE.ShapeGeometry(fs); fg.rotateX(-Math.PI/2); if(s < 0) fg.scale(-1, 1, 1);
+        const f = new THREE.Mesh(fg, new THREE.MeshPhongMaterial({ color:'#7C9A4A', side:THREE.DoubleSide, shininess:20 })); f.rotation.y = s*(i < 2 ? 0.35 : -0.5); p.add(f);
         p.userData.s = s; g.userData.fl.push(p); });
       return g; },
-    anim(g, t){ g.userData.fl.forEach((p, i) => { p.rotation.z = Math.sin(t*2.5 + (i > 1 ? 1 : 0))*0.5*p.userData.s; }); } },
+    anim(g, t){ g.userData.fl.forEach((p, i) => { p.rotation.z = Math.sin(t*2.2 + (i > 1 ? 1 : 0))*0.55*p.userData.s; }); g.userData.head.rotation.y = Math.sin(t*0.7)*0.2; } },
   { id:'moonjelly', name:'보름달물해파리', depth:'0~200m', y:[-2, -6], near:4.5, r:2, sp:0.4, bob:1.2,
     fact:'몸의 95% 이상이 물이에요. 가운데 네 개의 고리가 보름달처럼 보여요.',
     build(){ const g = new THREE.Group();
@@ -2954,7 +2989,7 @@ const SPECIES = [
   { id:'lantern', name:'샛비늘치 (랜턴피시)', depth:'200~1000m', y:[-8, -22], near:5, r:5, sp:2, bob:1,
     fact:'몸에 빛을 내는 점이 줄지어 있어요. 밤이 되면 먹이를 찾아 얕은 곳까지 올라와요.',
     build(){ const g = new THREE.Group(); g.userData.kids = [];
-      for(let i=0;i<7;i++){ const f = fish(0.6, 0.1, '#2E3A4A'); f.position.set(rand(-1.5, 1.5), rand(-0.7, 0.7), rand(-1.2, 1.2));
+      for(let i=0;i<7;i++){ const f = fishMesh({ len:0.6, h:0.2, w:0.12, back:'#1C2634', belly:'#5A6B80', fin:'#2E3A4A', eye:0.2 }); f.position.set(rand(-1.5, 1.5), rand(-0.7, 0.7), rand(-1.2, 1.2));
         for(let k=0;k<5;k++) [-1, 1].forEach(s => addM(f, new THREE.SphereGeometry(0.022, 6, 4), Gm('#7FF7FF'), s*0.08, -0.04, -0.2 + k*0.1));
         f.userData.ph = rand(0, 6.28); g.add(f); g.userData.kids.push(f); }
       return g; }, anim:schoolAnim },
@@ -3075,7 +3110,7 @@ function glowSprite(color, scale, opacity){
   const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map:new THREE.CanvasTexture(c), transparent:true, opacity:opacity == null ? 1 : opacity, blending:THREE.AdditiveBlending, depthWrite:false }));
   sp.scale.set(scale, scale, 1); return sp;
 }
-let seaSurf = null, kelps = [], seaBeam = null, seaSky = null, seaWaveT = null, seaFoam = null;
+let reefSchools = [], reefTent = [], seaSurf = null, kelps = [], seaBeam = null, seaSky = null, seaWaveT = null, seaFoam = null;
 function buildSea(){
   seaScene = new THREE.Scene();
   seaScene.background = new THREE.Color('#2A8FD0');
@@ -3090,7 +3125,7 @@ function buildSea(){
   const surf = new THREE.Mesh(new THREE.PlaneGeometry(400, 400, 60, 60), new THREE.MeshPhongMaterial({ color:'#1F8FCC', map:waveT, specular:'#FFFFFF', shininess:90, transparent:true, opacity:0.82, side:THREE.DoubleSide, depthWrite:false }));
   surf.rotation.x = -Math.PI/2; surf.renderOrder = 2; seaScene.add(surf); seaSurf = surf;
   seaSky = (() => { const c = document.createElement('canvas'); c.width = 16; c.height = 256; const x = c.getContext('2d'); const gr = x.createLinearGradient(0, 0, 0, 256);
-    gr.addColorStop(0, '#2E7FD6'); gr.addColorStop(0.42, '#7EC3F2'); gr.addColorStop(0.5, '#D9F0FF'); gr.addColorStop(0.52, '#7FBEE3'); gr.addColorStop(1, '#1D6FA8'); x.fillStyle = gr; x.fillRect(0, 0, 16, 256);
+    gr.addColorStop(0, '#1E5FC0'); gr.addColorStop(0.3, '#3C8EE3'); gr.addColorStop(0.45, '#6CB2EE'); gr.addColorStop(0.5, '#A8D5F3'); gr.addColorStop(0.52, '#2A86C4'); gr.addColorStop(1, '#155C92'); x.fillStyle = gr; x.fillRect(0, 0, 16, 256);
     const m = new THREE.Mesh(new THREE.SphereGeometry(125, 24, 16), new THREE.MeshBasicMaterial({ map:new THREE.CanvasTexture(c), side:THREE.BackSide, fog:false, depthWrite:false })); m.renderOrder = -1; seaScene.add(m); return m; })();
   { const sc = document.createElement('canvas'); sc.width = sc.height = 128; const x = sc.getContext('2d'); const gr = x.createRadialGradient(64, 64, 0, 64, 64, 64); gr.addColorStop(0, 'rgba(255,250,225,1)'); gr.addColorStop(0.25, 'rgba(255,240,190,.8)'); gr.addColorStop(1, 'rgba(255,240,190,0)'); x.fillStyle = gr; x.fillRect(0, 0, 128, 128);
     const s = new THREE.Sprite(new THREE.SpriteMaterial({ map:new THREE.CanvasTexture(sc), fog:false, depthWrite:false, transparent:true })); s.scale.set(30, 30, 1); s.position.set(65, 50, -55); seaSky.add(s);
@@ -3139,15 +3174,16 @@ function buildSea(){
   seaBeam.rotation.x = -Math.PI/2;
   // 해변 · 부두 · 얕은 모래 바닥(약 40m) · 잠수함
   { const sandM = Lm('#FFFFFF', { map:sandT });
-    const bc = document.createElement('canvas'); bc.width = bc.height = 256; { const x = bc.getContext('2d'); x.fillStyle = '#EED8A4'; x.fillRect(0, 0, 256, 256);
+    const bc = document.createElement('canvas'); bc.width = bc.height = 256; { const x = bc.getContext('2d'); x.fillStyle = '#E2C285'; x.fillRect(0, 0, 256, 256);
       for(let i=0;i<5000;i++){ x.fillStyle = ['rgba(200,170,115,.5)', 'rgba(255,245,215,.6)', 'rgba(180,150,100,.35)'][i % 3]; x.fillRect(Math.random()*256, Math.random()*256, 1.5, 1.5); }
       x.strokeStyle = 'rgba(190,160,105,.25)'; x.lineWidth = 2; for(let i=0;i<10;i++){ x.beginPath(); for(let q=0;q<=256;q+=8) x.lineTo(q, i*26 + Math.sin(q*0.04 + i*1.7)*6); x.stroke(); } }
     const beachT = new THREE.CanvasTexture(bc); beachT.wrapS = beachT.wrapT = THREE.RepeatWrapping; beachT.repeat.set(8, 24);
     const beach = new THREE.Mesh(new THREE.BoxGeometry(44, 1, 140), Lm('#FFFFFF', { map:beachT })); beach.position.set(-48, -0.15, 0); seaScene.add(beach);
-    const wet = new THREE.Mesh(new THREE.PlaneGeometry(3.5, 140), Lm('#C9A86E', { map:beachT })); wet.rotation.x = -Math.PI/2; wet.position.set(BEACH_X - 1.75, 0.36, 0); seaScene.add(wet);
+    const wet = new THREE.Mesh(new THREE.PlaneGeometry(3.5, 140), Lm('#B8955A', { map:beachT })); wet.rotation.x = -Math.PI/2; wet.position.set(BEACH_X - 1.75, 0.36, 0); seaScene.add(wet);
     { const fc = document.createElement('canvas'); fc.width = 64; fc.height = 256; const x = fc.getContext('2d'); for(let i=0;i<70;i++){ x.fillStyle = 'rgba(255,255,255,' + (0.4 + Math.random()*0.5) + ')'; x.beginPath(); x.ellipse(20 + Math.random()*24, Math.random()*256, 3 + Math.random()*10, 2 + Math.random()*6, 0, 0, Math.PI*2); x.fill(); }
       const ft = new THREE.CanvasTexture(fc); ft.wrapT = THREE.RepeatWrapping; ft.repeat.set(1, 20);
       seaFoam = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 140), new THREE.MeshBasicMaterial({ map:ft, transparent:true, opacity:0.85, depthWrite:false })); seaFoam.rotation.x = -Math.PI/2; seaFoam.position.set(BEACH_X + 0.9, 0.06, 0); seaFoam.renderOrder = 3; seaScene.add(seaFoam); }
+    const shelf = new THREE.Mesh(new THREE.BoxGeometry(BEACH_X*-1 + SHELF_X, 1, 140), sandM); shelf.position.set((BEACH_X + SHELF_X)/2, SHELF_Y - 0.5, 0); seaScene.add(shelf);
     const wallB = new THREE.Mesh(new THREE.BoxGeometry(1, 8.4, 140), Lm('#C9B27A')); wallB.position.set(BEACH_X - 0.5, -4, 0); seaScene.add(wallB);
     // 야자수 · 비치 타월 · 선베드
     const palm = (x, z, s) => { const pg = new THREE.Group(); pg.position.set(x, 0.35, z); pg.scale.setScalar(s); seaScene.add(pg); let px = 0, py = 0;
@@ -3175,6 +3211,27 @@ function buildSea(){
       for(let k=0;k<8;k++) addM(um, new THREE.ConeGeometry(1.35, 0.55, 8, 1, true, k/8*Math.PI*2, Math.PI/4), Lm(k % 2 ? '#FFFFFF' : uc, { side:THREE.DoubleSide }), 0, 2.3, 0);
       addM(um, new THREE.SphereGeometry(0.08, 8, 6), Lm(uc), 0, 2.6, 0);
       const sh = addM(um, new THREE.CircleGeometry(1.2, 20), new THREE.MeshBasicMaterial({ color:'#000000', transparent:true, opacity:0.14, depthWrite:false }), 0.35, 0.02, 0.2); sh.rotation.x = -Math.PI/2; } }
+  // 얕은 바다 산호초 친구들 (도감 X, 분위기용)
+  { const reef = (x, z) => { for(let i=0;i<5;i++){ const s = rand(0.3, 0.7); addM(seaScene, new THREE.DodecahedronGeometry(s, 0), Lm(['#FF7C93', '#FFB020', '#C9A8FF', '#FF6A4D', '#7FF7D8'][i]), x + rand(-1.5, 1.5), SHELF_Y + s*0.5, z + rand(-1.5, 1.5)).scale.y = 0.7; }
+      for(let i=0;i<4;i++){ const br = new THREE.Group(); br.position.set(x + rand(-1.2, 1.2), SHELF_Y, z + rand(-1.2, 1.2)); seaScene.add(br); const c = ['#FF8FB1', '#FFD34D', '#B48CFF', '#5CE1E6'][i];
+        for(let k=0;k<5;k++){ const b = addM(br, new THREE.CylinderGeometry(0.04, 0.08, rand(0.5, 1.1), 6), Lm(c), rand(-0.2, 0.2), 0.4, rand(-0.2, 0.2)); b.rotation.set(rand(-0.6, 0.6), 0, rand(-0.6, 0.6)); } } };
+    reef(-14, -2); reef(-8, 14); reef(-20, -18); reef(-5, -12);
+    const anem = (x, z) => { const a = new THREE.Group(); a.position.set(x, SHELF_Y, z); seaScene.add(a); addM(a, new THREE.CylinderGeometry(0.45, 0.55, 0.3, 14), Lm('#C2466A'), 0, 0.15, 0);
+      const tent = []; for(let i=0;i<26;i++){ const r = rand(0, 0.42), q = rand(0, 6.28), tn = new THREE.Group(); tn.position.set(Math.cos(q)*r, 0.3, Math.sin(q)*r); a.add(tn);
+        addM(tn, new THREE.CylinderGeometry(0.035, 0.05, 0.6, 5), Lm('#F7B2D0', { emissive:'#3A1020' }), 0, 0.3, 0); addM(tn, new THREE.SphereGeometry(0.05, 6, 4), Lm('#FF7CC0'), 0, 0.6, 0); tn.userData.ph = rand(0, 6); tent.push(tn); }
+      reefTent.push(...tent); return a; };
+    const KINDS = {
+      clown:() => fishMesh({ len:0.42, h:0.2, w:0.12, back:'#FF6A00', belly:'#FF9A3C', fin:'#FF7A1A', tailC:'#FF7A1A', bands:[[0.3, 0.05, '#FFFFFF', '#111111'], [0.55, 0.06, '#FFFFFF', '#111111'], [0.82, 0.035, '#FFFFFF', '#111111']], dorsal:0.4, eye:0.16 }),
+      tang:() => fishMesh({ len:0.6, h:0.36, w:0.12, back:'#1F4FD8', belly:'#3D7BFF', fin:'#163A9E', tailC:'#FFD21F', bands:[[0.5, 0.12, '#1F4FD8', '#0C1640']], tailL:0.24, dorsal:0.25, eye:0.11 }),
+      butterfly:() => fishMesh({ len:0.46, h:0.4, w:0.08, back:'#FFD21F', belly:'#FFF1A8', fin:'#FFC400', bands:[[0.27, 0.035, '#111111']], tailL:0.2, dorsal:0.35, eye:0.09 }),
+      wrasse:() => fishMesh({ len:0.5, h:0.14, w:0.09, back:'#14B88A', belly:'#9AF0D4', fin:'#FF5FA2', tailC:'#FF5FA2', dorsal:0.3 }) };
+    const school = (kind, n, cx, cy, cz, R, sp) => { const gq = new THREE.Group(); gq.position.set(cx, cy, cz); seaScene.add(gq); const kids = [];
+      for(let i=0;i<n;i++){ const f = KINDS[kind](); f.userData.a = i/n*Math.PI*2 + rand(-0.3, 0.3); f.userData.r = R*rand(0.6, 1.1); f.userData.y = rand(-0.5, 0.5); f.userData.ph = rand(0, 6); f.userData.sp = sp*rand(0.85, 1.15); gq.add(f); kids.push(f); }
+      reefSchools.push(kids); };
+    anem(-14, 1); anem(-9, 11);
+    school('clown', 2, -14, SHELF_Y + 1.1, 1, 0.6, 0.9); school('clown', 2, -9, SHELF_Y + 1.1, 11, 0.6, 0.9);
+    school('tang', 6, -12, SHELF_Y + 2.6, -6, 3.5, 1.2); school('butterfly', 4, -20, SHELF_Y + 1.6, -17, 2, 0.9);
+    school('wrasse', 7, -6, SHELF_Y + 2, -12, 2.8, 1.6); school('tang', 5, -8, SHELF_Y + 3.2, 16, 3, 1.1); school('butterfly', 3, -4, SHELF_Y + 1.5, 3, 1.6, 0.8); }
   // 잠수함 (하루 4시간 공부하면 탈 수 있어요)
   sub = { g:new THREE.Group(), h:Math.PI/2, home:new THREE.Vector3(-10.4, -0.4, 3.4) }; seaScene.add(sub.g);
   subHull(sub);
@@ -3360,10 +3417,10 @@ function seaTick(dt){
   // 깊어질수록 어두워져요 (햇빛은 약 1000m까지)
   const depth = Math.max(0, -p.y), dk = Math.min(1, depthM(depth)/1000), sun = Math.pow(1 - dk, 1.6), above = p.y > 0.1;
   if(dk < 0.4) tmpC.copy(C_SURF).lerp(C_MID, dk/0.4); else tmpC.copy(C_MID).lerp(C_DEEP, (dk - 0.4)/0.6);
-  if(above) tmpC.set('#BFE3F7'); seaSky.visible = above; seaSky.position.copy(camera.position); seaSurf.material.color.set(above ? '#1F8FCC' : '#7FD3FF'); seaSurf.material.opacity = above ? 0.86 : 0.55; seaWaveT.offset.x += dt*0.01; seaWaveT.offset.y += dt*0.006;
+  if(above) tmpC.set('#8FC6EC'); seaSky.visible = above; seaSky.position.copy(camera.position); seaSurf.material.color.set(above ? '#1F8FCC' : '#7FD3FF'); seaSurf.material.opacity = above ? 0.86 : 0.55; seaWaveT.offset.x += dt*0.01; seaWaveT.offset.y += dt*0.006;
   if(seaFoam){ seaFoam.material.opacity = 0.55 + Math.sin(t*1.2)*0.3; seaFoam.position.x = BEACH_X + 0.9 + Math.sin(t*1.2)*0.5; }
   seaScene.background.copy(tmpC); seaScene.fog.color.copy(tmpC); seaScene.fog.density = above ? 0.0035 : 0.03 + (seaPhase === 'swim' ? 0.07 : 0.025)*dk;   // 맨몸은 깊을수록 더 뿌옇게
-  seaAmb.intensity = above ? 0.75 : 0.14 + 0.9*sun; seaSun.intensity = above ? 1.1 : 0.9*sun; seaLamp.intensity = 0.6 + 1.0*dk; seaLamp.distance = 14; subLamp.intensity = 1 + 3*dk; sub.beam.material.opacity = seaPhase === 'sub' ? 0.02 + 0.08*dk : 0;
+  seaAmb.intensity = above ? 0.6 : 0.14 + 0.9*sun; seaSun.intensity = above ? 0.85 : 0.9*sun; seaLamp.intensity = 0.6 + 1.0*dk; seaLamp.distance = 14; subLamp.intensity = 1 + 3*dk; sub.beam.material.opacity = seaPhase === 'sub' ? 0.02 + 0.08*dk : 0;
   seaBeam.material.opacity = 0.015 + 0.075*dk;
   kelps.forEach(k => k.segs.forEach((s, i) => { s.rotation.z = Math.sin(t*0.9 + k.ph + i*0.5)*0.12; s.rotation.x = Math.cos(t*0.7 + k.ph + i*0.4)*0.08; }));
   if(depth < 20){ const pa = seaSurf.geometry.attributes.position, ar = pa.array;   // 수면이 출렁여요
@@ -3382,6 +3439,11 @@ function seaTick(dt){
     const bb = addM(seaScene, new THREE.SphereGeometry(rand(0.04, 0.08), 8, 6), Gm('#DFF6FF', { transparent:true, opacity:0.7 }), hd.x, hd.y, hd.z); bubbles.push({ m:bb, t:0 }); }
   for(let i = bubbles.length - 1; i >= 0; i--){ const b = bubbles[i]; b.t += dt; b.m.position.y += dt*1.4; b.m.position.x += Math.sin(t*5 + i)*dt*0.1; b.m.material.opacity = Math.max(0, 0.7 - b.t*0.3);
     if(b.t > 2.3 || b.m.position.y > -0.2){ seaScene.remove(b.m); b.m.geometry.dispose(); b.m.material.dispose(); bubbles.splice(i, 1); } }
+  // 산호초 물고기 (얕은 곳에 있을 때만 움직여요)
+  if(p.y > SHELF_Y - 14){ reefSchools.forEach(kids => kids.forEach(f => { const u = f.userData; u.a += u.sp*dt/u.r;
+      f.position.set(Math.cos(u.a)*u.r, u.y + Math.sin(t*0.8 + u.ph)*0.25, Math.sin(u.a)*u.r); f.rotation.y = -u.a + Math.sin(t*10 + u.ph)*0.06;
+      f.userData.tail.rotation.y = Math.sin(t*11 + u.ph)*0.45; f.userData.pecs.forEach(q => { q.rotation.y = q.userData.s*Math.sin(t*7 + u.ph)*0.4; }); }));
+    reefTent.forEach(tn => { tn.rotation.x = Math.sin(t*1.4 + tn.userData.ph)*0.3; tn.rotation.z = Math.cos(t*1.1 + tn.userData.ph)*0.3; }); }
   // 물고기
   fishList.forEach(f => {
     const d = f.d;
