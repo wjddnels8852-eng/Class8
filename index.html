@@ -536,7 +536,7 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
     </div>
     </div>
     <button class="btn primary" type="submit" id="enterBtn" hidden>교실 입장</button>
-    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 44</p>
+    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 45</p>
   </form>
 </div>
 
@@ -4569,13 +4569,13 @@ function buildIsleScene(){
   { const c = document.createElement('canvas'); c.width = 16; c.height = 256; const x = c.getContext('2d'), gr = x.createLinearGradient(0, 0, 0, 256);
     gr.addColorStop(0, '#2F6FD0'); gr.addColorStop(0.35, '#5EA4EA'); gr.addColorStop(0.5, '#B9DDF7'); gr.addColorStop(1, '#E8F4FF'); x.fillStyle = gr; x.fillRect(0, 0, 16, 256);
     const sky = new THREE.Mesh(new THREE.SphereGeometry(300, 24, 16), new THREE.MeshBasicMaterial({ map:new THREE.CanvasTexture(c), side:THREE.BackSide, fog:false, depthWrite:false })); sky.renderOrder = -1; isleScene.add(sky); isleScene.userData.sky = sky; }
-  // 구름 바다 (섬 아래) + 위쪽 구름
-  const cc = document.createElement('canvas'); cc.width = cc.height = 128; { const x = cc.getContext('2d'), gr = x.createRadialGradient(64, 64, 0, 64, 64, 64);
-    gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.5, 'rgba(255,255,255,.75)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = gr; x.fillRect(0, 0, 128, 128); }
-  const ct = new THREE.CanvasTexture(cc);
-  for(let i=0;i<70;i++){ const below = i < 55, a = rand(0, 6.28), d = below ? rand(0, 70) : rand(20, 80);
-    const s = new THREE.Sprite(new THREE.SpriteMaterial({ map:ct, transparent:true, opacity:below ? 0.9 : 0.8, depthWrite:false, fog:false }));
-    s.position.set(Math.cos(a)*d, below ? rand(-16, -11) : rand(8, 18), Math.sin(a)*d); const k = below ? rand(14, 26) : rand(8, 16); s.scale.set(k, k*0.45, 1); isleScene.add(s); isleClouds.push({ s, sp:rand(0.3, 0.9) }); }
+  // 구름 바다 (섬 아래) + 위쪽 구름: 반투명 그림 대신 몽글몽글한 입체 구름
+  const cloudM = new THREE.MeshLambertMaterial({ color:'#FFFFFF', emissive:'#B8C4D8' }), cloudGeo = new THREE.IcosahedronGeometry(1, 2);
+  const puff = (x, y, z, s) => { const g = new THREE.Group(); g.position.set(x, y, z); g.scale.setScalar(s); isleScene.add(g);
+    const n = 4 + Math.floor(Math.random()*3); for(let k=0;k<n;k++){ const m = new THREE.Mesh(cloudGeo, cloudM); const kx = (k - (n - 1)/2)*0.9 + rand(-0.2, 0.2);
+      m.position.set(kx, rand(-0.1, 0.35)*(1 - Math.abs(kx)/3), rand(-0.5, 0.5)); m.scale.set(rand(0.9, 1.3), rand(0.6, 0.85), rand(0.8, 1.1)); g.add(m); } return g; };
+  for(let i=0;i<46;i++){ const a = rand(0, 6.28), d = rand(4, 75); isleClouds.push({ s:puff(Math.cos(a)*d, rand(-19, -14), Math.sin(a)*d, rand(3, 6)), sp:rand(0.2, 0.6) }); }
+  for(let i=0;i<10;i++){ const a = rand(0, 6.28), d = rand(45, 85); isleClouds.push({ s:puff(Math.cos(a)*d, rand(14, 24), Math.sin(a)*d, rand(2, 3.5)), sp:rand(0.3, 0.8) }); }
   // 섬들
   ISLE_ROSTER.concat(['영선쌤']).forEach((name, i) => {
     const id = i < ISLE_ROSTER.length ? 's' + i : 't', I = { id, name, idx:id === 't' ? -1 : i, g:new THREE.Group(), base:null, lv:0, items:{}, itemsG:new THREE.Group(), ph:rand(0, 6.28) };
@@ -4708,7 +4708,7 @@ function isleTick(dt){
   isles.forEach(I => { I.g.position.y = I.pos.y + Math.sin(t*0.5 + I.ph)*0.25; });
   if(isleFocus && isleById[isleFocus]){ const I = isleById[isleFocus]; _ipt.set(I.g.position.x, I.g.position.y + 0.8, I.g.position.z); cam.t.lerp(_ipt, 1 - Math.exp(-dt*3)); }
   isleSpin.forEach(g => { if(g.userData.spin) g.userData.spin.rotation.z += dt*1.5; if(g.userData.bob) g.userData.bob.position.y = 0.95 + Math.sin(t*4)*0.05; if(g.userData.flag) g.userData.flag.rotation.y = Math.sin(t*3)*0.4; });
-  isleClouds.forEach(c => { c.s.position.x += c.sp*dt; if(c.s.position.x > 80) c.s.position.x = -80; });
+  isleClouds.forEach(c => { c.s.position.x += c.sp*dt; if(c.s.position.x > 85) c.s.position.x = -85; });
   isleScene.userData.sky.position.copy(camera.position);
   isleVisT -= dt; if(isleVisT <= 0){ isleVisT = 1;   // 누가 어느 섬을 구경하는지
     const by = {}; remotes.forEach(r => { const a = r.av; if(a.room === 'isle' && a.isl && isleById[a.isl]) (by[a.isl] = by[a.isl] || []).push(a.name); });
