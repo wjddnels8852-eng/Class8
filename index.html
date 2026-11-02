@@ -311,7 +311,9 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
 .dexcard.lock{opacity:.8}.dexcard.lock b{color:var(--muted)}
 .dexrow b{font-size:14px}
 /* 우주 */
-#spaceUI{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+#spaceUI,#isleUI{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+#isleUI[hidden]{display:none}
+#isleUI .btn{min-height:46px;padding:0 6px;font-size:14px}
 #padUI,#boardUI{display:grid;grid-template-columns:2fr 1fr;gap:8px}
 #boardUI .btn{min-height:50px}
 #padUI .btn{min-height:50px}
@@ -432,6 +434,7 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
     <button type="button" class="btn" data-go="space">🚀 우주</button>
     <button type="button" class="btn" data-go="nino">🌏 엘니뇨</button>
     <button type="button" class="btn" data-go="geo">📐 기하</button>
+    <button type="button" class="btn" data-go="isle">☁ 공중섬</button>
     <button type="button" class="btn warm" id="lobbyBack" style="grid-column:1/-1">⬅ 교실로</button>
   </div>
   <div id="dockUI" hidden>
@@ -453,6 +456,15 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
   <div id="boardUI" hidden>
     <button type="button" class="btn primary" id="boardGo">🚀 바로 출발</button>
     <button type="button" class="btn" id="boardOut">내리기</button>
+  </div>
+  <div id="isleUI" hidden>
+    <div id="isleInfo" style="grid-column:1/-1;text-align:center;font-weight:800;color:#FFE27A;font-size:14px">🪙 …</div>
+    <button type="button" class="btn primary" id="isleMineBtn">🏝 내 섬</button>
+    <button type="button" class="btn" id="isleAll">🗺 멀리 보기</button>
+    <button type="button" class="btn primary" id="isleBuild">🏗 짓기</button>
+    <button type="button" class="btn" id="isleUp">⬆ 땅 넓히기</button>
+    <button type="button" class="btn" id="isleDel">🗑 치우기</button>
+    <button type="button" class="btn warm" id="isleExit">로비로</button>
   </div>
   <div id="spaceUI" hidden>
     <button type="button" class="btn warm" id="spFusion" hidden style="grid-column:1/-1">☀ 핵융합 보기</button>
@@ -524,7 +536,7 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
     </div>
     </div>
     <button class="btn primary" type="submit" id="enterBtn" hidden>교실 입장</button>
-    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 42</p>
+    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 44</p>
   </form>
 </div>
 
@@ -1493,7 +1505,7 @@ const POSES = ['wave','hooray','clap','dance','bow'];
 const DATA_VER = 2;
 function myState(){
   return { name:me.name, hair:me.hair, shirt:me.shirt, x:+me.pos.x.toFixed(2), z:+me.pos.z.toFixed(2), ry:+me.ry.toFixed(2), jy:+me.jumpY.toFixed(2),
-    mode:me.mode, seat:me.seat, subject:me.subject, studyStart:me.studyStart, total:Math.floor(me.total), fly:me.flying, date:todayStr, v:DATA_VER, streak:me.streak || 0, steady:!!me.steady, best:Math.floor(me.best || 0), room, geo:!!geoDone, where:roomStudy ? roomStudy.where : '',
+    mode:me.mode, seat:me.seat, subject:me.subject, studyStart:me.studyStart, total:Math.floor(me.total), fly:me.flying, date:todayStr, v:DATA_VER, streak:me.streak || 0, steady:!!me.steady, best:Math.floor(me.best || 0), room, geo:!!geoDone, where:roomStudy ? roomStudy.where : '', isl:room === 'isle' ? (isleFocus || '') : '',
     sea:seaState(),
     sp:spaceState() };
 }
@@ -1538,8 +1550,8 @@ function handlePlayers(){
     av.subject = SUBJECTS.indexOf(s.subject) >= 0 ? s.subject : '수학';
     av.studyStart = num(s.studyStart, 0, now, now);
     av.total = (s.date === todayStr && s.v === DATA_VER) ? num(s.total, 0, 86400, 0) : 0; av.flying = s.fly === true;
-    av.streak = Math.floor(num(s.streak, 0, 999, 0)); av.steady = s.steady === true; av.geo = s.geo === true; av.where = typeof s.where === 'string' ? s.where.slice(0, 24) : ''; av.best = num(s.best, 0, 86400, 0);
-    av.room = (s.room === 'sea' || s.room === 'nino' || s.room === 'space' || s.room === 'geo' || s.room === 'lobby') ? s.room : 'class';
+    av.streak = Math.floor(num(s.streak, 0, 999, 0)); av.steady = s.steady === true; av.geo = s.geo === true; av.isl = typeof s.isl === 'string' ? s.isl.slice(0, 4) : ''; av.where = typeof s.where === 'string' ? s.where.slice(0, 24) : ''; av.best = num(s.best, 0, 86400, 0);
+    av.room = (s.room === 'sea' || s.room === 'nino' || s.room === 'space' || s.room === 'geo' || s.room === 'isle' || s.room === 'lobby') ? s.room : 'class';
     { const want = av.room === 'lobby' ? lobbyScene : scene; if(av.group.parent !== want) want.add(av.group); } av.group.visible = av.room === 'class' || av.room === 'lobby';
     seaRemote(uid, s, av); spaceRemote(uid, s, av);
     const seat = (av.room === 'class' && Number.isInteger(s.seat) && s.seat >= 0 && s.seat < seats.length) ? s.seat : -1;
@@ -1767,6 +1779,7 @@ canvas.addEventListener('wheel', e => { e.preventDefault(); cam.dist = clamp(cam
 const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
 const tapTargets = deskGroups.concat([vipGroup, surveyGroup, calGroup, qGroup, board, floor]);
 function tap(x, y){
+  if(me && room === 'isle'){ isleTap(x, y); return; }
   if(me && room === 'lobby'){
     ndc.set(x / window.innerWidth * 2 - 1, -(y / window.innerHeight) * 2 + 1); ray.setFromCamera(ndc, camera);
     for(const h of ray.intersectObjects(lobbyTargets, true)){
@@ -2124,7 +2137,7 @@ function seasonRows(){
 let meetToastShown = false, boardKey = '';
 const meetNow = () => new Date().getHours() === 23;
 // 교실에서: 체험관에 간 친구가 어디서 뭘 하는지 보여줘요 ("철수님이 🪐 화성에서 공부 중")
-const ROOM_NAME = { lobby:'🚪 체험관', sea:'🌊 심해 탐험실', space:'🚀 우주', nino:'🌏 엘니뇨 탐구실', geo:'📐 기하 탐구실' };
+const ROOM_NAME = { lobby:'🚪 체험관', sea:'🌊 심해 탐험실', space:'🚀 우주', nino:'🌏 엘니뇨 탐구실', geo:'📐 기하 탐구실', isle:'☁ 공중섬' };
 let awayKey = '';
 function updateAway(){
   const box = $('#awayList'), items = [];
@@ -2702,22 +2715,23 @@ const lobbyRight = lwall(LZ*2, LX1, 0, -Math.PI/2, '#46518A'), lobbyBack = lwall
   const rb = new THREE.Mesh(new THREE.PlaneGeometry(2.9, 10.7), mat('#5B3FA8')); rb.rotation.x = -Math.PI/2; rb.position.set(LX0 + 2.6, 0.012, 0); lobbyScene.add(rb);
   const title = new THREE.Mesh(new THREE.PlaneGeometry(5.6, 0.7), signMat('체험관 · 가고 싶은 방의 문으로 들어가요', '#1B1F3B', '#FFE27A', 1120, 140, '800 60px "Noto Sans KR", sans-serif')); title.position.set(0, 2.7, 0.05); lobbyBack.add(title); }
 const DOOR_Z = { sea:-5.25, space:-1.75, nino:1.75, geo:5.25 };   // 로비 문 위치 (z)
-const DOOR_NAME = { sea:'심해 탐험실', space:'우주 발사장', nino:'엘니뇨 탐구실', geo:'기하 탐구실' };
+const DOOR_NAME = { sea:'심해 탐험실', space:'우주 발사장', nino:'엘니뇨 탐구실', geo:'기하 탐구실', isle:'공중섬' };
 const seaDoor = makeDoor(lobbyWall, 5.25, 'sea', '심해 탐험실', '3시간공부후출입가능', '#B83B4E', '#1F4F7A', '#0A3A66');
 const ninoDoor = makeDoor(lobbyWall, -1.75, 'nino', '엘니뇨 탐구실', '엘니뇨 탐구실 · 누구나', '#2B6CB0', '#2B5E4A', '#2E86DE');
 const geoDoor = makeDoor(lobbyWall, -5.25, 'geo', '기하 탐구실', '📐 기하 탐구실 · 지하 ↓', '#2E8F7F', '#1E3A4A', '#0B1530');
+const isleDoor = makeDoor(lobbyFront, 0, 'isle', '공중섬', '☁ 공중섬 · 내 섬 키우기', '#3D8FE0', '#3A6EA5', '#9FD8FF');
 const exitDoor = makeDoor(lobbyRight, 0, 'class', '교실', '⬅ 교실로 돌아가기', '#2FA36B', '#2B5E4A', '#A9D3FF');
-const lobbyTargets = [seaDoor, ninoDoor, geoDoor, exitDoor, lobbyFloor];
+const lobbyTargets = [seaDoor, ninoDoor, geoDoor, isleDoor, exitDoor, lobbyFloor];
 // 교실 왼쪽 벽: 체험관 문 하나
-const hubDoor = makeDoor(leftWall, 0, 'hub', '체험관', '🚪 체험관 · 4개의 방', '#5B3FA8', '#2A2F5A', '#0B0F2A');
+const hubDoor = makeDoor(leftWall, 0, 'hub', '체험관', '🚪 체험관 · 5개의 방', '#5B3FA8', '#2A2F5A', '#0B0F2A');
 tapTargets.push(hubDoor);
 const hubCv = document.createElement('canvas'); hubCv.width = hubCv.height = 128; const hubTex = new THREE.CanvasTexture(hubCv);
 hubDoor.userData.win.material = new THREE.MeshBasicMaterial({ map:hubTex });
 let hubT = 0, hubI = -1;
 function hubTick(dt){   // 체험관 문 창문에 방 아이콘이 번갈아 떠요
-  hubT += dt; const i = Math.floor(hubT/1.4) % 4; if(i === hubI) return; hubI = i;
-  const x = hubCv.getContext('2d'), cols = ['#0A3A66', '#0B0F2A', '#123E6E', '#0B1530'];
-  x.fillStyle = cols[i]; x.fillRect(0, 0, 128, 128); x.font = '72px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(['🌊', '🚀', '🌏', '📐'][i], 64, 70); hubTex.needsUpdate = true;
+  hubT += dt; const i = Math.floor(hubT/1.4) % 5; if(i === hubI) return; hubI = i;
+  const x = hubCv.getContext('2d'), cols = ['#0A3A66', '#0B0F2A', '#123E6E', '#0B1530', '#3D8FE0'];
+  x.fillStyle = cols[i]; x.fillRect(0, 0, 128, 128); x.font = '72px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(['🌊', '🚀', '🌏', '📐', '☁️'][i], 64, 70); hubTex.needsUpdate = true;
 }
 let lobbyGo = null;
 function enterLobby(from){
@@ -2731,6 +2745,7 @@ function enterLobby(from){
   $('#panel').hidden = false; $('#joy').hidden = false; $('#lobbyUI').hidden = false;
   const fromClass = from === 'class';
   me.pos.set(fromClass ? LX1 - 2.8 : LX0 + 2.4, 0, fromClass ? 0 : (DOOR_Z[from] || 0)); me.ry = me.targetRy = fromClass ? -Math.PI/2 : Math.PI/2;
+  if(from === 'isle'){ me.pos.set((LX0 + LX1)/2, 0, LZ - 2.4); me.ry = me.targetRy = Math.PI; }
   Object.assign(camLim, CLASS_LIM); cam.yaw = Math.PI/2; cam.pitch = 0.5; cam.dist = 7.5; cam.t.set(me.pos.x, 1, me.pos.z);
   lastSent = ''; pushPresence();
   if(fromClass) toast('체험관이에요! 가고 싶은 방의 문으로 걸어가요');
@@ -2754,6 +2769,7 @@ function lobbyTick(dt){
   let near = '';
   if(me.pos.x < LX0 + 2.2) Object.keys(DOOR_Z).forEach(k => { if(Math.abs(me.pos.z - DOOR_Z[k]) < 1) near = k; });
   if(me.pos.x > LX1 - 2.2 && Math.abs(me.pos.z) < 1) near = 'class';
+  if(me.pos.z > LZ - 2.2 && Math.abs(me.pos.x - (LX0 + LX1)/2) < 1) near = 'isle';
   if(near !== lobbyNear){ lobbyNear = near; roomBtnAct = null; const b = $('#roomBtn'); b.hidden = !near; if(near) b.textContent = near === 'class' ? '⬅ 교실로 돌아가기' : '🚪 ' + DOOR_NAME[near] + ' 들어가기'; }
 }
 let roomBtnAct = null;
@@ -2797,6 +2813,8 @@ function enterRoom(k){
     updDexBtn(); toast('바닷가에 왔어요! 부두 끝에서 잠수하거나 잠수함을 타요');
   } else if(k === 'geo'){
     enterGeo();
+  } else if(k === 'isle'){
+    enterIsle();
   } else if(k === 'space'){
     enterSpace();
   } else {
@@ -2815,7 +2833,7 @@ function exitRoom(){
   const from = room; seaVin = 0;
   camera.clearViewOffset();
   $('#seaUI').hidden = true; $('#dockUI').hidden = true; $('#seaHud').hidden = true; $('#ninoCard').hidden = true; $('#dexSheet').hidden = true; $('#roomBtn').hidden = true; lobbyNear = ''; roomBtnAct = null;
-  leaveSpace(); leaveGeo();
+  leaveSpace(); leaveGeo(); leaveIsle();
   if(from !== 'lobby'){ enterLobby(from); return; }   // 방에서 나오면 로비로
   room = 'class'; scene.add(me.group); $('#lobbyUI').hidden = true;
   $('#panel').hidden = false; $('#joy').hidden = false;
@@ -2867,7 +2885,7 @@ function roomStudyTick(dt){ if(roomStudy){ me.total += dt; me.week = (me.week ||
 function roomCount(k){ let n = room === k ? 1 : 0; remotes.forEach(r => { if(r.av.room === k) n++; }); return n; }
 function roomTick(dt){
   roomStudyTick(dt);
-  if(room === 'lobby') lobbyTick(dt); else if(room === 'sea') seaTick(dt); else if(room === 'nino') ninoTick(dt); else if(room === 'space') spaceTick(dt); else if(room === 'geo') geoTick(dt);
+  if(room === 'lobby') lobbyTick(dt); else if(room === 'sea') seaTick(dt); else if(room === 'nino') ninoTick(dt); else if(room === 'space') spaceTick(dt); else if(room === 'geo') geoTick(dt); else if(room === 'isle') isleTick(dt);
 }
 
 /* ===== 심해 탐험실 ===== */
@@ -4465,6 +4483,251 @@ syncViewBtn();
 $('#btnView').addEventListener('click', () => { firstPerson = !firstPerson; store.set('class8-fp', firstPerson); syncViewBtn(); if(firstPerson) cam.pitch = 0.4; else resetView(); toast(firstPerson ? '1인칭: 내 눈으로 봐요 · 드래그로 둘러보기' : '3인칭: 내 캐릭터를 뒤에서 봐요'); });
 const _eye = new THREE.Vector3();
 function fwd(o, d){ return _eye.set(o.g.position.x + Math.sin(o.h || 0)*d, 0, o.g.position.z + Math.cos(o.h || 0)*d); }
+/* ===== ☁ 공중섬: 공부한 만큼 땅을 넓히고 집을 지어요 (공부 1분 = 1포인트) ===== */
+const ISLE_ROSTER = ['정우진', '구재성', '권해준', '김건훈', '김DO희', '노경민', '박준원', '시혁', '유용준', '이성준', '조현빈', '천승우', '추성민', '황태율', '최건'];   // 순서 바꾸지 말기 (섬 번호)
+const ISLE_R = [0, 2.2, 3.0, 3.8, 4.6, 5.4, 6.2];
+const ISLE_UP = [0, 0, 60, 150, 300, 500, 800];   // 그 레벨로 넓히는 데 드는 포인트
+const ISLE_ITEMS = [
+  { t:'flower', name:'꽃밭', e:'🌷', cost:5, lv:1, r:0.35 },
+  { t:'rock', name:'바위', e:'🪨', cost:5, lv:1, r:0.35 },
+  { t:'tree', name:'나무', e:'🌳', cost:10, lv:1, r:0.45 },
+  { t:'bench', name:'벤치', e:'🪑', cost:15, lv:1, r:0.5 },
+  { t:'tent', name:'텐트', e:'⛺', cost:30, lv:1, r:0.6 },
+  { t:'desk', name:'공부 책상', e:'📚', cost:40, lv:2, r:0.6 },
+  { t:'house', name:'작은 집', e:'🏠', cost:60, lv:2, r:0.8 },
+  { t:'fountain', name:'분수', e:'⛲', cost:80, lv:3, r:0.75 },
+  { t:'bighouse', name:'2층 집', e:'🏡', cost:150, lv:3, r:1.0 },
+  { t:'windmill', name:'풍차', e:'🌬️', cost:200, lv:4, r:0.8 },
+  { t:'tower', name:'시계탑', e:'🕰️', cost:300, lv:4, r:0.8 },
+  { t:'rocket', name:'로켓', e:'🚀', cost:400, lv:5, r:0.7 },
+  { t:'castle', name:'성', e:'🏰', cost:600, lv:5, r:1.5 }
+];
+const ISLE_ITEM = {}; ISLE_ITEMS.forEach(o => { ISLE_ITEM[o.t] = o; });
+const ISLE_MAX = 40;
+// 가운데 영선쌤 섬: 반 친구들이 쓴 포인트를 다 합친 만큼 저절로 커져요
+const T_LV = [0, 300, 1000, 2500, 5000];
+const T_AUTO = [[0, 'tree', 1.4, 0.6], [0, 'flower', -1.2, 1.0], [0, 'bench', 0, 1.7], [150, 'tree', -1.5, -1.0], [300, 'fountain', 0, 0], [600, 'house', 2.2, -1.4],
+  [1000, 'tree', -2.6, 0.6], [1500, 'bighouse', -2.2, -2.2], [2500, 'tower', 3.0, 1.6], [3500, 'windmill', -3.4, 2.0], [5000, 'castle', 0, -3.6]];
+let isleScene = null, isles = [], isleById = {}, isleData = {}, isleRef = null, isleFocus = null, isleMine = null, isleBaseSec = null, isleMode = null, isleClouds = [], isleSpin = [], isleLocal = false, isleClaimT = 0, isleVisitKey = '';
+
+function isleBase(r){
+  const g = new THREE.Group();
+  const top = addM(g, new THREE.CylinderGeometry(r, r*0.97, 0.3, 40), Lm('#6CC04A'), 0, -0.15, 0); top.userData.isleTop = true;
+  addM(g, new THREE.TorusGeometry(r*0.985, 0.07, 6, 40), Lm('#5AA83C'), 0, -0.02, 0).rotation.x = Math.PI/2;
+  addM(g, new THREE.CylinderGeometry(r*0.97, r*0.88, 0.55, 40), Lm('#8A5A35'), 0, -0.57, 0);
+  const ch = r*1.25 + 0.8; addM(g, new THREE.ConeGeometry(r*0.88, ch, 10), Lm('#73675B'), 0, -0.85 - ch/2, 0).rotation.x = Math.PI;
+  for(let k=0;k<Math.round(r*3);k++){ const a = rand(0, 6.28), s = rand(0.25, 0.55)*Math.min(1.6, r/2.2);
+    addM(g, new THREE.DodecahedronGeometry(s, 0), Lm(k % 2 ? '#7E7266' : '#695E53'), Math.cos(a)*r*rand(0.45, 0.75), -1.1 - rand(0, r*0.5), Math.sin(a)*r*rand(0.45, 0.75)).rotation.set(rand(0, 3), rand(0, 3), 0); }
+  for(let k=0;k<Math.round(r*2.5);k++){ const a = rand(0, 6.28), h = rand(0.5, 1.4);
+    addM(g, new THREE.CylinderGeometry(0.03, 0.02, h, 4), Lm('#4E8F3A'), Math.cos(a)*r*0.97, -0.3 - h/2, Math.sin(a)*r*0.97); }
+  for(let k=0;k<2;k++){ const a = rand(0, 6.28), s = rand(0.2, 0.4); addM(g, new THREE.DodecahedronGeometry(s, 0), Lm('#7E7266'), Math.cos(a)*(r + 1.2), rand(-2, -0.5), Math.sin(a)*(r + 1.2)); }
+  return g;
+}
+function makeIsleItem(t){
+  const g = new THREE.Group(), box = (w, h, d, c, x, y, z) => addM(g, new THREE.BoxGeometry(w, h, d), Lm(c), x, y, z);
+  const roof = (r, h, c, y, seg) => { const o = addM(g, new THREE.ConeGeometry(r, h, seg || 4), Lm(c), 0, y, 0); if(!seg || seg === 4) o.rotation.y = Math.PI/4; return o; };
+  if(t === 'flower'){ addM(g, new THREE.CylinderGeometry(0.32, 0.32, 0.04, 14), Lm('#4E9A38'), 0, 0.02, 0);
+    for(let i=0;i<7;i++){ const a = i/7*6.28, rr = i ? 0.2 : 0; addM(g, new THREE.CylinderGeometry(0.012, 0.012, 0.18, 4), Lm('#3E7F2E'), Math.cos(a)*rr, 0.1, Math.sin(a)*rr);
+      addM(g, new THREE.SphereGeometry(0.06, 8, 6), Lm(['#FF7C93', '#FFD34D', '#C9A8FF', '#FFFFFF'][i % 4]), Math.cos(a)*rr, 0.2, Math.sin(a)*rr); } }
+  else if(t === 'rock'){ addM(g, new THREE.DodecahedronGeometry(0.3, 0), Lm('#8A8F96'), 0, 0.15, 0).scale.y = 0.7; addM(g, new THREE.DodecahedronGeometry(0.16, 0), Lm('#9AA0A8'), 0.25, 0.08, 0.1); }
+  else if(t === 'tree'){ addM(g, new THREE.CylinderGeometry(0.07, 0.1, 0.7, 7), Lm('#7A5638'), 0, 0.35, 0);
+    [[0, 0.9, 0, 0.42], [0.18, 1.15, 0.05, 0.3], [-0.15, 1.2, -0.08, 0.3], [0, 1.4, 0, 0.26]].forEach(([x, y, z, r], i) => addM(g, new THREE.IcosahedronGeometry(r, 1), Lm(i % 2 ? '#4FAE45' : '#3E9B3A'), x, y, z)); }
+  else if(t === 'bench'){ box(0.8, 0.06, 0.3, '#B5824E', 0, 0.32, 0); box(0.8, 0.25, 0.05, '#B5824E', 0, 0.5, -0.14); [-0.34, 0.34].forEach(x => box(0.05, 0.32, 0.28, '#5B6170', x, 0.16, 0)); }
+  else if(t === 'tent'){ const c = addM(g, new THREE.ConeGeometry(0.55, 0.8, 4), Lm('#FF8A3D'), 0, 0.4, 0); c.rotation.y = Math.PI/4;
+    const d = addM(g, new THREE.CircleGeometry(0.2, 3), Gm('#3A2A20'), 0, 0.2, 0.39); d.rotation.z = Math.PI/2; d.rotation.x = -0.45; }
+  else if(t === 'desk'){ box(0.9, 0.05, 0.5, '#C99A6B', 0, 0.55, 0); [[-0.4, -0.2], [0.4, -0.2], [-0.4, 0.2], [0.4, 0.2]].forEach(q => box(0.04, 0.55, 0.04, '#5B6170', q[0], 0.27, q[1]));
+    box(0.4, 0.04, 0.35, '#566190', 0, 0.32, 0.5); box(0.4, 0.35, 0.04, '#566190', 0, 0.5, 0.68); box(0.25, 0.04, 0.18, '#2C6FD1', -0.2, 0.6, 0); box(0.2, 0.03, 0.15, '#FF7C93', -0.2, 0.635, 0);
+    addM(g, new THREE.SphereGeometry(0.06, 8, 6), Gm('#FFE7A0'), 0.3, 0.8, -0.1); box(0.02, 0.22, 0.02, '#5B6170', 0.3, 0.68, -0.1); }
+  else if(t === 'house'){ box(1.0, 0.8, 0.9, '#FFF1D6', 0, 0.4, 0); roof(0.82, 0.6, '#E2574C', 1.1); box(0.25, 0.45, 0.02, '#7A5638', 0, 0.23, 0.46);
+    [-0.3, 0.3].forEach(x => box(0.2, 0.2, 0.02, '#8FD3FF', x, 0.52, 0.46)); box(0.12, 0.3, 0.12, '#9A5B45', 0.25, 1.2, -0.15); }
+  else if(t === 'fountain'){ addM(g, new THREE.CylinderGeometry(0.65, 0.7, 0.25, 20), Lm('#C9CCD6'), 0, 0.12, 0); addM(g, new THREE.CylinderGeometry(0.56, 0.56, 0.02, 20), Lm('#5CC8F2', { emissive:'#0A3A55' }), 0, 0.24, 0);
+    addM(g, new THREE.CylinderGeometry(0.08, 0.1, 0.6, 8), Lm('#C9CCD6'), 0, 0.5, 0); addM(g, new THREE.CylinderGeometry(0.28, 0.12, 0.1, 14), Lm('#C9CCD6'), 0, 0.8, 0);
+    const w = addM(g, new THREE.SphereGeometry(0.14, 10, 8), Lm('#8FE0FF', { emissive:'#1A5A75', transparent:true, opacity:0.85 }), 0, 0.95, 0); g.userData.bob = w; }
+  else if(t === 'bighouse'){ box(1.4, 1.4, 1.2, '#F4E3C1', 0, 0.7, 0); roof(1.1, 0.8, '#3D6FB6', 1.8); box(0.3, 0.55, 0.02, '#6B4A2E', 0, 0.28, 0.61);
+    [[-0.4, 0.45], [0.4, 0.45], [-0.4, 1.05], [0, 1.05], [0.4, 1.05]].forEach(([x, y]) => box(0.22, 0.24, 0.02, '#8FD3FF', x, y, 0.61)); box(0.7, 0.06, 0.25, '#B5824E', 0, 0.85, 0.72); box(0.15, 0.45, 0.15, '#9A5B45', -0.4, 1.95, -0.2); }
+  else if(t === 'windmill'){ addM(g, new THREE.CylinderGeometry(0.32, 0.48, 1.7, 10), Lm('#F2E6D0'), 0, 0.85, 0); roof(0.42, 0.45, '#B5523C', 1.92, 10);
+    box(0.22, 0.35, 0.02, '#6B4A2E', 0, 0.2, 0.47); const hub = new THREE.Group(); hub.position.set(0, 1.55, 0.42); g.add(hub);
+    for(let i=0;i<4;i++){ const b = new THREE.Group(); b.rotation.z = i*Math.PI/2; hub.add(b); addM(b, new THREE.BoxGeometry(0.06, 0.95, 0.03), Lm('#7A5638'), 0, 0.5, 0); addM(b, new THREE.BoxGeometry(0.22, 0.7, 0.02), Lm('#FFFFFF'), 0.12, 0.6, 0.01); }
+    g.userData.spin = hub; }
+  else if(t === 'tower'){ box(0.6, 2.2, 0.6, '#C46A4A', 0, 1.1, 0); box(0.7, 0.12, 0.7, '#8A4A35', 0, 2.2, 0); roof(0.55, 0.8, '#3D4F7A', 2.65);
+    for(let i=0;i<4;i++){ const a = i*Math.PI/2, f = addM(g, new THREE.CircleGeometry(0.2, 20), Lm('#FFFFFF'), Math.sin(a)*0.31, 1.8, Math.cos(a)*0.31); f.rotation.y = a;
+      const h = addM(g, new THREE.BoxGeometry(0.02, 0.15, 0.01), Gm('#1B1F3B'), Math.sin(a)*0.32, 1.85, Math.cos(a)*0.32); h.rotation.y = a; } }
+  else if(t === 'rocket'){ addM(g, new THREE.CylinderGeometry(0.5, 0.55, 0.12, 16), Lm('#8A8F96'), 0, 0.06, 0); addM(g, new THREE.CylinderGeometry(0.22, 0.25, 1.3, 16), Lm('#F4F2FF'), 0, 0.85, 0);
+    addM(g, new THREE.ConeGeometry(0.22, 0.5, 16), Lm('#E2574C'), 0, 1.75, 0); addM(g, new THREE.CircleGeometry(0.09, 14), Lm('#8FD3FF'), 0, 1.15, 0.235);
+    for(let i=0;i<3;i++){ const f = new THREE.Group(); f.rotation.y = i/3*Math.PI*2; g.add(f); addM(f, new THREE.BoxGeometry(0.03, 0.4, 0.25), Lm('#E2574C'), 0, 0.35, 0.3); } }
+  else if(t === 'castle'){ box(1.2, 1.3, 1.2, '#D7D2C8', 0, 0.65, 0); box(0.35, 0.55, 0.02, '#5A3A22', 0, 0.28, 0.61);
+    for(let i=0;i<4;i++){ box(0.18, 0.18, 0.18, '#D7D2C8', -0.45 + i*0.3, 1.39, 0.51); box(0.18, 0.18, 0.18, '#D7D2C8', -0.45 + i*0.3, 1.39, -0.51); }
+    [[-0.8, -0.8], [0.8, -0.8], [-0.8, 0.8], [0.8, 0.8]].forEach(([x, z]) => { addM(g, new THREE.CylinderGeometry(0.3, 0.32, 1.8, 12), Lm('#C9C3B8'), x, 0.9, z); addM(g, new THREE.ConeGeometry(0.38, 0.6, 12), Lm('#3D6FB6'), x, 2.1, z); });
+    addM(g, new THREE.CylinderGeometry(0.015, 0.015, 0.6, 4), Lm('#5B6170'), 0, 1.6, 0); const fl = addM(g, new THREE.PlaneGeometry(0.35, 0.22), Lm('#FFC93C', { side:THREE.DoubleSide }), 0.18, 1.8, 0); g.userData.flag = fl; }
+  return g;
+}
+function islePos(i){ if(i < 0) return new THREE.Vector3(0, 2.5, 0); const a = i/ISLE_ROSTER.length*Math.PI*2 - Math.PI/2; return new THREE.Vector3(Math.cos(a)*30, Math.sin(i*1.7)*2.5, Math.sin(a)*30); }
+function buildIsleScene(){
+  isleScene = new THREE.Scene(); isleScene.background = new THREE.Color('#9FCFF2'); isleScene.fog = new THREE.FogExp2('#B7DBF5', 0.006);
+  isleScene.add(new THREE.HemisphereLight('#FFFFFF', '#7A8CA8', 0.75));
+  const sun = new THREE.DirectionalLight('#FFF4E0', 0.85); sun.position.set(40, 60, 25); isleScene.add(sun);
+  { const c = document.createElement('canvas'); c.width = 16; c.height = 256; const x = c.getContext('2d'), gr = x.createLinearGradient(0, 0, 0, 256);
+    gr.addColorStop(0, '#2F6FD0'); gr.addColorStop(0.35, '#5EA4EA'); gr.addColorStop(0.5, '#B9DDF7'); gr.addColorStop(1, '#E8F4FF'); x.fillStyle = gr; x.fillRect(0, 0, 16, 256);
+    const sky = new THREE.Mesh(new THREE.SphereGeometry(300, 24, 16), new THREE.MeshBasicMaterial({ map:new THREE.CanvasTexture(c), side:THREE.BackSide, fog:false, depthWrite:false })); sky.renderOrder = -1; isleScene.add(sky); isleScene.userData.sky = sky; }
+  // 구름 바다 (섬 아래) + 위쪽 구름
+  const cc = document.createElement('canvas'); cc.width = cc.height = 128; { const x = cc.getContext('2d'), gr = x.createRadialGradient(64, 64, 0, 64, 64, 64);
+    gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.5, 'rgba(255,255,255,.75)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = gr; x.fillRect(0, 0, 128, 128); }
+  const ct = new THREE.CanvasTexture(cc);
+  for(let i=0;i<70;i++){ const below = i < 55, a = rand(0, 6.28), d = below ? rand(0, 70) : rand(20, 80);
+    const s = new THREE.Sprite(new THREE.SpriteMaterial({ map:ct, transparent:true, opacity:below ? 0.9 : 0.8, depthWrite:false, fog:false }));
+    s.position.set(Math.cos(a)*d, below ? rand(-16, -11) : rand(8, 18), Math.sin(a)*d); const k = below ? rand(14, 26) : rand(8, 16); s.scale.set(k, k*0.45, 1); isleScene.add(s); isleClouds.push({ s, sp:rand(0.3, 0.9) }); }
+  // 섬들
+  ISLE_ROSTER.concat(['영선쌤']).forEach((name, i) => {
+    const id = i < ISLE_ROSTER.length ? 's' + i : 't', I = { id, name, idx:id === 't' ? -1 : i, g:new THREE.Group(), base:null, lv:0, items:{}, itemsG:new THREE.Group(), ph:rand(0, 6.28) };
+    I.pos = islePos(I.idx); I.g.position.copy(I.pos); I.g.add(I.itemsG); isleScene.add(I.g);
+    I.label = labelSprite(name, '#FFFFFF'); I.label.scale.set(3.4, 0.85, 1); I.g.add(I.label);
+    I.visit = labelSprite('', '#8FCBFF'); I.visit.scale.set(2.8, 0.7, 1); I.visit.visible = false; I.g.add(I.visit);
+    isles.push(I); isleById[id] = I; });
+  refreshIsles();
+}
+function teacherSpent(){ let s = 0; Object.keys(isleData).forEach(k => { if(k !== 't') s += num(isleData[k] && isleData[k].spent, 0, 1e7, 0); }); return s; }
+function refreshIsles(){
+  if(!isleScene) return;
+  isleMine = null; Object.keys(isleData).forEach(k => { const d = isleData[k]; if(d && d.owner === myUid && k !== 't') isleMine = k; });
+  const tsp = teacherSpent();
+  isles.forEach(I => {
+    const d = isleData[I.id] || {}, teacher = I.id === 't';
+    const lv = teacher ? Math.min(6, 2 + T_LV.filter(v => tsp >= v).length - 1) : clamp(Math.floor(num(d.lv, 1, 6, 1)), 1, 6);
+    if(lv !== I.lv){ if(I.base) I.g.remove(I.base); I.base = isleBase(ISLE_R[lv]); I.base.traverse(o => { o.userData.isleId = I.id; }); I.g.add(I.base); I.lv = lv; }
+    let want = {};
+    if(teacher) T_AUTO.forEach(([need, t, x, z], k) => { if(tsp >= need) want['a' + k] = { t, x, z, r:Math.atan2(x, z) }; });
+    else { const it = d.items || {}; Object.keys(it).slice(0, ISLE_MAX).forEach(k => { const o = it[k]; if(o && ISLE_ITEM[o.t]) want[k] = { t:o.t, x:num(o.x, -7, 7, 0), z:num(o.z, -7, 7, 0), r:num(o.r, -7, 7, 0) }; });
+      if(!d.owner && !Object.keys(want).length) want = { s0:{ t:'tree', x:0.4, z:-0.3, r:0 } }; }
+    Object.keys(I.items).forEach(k => { if(!want[k] || want[k].t !== I.items[k].t){ I.itemsG.remove(I.items[k].g); isleSpin = isleSpin.filter(o => o !== I.items[k].g); delete I.items[k]; } });
+    Object.keys(want).forEach(k => { if(I.items[k]) return; const w = want[k], g = makeIsleItem(w.t); g.position.set(w.x, 0, w.z); g.rotation.y = w.r;
+      g.traverse(o => { o.userData.isleId = I.id; o.userData.ik = k; }); I.itemsG.add(g); I.items[k] = { t:w.t, g, x:w.x, z:w.z };
+      if(g.userData.spin || g.userData.bob || g.userData.flag) isleSpin.push(g); });
+    const mine = I.id === isleMine, n = Object.keys(I.items).length;
+    const txt = teacher ? '👩‍🏫 영선쌤 섬 · Lv' + lv : I.name + (d.owner ? ' · Lv' + lv : ' · 빈 섬');
+    if(I.label.userData.txt !== txt + mine){ I.label.userData.txt = txt + mine; setLabel(I.label, txt, mine ? '#FFE27A' : d.owner || teacher ? '#FFFFFF' : '#A9B0D6'); }
+    I.label.position.y = 2.6 + lv*0.35; I.visit.position.y = I.label.position.y + 0.8; I.n = n;
+  });
+  updIsleUI();
+}
+function islePoints(){ if(isleBaseSec == null) return null; const d = isleMine && isleData[isleMine]; return Math.floor((isleBaseSec + (me ? me.total || 0 : 0))/60) - num(d && d.spent, 0, 1e7, 0); }
+function isleLoadEarned(){
+  isleBaseSec = null;
+  if(!rtdb || !myUid){ isleBaseSec = 0; updIsleUI(); return; }
+  rtdb.ref('days/' + myUid).once('value').then(s => { const v = s.val() || {}; let sum = 0; Object.keys(v).forEach(k => { if(k !== todayKey) sum += num(v[k] && v[k].t, 0, 86400, 0); }); isleBaseSec = sum; updIsleUI(); })
+    .catch(e => { isleBaseSec = 0; netErr(e); updIsleUI(); });
+}
+function updIsleUI(){
+  if(room !== 'isle') return;
+  const p = islePoints(), d = isleMine && isleData[isleMine], lv = d ? clamp(Math.floor(num(d.lv, 1, 6, 1)), 1, 6) : 0;
+  $('#isleInfo').textContent = isleMine ? '🪙 ' + (p == null ? '…' : p + 'P') + ' · 내 섬 Lv' + lv + ' · 공부 1분 = 1P' : '아직 내 섬이 없어요 · 명단에서 내 이름을 골라요';
+  $('#isleBuild').disabled = $('#isleUp').disabled = $('#isleDel').disabled = !isleMine;
+  $('#isleUp').textContent = lv >= 6 ? '⬆ 최대 크기' : '⬆ 땅 넓히기 ' + (ISLE_UP[lv + 1] || '') + 'P';
+  $('#isleMineBtn').textContent = isleMine ? '🏝 내 섬' : '🏝 내 섬 고르기';
+}
+function isleAt(id){ isleFocus = id; const I = isleById[id]; if(!I) return; cam.dist = clamp(ISLE_R[I.lv]*2.6 + 6, 9, 30); lastSent = ''; pushPresence();
+  const d = isleData[id] || {}; toast(id === 't' ? '👩‍🏫 영선쌤 섬 · 우리 반이 포인트를 쓸수록 같이 커져요' : I.name + (d.owner ? '의 섬 · Lv' + I.lv + ' · 건물 ' + I.n + '개' : ' · 아직 주인이 없어요')); }
+function isleClaim(){
+  const body = showSheet('내 섬 고르기 · 명단에서 내 이름'); $('#spSheet').hidden = false;
+  body.appendChild(el('p', null, '한 번 고르면 바꿀 수 없어요. 꼭 내 이름을 골라요.'));
+  ISLE_ROSTER.forEach((name, i) => { const id = 's' + i, taken = !!(isleData[id] && isleData[id].owner), btn = el('button', 'quizopt', (taken ? '✓ ' : '') + name + (taken ? ' · 주인 있음' : ''));
+    btn.type = 'button'; btn.disabled = taken; if(taken) btn.style.opacity = 0.45;
+    btn.addEventListener('click', () => { const b2 = showSheet('‘' + name + '’ 섬의 주인이 될까요?'); b2.appendChild(el('p', null, '한 번 고르면 바꿀 수 없어요. 내 이름이 맞는지 다시 확인해요.'));
+      const ok = el('button', 'btn primary', '맞아요, 내 섬으로 할래요'), no = el('button', 'btn', '다시 고르기'); ok.type = no.type = 'button';
+      ok.addEventListener('click', () => { $('#spSheet').hidden = true; isleTake(id, name); }); no.addEventListener('click', isleClaim); b2.appendChild(ok); b2.appendChild(no); });
+    body.appendChild(btn); });
+}
+function isleTake(id, name){
+  const fresh = { owner:myUid, lv:1, spent:0, at:Date.now(), items:{ i0:{ t:'tree', x:0.6, z:-0.4, r:0 } } };
+  const done = () => { toast('🎉 ' + name + '의 섬이 생겼어요! 공부한 만큼 포인트로 꾸며요'); isleAt(id); };
+  if(isleLocal){ isleData[id] = fresh; refreshIsles(); done(); return; }
+  rtdb.ref('isles/' + id).transaction(cur => cur ? undefined : fresh).then(r => { if(r.committed) done(); else toast('앗, 다른 친구가 먼저 골랐어요'); }).catch(netErr);
+}
+function isleWrite(upd){
+  if(!isleMine) return;
+  if(isleLocal){ const d = isleData[isleMine] = isleData[isleMine] || {}; Object.keys(upd).forEach(k => { if(k.startsWith('items/')){ d.items = d.items || {}; const kk = k.slice(6); if(upd[k] == null) delete d.items[kk]; else d.items[kk] = upd[k]; } else d[k] = upd[k]; }); refreshIsles(); return; }
+  rtdb.ref('isles/' + isleMine).update(upd).catch(netErr);
+}
+function isleBuildSheet(){
+  if(!isleMine){ isleClaim(); return; }
+  const d = isleData[isleMine] || {}, lv = clamp(Math.floor(num(d.lv, 1, 6, 1)), 1, 6), p = islePoints() || 0, n = Object.keys(d.items || {}).length;
+  const body = showSheet('짓기 · 🪙 ' + p + 'P');
+  if(n >= ISLE_MAX) body.appendChild(el('p', null, '섬이 꽉 찼어요 (' + ISLE_MAX + '개). 치우기로 자리를 만들어요.'));
+  ISLE_ITEMS.forEach(it => { const lock = it.lv > lv, poor = it.cost > p, btn = el('button', 'quizopt', it.e + ' ' + it.name + ' · ' + it.cost + 'P' + (lock ? ' · 🔒 섬 Lv' + it.lv : poor ? ' · 포인트 부족' : ''));
+    btn.type = 'button'; btn.disabled = lock || poor || n >= ISLE_MAX; if(btn.disabled) btn.style.opacity = 0.45;
+    btn.addEventListener('click', () => { $('#spSheet').hidden = true; isleMode = { kind:'place', t:it.t }; isleAt(isleMine); ctxBtn('✖ ' + it.name + ' 놓기 취소', () => { isleMode = null; ctxBtn(''); }); toast(it.e + ' 내 섬 위를 눌러서 놓을 곳을 골라요'); });
+    body.appendChild(btn); });
+}
+const _iplane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), _ipt = new THREE.Vector3();
+function isleTap(x, y){
+  ndc.set(x / window.innerWidth * 2 - 1, -(y / window.innerHeight) * 2 + 1); ray.setFromCamera(ndc, camera);
+  const I = isleMine && isleById[isleMine];
+  if(isleMode && isleMode.kind === 'place' && I){
+    _iplane.constant = -I.g.position.y; if(!ray.ray.intersectPlane(_iplane, _ipt)) return;
+    const lx = _ipt.x - I.g.position.x, lz = _ipt.z - I.g.position.z, it = ISLE_ITEM[isleMode.t], R = ISLE_R[I.lv];
+    if(Math.hypot(lx, lz) > R - it.r*0.8){ toast('섬 밖이에요. 섬 위를 눌러요'); return; }
+    for(const k in I.items){ const o = I.items[k]; if(Math.hypot(o.x - lx, o.z - lz) < (ISLE_ITEM[o.t].r + it.r)*0.8){ toast('다른 건물이랑 너무 가까워요'); return; } }
+    const p = islePoints() || 0; if(p < it.cost){ toast('포인트가 모자라요'); isleMode = null; ctxBtn(''); return; }
+    const d = isleData[isleMine] || {}, k = 'i' + Date.now().toString(36) + Math.floor(Math.random()*1e4).toString(36);
+    isleWrite({ ['items/' + k]:{ t:it.t, x:+lx.toFixed(2), z:+lz.toFixed(2), r:+Math.atan2(lx, lz).toFixed(2) }, spent:num(d.spent, 0, 1e7, 0) + it.cost });
+    toast(it.e + ' ' + it.name + ' 완성! -' + it.cost + 'P'); isleMode = null; ctxBtn(''); return;
+  }
+  const targets = isleMode && isleMode.kind === 'del' ? (I ? [I.itemsG] : []) : isles.map(o => o.g);
+  for(const h of ray.intersectObjects(targets, true)){
+    const id = h.object.userData.isleId; if(!id) continue;
+    if(isleMode && isleMode.kind === 'del'){ const k = h.object.userData.ik; if(!k || !I.items[k]) continue; const it = ISLE_ITEM[I.items[k].t], d = isleData[isleMine] || {}, back = Math.floor(it.cost/2);
+      isleWrite({ ['items/' + k]:null, spent:Math.max(0, num(d.spent, 0, 1e7, 0) - back) }); toast(it.e + ' ' + it.name + ' 치웠어요 · +' + back + 'P 돌려받음'); return; }
+    if(id === isleMine){ if(id !== isleFocus) isleAt(id); return; }
+    const I2 = isleById[id], d2 = isleData[id] || {}; toast('👀 ' + (id === 't' ? '영선쌤 섬 · 우리 반이 같이 키워요' : I2.name + (d2.owner ? '의 섬 · Lv' + I2.lv + ' · 건물 ' + I2.n + '개' : ' · 아직 주인이 없어요')) + ' (구경만 할 수 있어요)'); return;
+  }
+}
+function enterIsle(){
+  if(!isleScene) buildIsleScene();
+  camera.far = 400; camera.updateProjectionMatrix();
+  Object.assign(camLim, { pmin:-0.25, pmax:1.35, dmin:5, dmax:95 });
+  cam.yaw = 0; cam.pitch = 0.42; cam.dist = 72; cam.t.set(0, 0, 0); isleFocus = null; isleMode = null;
+  $('#panel').hidden = false; $('#joy').hidden = false; $('#isleUI').hidden = false;
+  isleLocal = !rtdb;
+  if(!isleLocal){ isleRef = rtdb.ref('isles'); isleRef.on('value', s => { isleData = s.val() || {}; refreshIsles(); if(!isleMine && isleClaimT === 0){ isleClaimT = 1; setTimeout(() => { if(room === 'isle' && !isleMine) isleClaim(); }, 600); } }, netErr); }
+  else { refreshIsles(); setTimeout(() => { if(room === 'isle' && !isleMine) isleClaim(); }, 600); }
+  isleLoadEarned(); updIsleUI(); setTimeout(() => { if(room === 'isle' && isleMine && !isleFocus) isleAt(isleMine); }, 800);
+  toast('☁ 공중섬에 왔어요! 공부한 만큼 땅을 넓히고 건물을 지어요');
+}
+function leaveIsle(){
+  if(isleRef){ isleRef.off(); isleRef = null; }
+  isleClaimT = 0; isleMode = null; isleFocus = null; $('#isleUI').hidden = true;
+  if(room === 'isle' || camera.far === 400){ camera.far = 140; camera.updateProjectionMatrix(); }
+}
+let isleVisT = 0;
+function isleTick(dt){
+  const t = performance.now()/1000;
+  let ix = joy.x, iy = joy.y;
+  if(keys['a'] || keys['arrowleft']) ix -= 1; if(keys['d'] || keys['arrowright']) ix += 1;
+  if(keys['w'] || keys['arrowup']) iy -= 1; if(keys['s'] || keys['arrowdown']) iy += 1;
+  const mag = Math.min(1, Math.hypot(ix, iy));
+  if(mag >= 0.12){ cam.yaw -= ix*dt*1.6; cam.dist = clamp(cam.dist + iy*dt*(6 + cam.dist*0.6), camLim.dmin, camLim.dmax); }   // 남의 섬으로는 못 가요 · 돌려보고 확대/축소만
+  isles.forEach(I => { I.g.position.y = I.pos.y + Math.sin(t*0.5 + I.ph)*0.25; });
+  if(isleFocus && isleById[isleFocus]){ const I = isleById[isleFocus]; _ipt.set(I.g.position.x, I.g.position.y + 0.8, I.g.position.z); cam.t.lerp(_ipt, 1 - Math.exp(-dt*3)); }
+  isleSpin.forEach(g => { if(g.userData.spin) g.userData.spin.rotation.z += dt*1.5; if(g.userData.bob) g.userData.bob.position.y = 0.95 + Math.sin(t*4)*0.05; if(g.userData.flag) g.userData.flag.rotation.y = Math.sin(t*3)*0.4; });
+  isleClouds.forEach(c => { c.s.position.x += c.sp*dt; if(c.s.position.x > 80) c.s.position.x = -80; });
+  isleScene.userData.sky.position.copy(camera.position);
+  isleVisT -= dt; if(isleVisT <= 0){ isleVisT = 1;   // 누가 어느 섬을 구경하는지
+    const by = {}; remotes.forEach(r => { const a = r.av; if(a.room === 'isle' && a.isl && isleById[a.isl]) (by[a.isl] = by[a.isl] || []).push(a.name); });
+    const key = JSON.stringify(by); if(key !== isleVisitKey){ isleVisitKey = key; isles.forEach(I => { const n = by[I.id]; I.visit.visible = !!n; if(n) setLabel(I.visit, '👀 ' + n[0] + (n.length > 1 ? ' 외 ' + (n.length - 1) + '명' : ''), '#8FCBFF'); }); }
+    updIsleUI(); }
+}
+$('#isleMineBtn').addEventListener('click', () => { if(isleMine){ isleAt(isleMine); cam.pitch = 0.42; } else isleClaim(); });
+$('#isleAll').addEventListener('click', () => { isleMode = null; ctxBtn(''); cam.dist = 72; cam.pitch = 0.42; toast('🗺 멀리서 다 같이 구경해요'); });
+$('#isleBuild').addEventListener('click', isleBuildSheet);
+$('#isleUp').addEventListener('click', () => {
+  if(!isleMine) return; const d = isleData[isleMine] || {}, lv = clamp(Math.floor(num(d.lv, 1, 6, 1)), 1, 6);
+  if(lv >= 6){ toast('이미 가장 큰 섬이에요!'); return; }
+  const cost = ISLE_UP[lv + 1], p = islePoints() || 0;
+  if(p < cost){ toast('땅 넓히기는 ' + cost + 'P가 필요해요 · ' + (cost - p) + 'P 남았어요 (공부 ' + (cost - p) + '분)'); return; }
+  isleWrite({ lv:lv + 1, spent:num(d.spent, 0, 1e7, 0) + cost }); isleAt(isleMine); toast('🏝 땅이 넓어졌어요! 섬 Lv' + (lv + 1));
+});
+$('#isleDel').addEventListener('click', () => { if(!isleMine) return; isleMode = { kind:'del' }; isleAt(isleMine); ctxBtn('✖ 치우기 끝내기', () => { isleMode = null; ctxBtn(''); }); toast('치울 건물을 눌러요 · 값의 절반을 돌려받아요'); });
+$('#isleExit').addEventListener('click', exitRoom);
+
 function fpEye(){
   if(!firstPerson || !me) return null;
   if(room === 'class' || room === 'lobby'){ if(me.mode === 'sit' && room === 'class') return _eye.set(me.pos.x, 1.15, me.pos.z); return _eye.set(me.pos.x, 1.45 + me.jumpY + me.flyH + me.bob, me.pos.z); }
@@ -4531,7 +4794,7 @@ function loop(){
   leftWall.visible = camera.position.x > -W/2 + 0.2; rightWall.visible = camera.position.x < W/2 - 0.2; outdoor.visible = rightWall.visible;
   uiT -= dt; if(uiT <= 0){ uiT = 0.25; updateUI(); }
   const fpHid = fpHideList(eye);
-  renderer.render(room === 'sea' ? seaScene : room === 'nino' ? ninoScene : room === 'space' ? (spacePhase === 'space' ? spaceScene : launchScene) : room === 'geo' ? geoScene : room === 'lobby' ? lobbyScene : scene, camera);
+  renderer.render(room === 'sea' ? seaScene : room === 'nino' ? ninoScene : room === 'space' ? (spacePhase === 'space' ? spaceScene : launchScene) : room === 'geo' ? geoScene : room === 'isle' ? isleScene : room === 'lobby' ? lobbyScene : scene, camera);
   fpHid.forEach(o => { o.visible = true; });
   requestAnimationFrame(loop);
 }
