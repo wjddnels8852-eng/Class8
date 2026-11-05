@@ -536,7 +536,7 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
     </div>
     </div>
     <button class="btn primary" type="submit" id="enterBtn" hidden>교실 입장</button>
-    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 45</p>
+    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 46</p>
   </form>
 </div>
 
@@ -1505,7 +1505,7 @@ const POSES = ['wave','hooray','clap','dance','bow'];
 const DATA_VER = 2;
 function myState(){
   return { name:me.name, hair:me.hair, shirt:me.shirt, x:+me.pos.x.toFixed(2), z:+me.pos.z.toFixed(2), ry:+me.ry.toFixed(2), jy:+me.jumpY.toFixed(2),
-    mode:me.mode, seat:me.seat, subject:me.subject, studyStart:me.studyStart, total:Math.floor(me.total), fly:me.flying, date:todayStr, v:DATA_VER, streak:me.streak || 0, steady:!!me.steady, best:Math.floor(me.best || 0), room, geo:!!geoDone, where:roomStudy ? roomStudy.where : '', isl:room === 'isle' ? (isleFocus || '') : '',
+    mode:me.mode, seat:me.seat, subject:me.subject, studyStart:me.studyStart, total:Math.floor(me.total), fly:me.flying, date:todayStr, v:DATA_VER, streak:me.streak || 0, steady:!!me.steady, best:Math.floor(me.best || 0), room, geo:!!geoDone, where:roomStudy ? roomStudy.where : '', isl:room === 'isle' ? (isleMine || isleFocus || '') : '',
     sea:seaState(),
     sp:spaceState() };
 }
@@ -4500,7 +4500,11 @@ const ISLE_ITEMS = [
   { t:'windmill', name:'풍차', e:'🌬️', cost:200, lv:4, r:0.8 },
   { t:'tower', name:'시계탑', e:'🕰️', cost:300, lv:4, r:0.8 },
   { t:'rocket', name:'로켓', e:'🚀', cost:400, lv:5, r:0.7 },
-  { t:'castle', name:'성', e:'🏰', cost:600, lv:5, r:1.5 }
+  { t:'castle', name:'성', e:'🏰', cost:600, lv:5, r:1.5 },
+  { t:'jet', name:'제트엔진', e:'🔥', cost:350, lv:4, r:0.8 },
+  { t:'pyramid', name:'피라미드', e:'🔺', cost:700, lv:5, r:1.6 },
+  { t:'skyscraper', name:'초고층 빌딩', e:'🏙️', cost:1000, lv:6, r:1.0 },
+  { t:'megacastle', name:'거대한 성', e:'👑', cost:1500, lv:6, r:2.6 }
 ];
 const ISLE_ITEM = {}; ISLE_ITEMS.forEach(o => { ISLE_ITEM[o.t] = o; });
 const ISLE_MAX = 40;
@@ -4559,6 +4563,41 @@ function makeIsleItem(t){
     for(let i=0;i<4;i++){ box(0.18, 0.18, 0.18, '#D7D2C8', -0.45 + i*0.3, 1.39, 0.51); box(0.18, 0.18, 0.18, '#D7D2C8', -0.45 + i*0.3, 1.39, -0.51); }
     [[-0.8, -0.8], [0.8, -0.8], [-0.8, 0.8], [0.8, 0.8]].forEach(([x, z]) => { addM(g, new THREE.CylinderGeometry(0.3, 0.32, 1.8, 12), Lm('#C9C3B8'), x, 0.9, z); addM(g, new THREE.ConeGeometry(0.38, 0.6, 12), Lm('#3D6FB6'), x, 2.1, z); });
     addM(g, new THREE.CylinderGeometry(0.015, 0.015, 0.6, 4), Lm('#5B6170'), 0, 1.6, 0); const fl = addM(g, new THREE.PlaneGeometry(0.35, 0.22), Lm('#FFC93C', { side:THREE.DoubleSide }), 0.18, 1.8, 0); g.userData.flag = fl; }
+  else if(t === 'jet'){   // 제트엔진: 흡입구 팬이 돌고, 뒤로 불꽃이 뿜어져요 (앞=섬 가운데 쪽)
+    const body = addM(g, new THREE.CylinderGeometry(0.42, 0.34, 1.5, 20), new THREE.MeshPhongMaterial({ color:'#B9C0CC', specular:'#FFFFFF', shininess:80 }), 0, 0.6, 0); body.rotation.x = Math.PI/2;
+    const lip = addM(g, new THREE.TorusGeometry(0.42, 0.05, 8, 24), Lm('#6B7280'), 0, 0.6, -0.75);
+    addM(g, new THREE.CircleGeometry(0.38, 20), Gm('#1B1F2B'), 0, 0.6, -0.74).rotation.y = Math.PI;
+    const fan = new THREE.Group(); fan.position.set(0, 0.6, -0.72); g.add(fan); for(let i=0;i<8;i++){ const b = addM(fan, new THREE.BoxGeometry(0.06, 0.34, 0.02), Lm('#D7DCE5'), 0, 0.18, 0); b.parent.remove(b); const p = new THREE.Group(); p.rotation.z = i/8*Math.PI*2; fan.add(p); b.position.set(0, 0.18, 0); b.rotation.y = 0.5; p.add(b); }
+    addM(fan, new THREE.ConeGeometry(0.1, 0.18, 12), Lm('#3A3F4A'), 0, 0, -0.05).rotation.x = -Math.PI/2;
+    const noz = addM(g, new THREE.CylinderGeometry(0.22, 0.32, 0.4, 16, 1, true), Lm('#4A4F5A', { side:THREE.DoubleSide }), 0, 0.6, 0.95); noz.rotation.x = Math.PI/2;
+    [-1, 1].forEach(s => addM(g, new THREE.BoxGeometry(0.08, 0.6, 0.5), Lm('#6B7280'), s*0.25, 0.25, 0));
+    const fl = new THREE.Group(); fl.position.set(0, 0.6, 1.15); g.add(fl);
+    const f1 = addM(fl, new THREE.ConeGeometry(0.22, 1.2, 14, 1, true), new THREE.MeshBasicMaterial({ color:'#FF8A2A', transparent:true, opacity:0.85, depthWrite:false }), 0, 0, 0.6); f1.rotation.x = Math.PI/2;
+    const f2 = addM(fl, new THREE.ConeGeometry(0.12, 0.8, 12, 1, true), new THREE.MeshBasicMaterial({ color:'#FFF3A0', depthWrite:false }), 0, 0, 0.4); f2.rotation.x = Math.PI/2;
+    const f3 = addM(fl, new THREE.ConeGeometry(0.28, 1.6, 14, 1, true), new THREE.MeshBasicMaterial({ color:'#5CC8FF', transparent:true, opacity:0.25, depthWrite:false }), 0, 0, 0.8); f3.rotation.x = Math.PI/2;
+    g.userData.fan = fan; g.userData.flame = fl; }
+  else if(t === 'pyramid'){ const p = addM(g, new THREE.ConeGeometry(1.6, 2.2, 4), Lm('#E2C285'), 0, 1.1, 0); p.rotation.y = Math.PI/4;
+    for(let i=1;i<6;i++){ const s = 1 - i/6; const ring = addM(g, new THREE.BoxGeometry(2.26*s + 0.02, 0.03, 2.26*s + 0.02), Lm('#C9A86E'), 0, 2.2*(i/6), 0); }
+    addM(g, new THREE.BoxGeometry(0.4, 0.5, 0.05), Gm('#3A2A20'), 0, 0.25, 1.1); addM(g, new THREE.OctahedronGeometry(0.15, 0), Lm('#FFD34D', { emissive:'#5A4000' }), 0, 2.3, 0); }
+  else if(t === 'skyscraper'){ const glass = new THREE.MeshPhongMaterial({ color:'#5B8FD6', specular:'#FFFFFF', shininess:100 });
+    addM(g, new THREE.BoxGeometry(1.4, 4.2, 1.4), glass, 0, 2.1, 0); addM(g, new THREE.BoxGeometry(1.0, 1.4, 1.0), glass, 0, 4.9, 0); addM(g, new THREE.BoxGeometry(0.6, 0.6, 0.6), glass, 0, 5.9, 0);
+    addM(g, new THREE.CylinderGeometry(0.03, 0.03, 1.2, 6), Lm('#C9CCD6'), 0, 6.8, 0); g.userData.bob = addM(g, new THREE.SphereGeometry(0.07, 8, 6), Gm('#FF4D5E'), 0, 7.4, 0); g.userData.bobY = 7.4;
+    for(let y=0.4;y<4.2;y+=0.45) [[0, 0.71, 0], [0, -0.71, Math.PI], [0.71, 0, Math.PI/2], [-0.71, 0, -Math.PI/2]].forEach(([x, z, r]) => { for(let k=-1;k<=1;k++){ const w = addM(g, new THREE.PlaneGeometry(0.28, 0.25), Gm(Math.random() < 0.4 ? '#FFE7A0' : '#BFD9FF'), x + (z ? k*0.4 : 0), y, z + (x ? k*0.4 : 0)); w.rotation.y = r; } });
+    addM(g, new THREE.BoxGeometry(0.5, 0.5, 0.05), Gm('#2A3A5A'), 0, 0.25, 0.72); }
+  else if(t === 'megacastle'){ const st = '#D9D3C7', st2 = '#C2BBAE', blue = '#3D5FB6';
+    const wallSeg = (x, z, len, rot) => { const w = new THREE.Group(); w.position.set(x, 0, z); w.rotation.y = rot; g.add(w); addM(w, new THREE.BoxGeometry(len, 1.1, 0.3), Lm(st2), 0, 0.55, 0);
+      for(let k=0;k<Math.floor(len/0.4);k++) addM(w, new THREE.BoxGeometry(0.2, 0.2, 0.3), Lm(st2), -len/2 + 0.2 + k*0.4, 1.2, 0); };
+    wallSeg(0, 2.2, 3.6, 0); wallSeg(0, -2.2, 3.6, 0); wallSeg(2.2, 0, 3.6, Math.PI/2); wallSeg(-2.2, 0, 3.6, Math.PI/2);
+    addM(g, new THREE.BoxGeometry(0.8, 1.0, 0.1), Gm('#4A3020'), 0, 0.5, 2.36);
+    [[-2.2, -2.2], [2.2, -2.2], [-2.2, 2.2], [2.2, 2.2]].forEach(([x, z]) => { addM(g, new THREE.CylinderGeometry(0.45, 0.5, 2.0, 14), Lm(st), x, 1.0, z); addM(g, new THREE.ConeGeometry(0.58, 1.0, 14), Lm(blue), x, 2.5, z); });
+    addM(g, new THREE.BoxGeometry(2.2, 2.6, 2.0), Lm(st), 0, 1.3, -0.2);
+    for(let k=0;k<5;k++){ addM(g, new THREE.BoxGeometry(0.25, 0.25, 0.25), Lm(st), -0.9 + k*0.45, 2.72, 0.8); addM(g, new THREE.BoxGeometry(0.25, 0.25, 0.25), Lm(st), -0.9 + k*0.45, 2.72, -1.2); }
+    [[-0.8, 0.6], [0.8, 0.6]].forEach(([x, z]) => { addM(g, new THREE.CylinderGeometry(0.32, 0.34, 3.4, 12), Lm(st), x, 1.7, z); addM(g, new THREE.ConeGeometry(0.42, 1.1, 12), Lm(blue), x, 3.95, z); });
+    addM(g, new THREE.CylinderGeometry(0.55, 0.6, 4.6, 16), Lm(st), 0, 2.3, -0.4); addM(g, new THREE.ConeGeometry(0.75, 1.8, 16), Lm(blue), 0, 5.5, -0.4);
+    addM(g, new THREE.SphereGeometry(0.12, 10, 8), Lm('#FFD34D', { emissive:'#6A5000' }), 0, 6.45, -0.4);
+    [[-0.5, 1.6, 0.81], [0.5, 1.6, 0.81], [0, 2.2, 0.81], [-0.5, 0.9, 0.81], [0.5, 0.9, 0.81]].forEach(([x, y, z]) => addM(g, new THREE.PlaneGeometry(0.22, 0.32), Gm('#FFE7A0'), x, y, z));
+    addM(g, new THREE.CylinderGeometry(0.015, 0.015, 0.8, 4), Lm('#5B6170'), 0, 6.8, -0.4); const fl = addM(g, new THREE.PlaneGeometry(0.5, 0.3), Lm('#FF4D5E', { side:THREE.DoubleSide }), 0.25, 7.0, -0.4); g.userData.flag = fl;
+    for(let k=0;k<6;k++){ const a = k/6*Math.PI*2; addM(g, new THREE.ConeGeometry(0.03, 0.3, 4), Lm('#FFD34D'), Math.cos(a)*0.62, 4.75, -0.4 + Math.sin(a)*0.62); } }
   return g;
 }
 function islePos(i){ if(i < 0) return new THREE.Vector3(0, 2.5, 0); const a = i/ISLE_ROSTER.length*Math.PI*2 - Math.PI/2; return new THREE.Vector3(Math.cos(a)*30, Math.sin(i*1.7)*2.5, Math.sin(a)*30); }
@@ -4601,7 +4640,7 @@ function refreshIsles(){
     Object.keys(I.items).forEach(k => { if(!want[k] || want[k].t !== I.items[k].t){ I.itemsG.remove(I.items[k].g); isleSpin = isleSpin.filter(o => o !== I.items[k].g); delete I.items[k]; } });
     Object.keys(want).forEach(k => { if(I.items[k]) return; const w = want[k], g = makeIsleItem(w.t); g.position.set(w.x, 0, w.z); g.rotation.y = w.r;
       g.traverse(o => { o.userData.isleId = I.id; o.userData.ik = k; }); I.itemsG.add(g); I.items[k] = { t:w.t, g, x:w.x, z:w.z };
-      if(g.userData.spin || g.userData.bob || g.userData.flag) isleSpin.push(g); });
+      if(g.userData.spin || g.userData.bob || g.userData.flag || g.userData.flame) isleSpin.push(g); });
     const mine = I.id === isleMine, n = Object.keys(I.items).length;
     const txt = teacher ? '👩‍🏫 영선쌤 섬 · Lv' + lv : I.name + (d.owner ? ' · Lv' + lv : ' · 빈 섬');
     if(I.label.userData.txt !== txt + mine){ I.label.userData.txt = txt + mine; setLabel(I.label, txt, mine ? '#FFE27A' : d.owner || teacher ? '#FFFFFF' : '#A9B0D6'); }
@@ -4624,7 +4663,7 @@ function updIsleUI(){
   $('#isleUp').textContent = lv >= 6 ? '⬆ 최대 크기' : '⬆ 땅 넓히기 ' + (ISLE_UP[lv + 1] || '') + 'P';
   $('#isleMineBtn').textContent = isleMine ? '🏝 내 섬' : '🏝 내 섬 고르기';
 }
-function isleAt(id){ isleFocus = id; const I = isleById[id]; if(!I) return; cam.dist = clamp(ISLE_R[I.lv]*2.6 + 6, 9, 30); lastSent = ''; pushPresence();
+function isleAt(id){ isleFocus = id; const I = isleById[id]; if(!I) return; cam.dist = id === isleMine ? clamp(ISLE_R[I.lv]*1.6 + 3, 6, 16) : clamp(ISLE_R[I.lv]*2.6 + 6, 9, 30); lastSent = ''; pushPresence();
   const d = isleData[id] || {}; toast(id === 't' ? '👩‍🏫 영선쌤 섬 · 우리 반이 포인트를 쓸수록 같이 커져요' : I.name + (d.owner ? '의 섬 · Lv' + I.lv + ' · 건물 ' + I.n + '개' : ' · 아직 주인이 없어요')); }
 function isleClaim(){
   const body = showSheet('내 섬 고르기 · 명단에서 내 이름'); $('#spSheet').hidden = false;
@@ -4676,38 +4715,64 @@ function isleTap(x, y){
     const id = h.object.userData.isleId; if(!id) continue;
     if(isleMode && isleMode.kind === 'del'){ const k = h.object.userData.ik; if(!k || !I.items[k]) continue; const it = ISLE_ITEM[I.items[k].t], d = isleData[isleMine] || {}, back = Math.floor(it.cost/2);
       isleWrite({ ['items/' + k]:null, spent:Math.max(0, num(d.spent, 0, 1e7, 0) - back) }); toast(it.e + ' ' + it.name + ' 치웠어요 · +' + back + 'P 돌려받음'); return; }
-    if(id === isleMine){ if(id !== isleFocus) isleAt(id); return; }
+    if(id === isleMine){ const I0 = isleById[id]; I0.g.worldToLocal(_ipt.copy(h.point)); isleGo = { x:_ipt.x, z:_ipt.z }; return; }
     const I2 = isleById[id], d2 = isleData[id] || {}; toast('👀 ' + (id === 't' ? '영선쌤 섬 · 우리 반이 같이 키워요' : I2.name + (d2.owner ? '의 섬 · Lv' + I2.lv + ' · 건물 ' + I2.n + '개' : ' · 아직 주인이 없어요')) + ' (구경만 할 수 있어요)'); return;
   }
 }
 function enterIsle(){
   if(!isleScene) buildIsleScene();
   camera.far = 400; camera.updateProjectionMatrix();
-  Object.assign(camLim, { pmin:-0.25, pmax:1.35, dmin:5, dmax:95 });
+  Object.assign(camLim, { pmin:-0.25, pmax:1.35, dmin:2.5, dmax:95 });
   cam.yaw = 0; cam.pitch = 0.42; cam.dist = 72; cam.t.set(0, 0, 0); isleFocus = null; isleMode = null;
   $('#panel').hidden = false; $('#joy').hidden = false; $('#isleUI').hidden = false;
   isleLocal = !rtdb;
   if(!isleLocal){ isleRef = rtdb.ref('isles'); isleRef.on('value', s => { isleData = s.val() || {}; refreshIsles(); if(!isleMine && isleClaimT === 0){ isleClaimT = 1; setTimeout(() => { if(room === 'isle' && !isleMine) isleClaim(); }, 600); } }, netErr); }
   else { refreshIsles(); setTimeout(() => { if(room === 'isle' && !isleMine) isleClaim(); }, 600); }
-  isleLoadEarned(); updIsleUI(); setTimeout(() => { if(room === 'isle' && isleMine && !isleFocus) isleAt(isleMine); }, 800);
+  isleLoadEarned(); updIsleUI(); setTimeout(() => { if(room === 'isle' && isleMine && !isleFocus){ isleAt(isleMine); cam.pitch = 0.45; } }, 800);
   toast('☁ 공중섬에 왔어요! 공부한 만큼 땅을 넓히고 건물을 지어요');
 }
 function leaveIsle(){
   if(isleRef){ isleRef.off(); isleRef = null; }
-  isleClaimT = 0; isleMode = null; isleFocus = null; $('#isleUI').hidden = true;
+  isleClaimT = 0; isleMode = null; isleFocus = null; isleGo = null; isleOn = null; $('#isleUI').hidden = true; if(me){ me.group.scale.setScalar(1); }
   if(room === 'isle' || camera.far === 400){ camera.far = 140; camera.updateProjectionMatrix(); }
 }
-let isleVisT = 0;
+let isleVisT = 0, isleGo = null, isleOn = null;
+const ISLE_ME = 0.42;   // 섬에서는 캐릭터를 작게 (건물이랑 크기 맞추기)
+function islePlaceMe(){
+  const I = isleById[isleMine]; if(!I || !me) return;
+  I.g.add(me.group); isleOn = isleMine; me.group.scale.setScalar(ISLE_ME); me.group.visible = true;
+  if(me.flying) setFly(false); me.path = []; me.goSeat = null; me.mode = 'idle'; me.manual = false; me.jumpY = 0;
+  me.pos.set(0, 0, ISLE_R[I.lv]*0.55); me.ry = me.targetRy = Math.PI; isleKeepOn(I);
+  lastSent = ''; pushPresence();
+}
+function isleKeepOn(I){   // 섬 밖으로 안 떨어지고, 건물은 피해서 걸어요
+  const R = ISLE_R[I.lv] - 0.3, d = Math.hypot(me.pos.x, me.pos.z); if(d > R){ me.pos.x *= R/d; me.pos.z *= R/d; }
+  for(const k in I.items){ const o = I.items[k], rr = ISLE_ITEM[o.t].r*0.85 + 0.15, dx = me.pos.x - o.x, dz = me.pos.z - o.z, dd = Math.hypot(dx, dz);
+    if(dd < rr){ if(dd < 1e-4){ me.pos.x += rr; } else { me.pos.x = o.x + dx/dd*rr; me.pos.z = o.z + dz/dd*rr; } } }
+  me.pos.y = 0;
+}
 function isleTick(dt){
   const t = performance.now()/1000;
   let ix = joy.x, iy = joy.y;
   if(keys['a'] || keys['arrowleft']) ix -= 1; if(keys['d'] || keys['arrowright']) ix += 1;
   if(keys['w'] || keys['arrowup']) iy -= 1; if(keys['s'] || keys['arrowdown']) iy += 1;
   const mag = Math.min(1, Math.hypot(ix, iy));
-  if(mag >= 0.12){ cam.yaw -= ix*dt*1.6; cam.dist = clamp(cam.dist + iy*dt*(6 + cam.dist*0.6), camLim.dmin, camLim.dmax); }   // 남의 섬으로는 못 가요 · 돌려보고 확대/축소만
+  const MI = isleMine && isleById[isleMine];
+  if(MI && me){   // 내 섬 위를 걸어다녀요 (남의 섬으로는 못 가요)
+    if(isleOn !== isleMine || me.group.parent !== MI.g) islePlaceMe();
+    let mx = 0, mz = 0, sp = 0;
+    if(mag >= 0.12){ isleGo = null; const fx = -Math.sin(cam.yaw), fz = -Math.cos(cam.yaw), rx = Math.cos(cam.yaw), rz = -Math.sin(cam.yaw);
+      mx = fx*(-iy) + rx*ix; mz = fz*(-iy) + rz*ix; const ml = Math.hypot(mx, mz) || 1; mx /= ml; mz /= ml; sp = 1.9*mag; }
+    else if(isleGo){ const dx = isleGo.x - me.pos.x, dz = isleGo.z - me.pos.z, dl = Math.hypot(dx, dz); if(dl > 0.08){ mx = dx/dl; mz = dz/dl; sp = 1.8; } else isleGo = null; }
+    if(sp){ me.pos.x += mx*sp*dt; me.pos.z += mz*sp*dt; me.targetRy = Math.atan2(mx, mz); me.mode = 'walk'; me.manual = true; }
+    else if(me.mode === 'walk'){ me.mode = 'idle'; me.manual = false; }
+    isleKeepOn(MI); me.kvx = me.kvz = 0; me.update(dt);
+    MI.g.updateMatrixWorld(); me.group.getWorldPosition(_ipt); _ipt.y += 0.5; cam.t.lerp(_ipt, 1 - Math.exp(-dt*5));
+  } else if(mag >= 0.12){ cam.yaw -= ix*dt*1.6; cam.dist = clamp(cam.dist + iy*dt*(6 + cam.dist*0.6), camLim.dmin, camLim.dmax); }
   isles.forEach(I => { I.g.position.y = I.pos.y + Math.sin(t*0.5 + I.ph)*0.25; });
-  if(isleFocus && isleById[isleFocus]){ const I = isleById[isleFocus]; _ipt.set(I.g.position.x, I.g.position.y + 0.8, I.g.position.z); cam.t.lerp(_ipt, 1 - Math.exp(-dt*3)); }
-  isleSpin.forEach(g => { if(g.userData.spin) g.userData.spin.rotation.z += dt*1.5; if(g.userData.bob) g.userData.bob.position.y = 0.95 + Math.sin(t*4)*0.05; if(g.userData.flag) g.userData.flag.rotation.y = Math.sin(t*3)*0.4; });
+  if(!(MI && me) && isleFocus && isleById[isleFocus]){ const I = isleById[isleFocus]; _ipt.set(I.g.position.x, I.g.position.y + 0.8, I.g.position.z); cam.t.lerp(_ipt, 1 - Math.exp(-dt*3)); }
+  isleSpin.forEach(g => { if(g.userData.spin) g.userData.spin.rotation.z += dt*1.5; if(g.userData.bob) g.userData.bob.position.y = (g.userData.bobY || 0.95) + Math.sin(t*4)*0.05; if(g.userData.flag) g.userData.flag.rotation.y = Math.sin(t*3)*0.4;
+    if(g.userData.flame){ g.userData.fan.rotation.z += dt*25; const f = 0.85 + Math.random()*0.3; g.userData.flame.scale.set(f, f, 0.8 + Math.random()*0.5); } });
   isleClouds.forEach(c => { c.s.position.x += c.sp*dt; if(c.s.position.x > 85) c.s.position.x = -85; });
   isleScene.userData.sky.position.copy(camera.position);
   isleVisT -= dt; if(isleVisT <= 0){ isleVisT = 1;   // 누가 어느 섬을 구경하는지
