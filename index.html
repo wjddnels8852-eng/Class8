@@ -285,6 +285,31 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
 .studybar span{color:#FFE7A0;font-weight:800;padding:0 10px;font-variant-numeric:tabular-nums}
 .studybar button{min-height:42px;padding:0 16px;border:0;border-radius:999px;font-weight:800;font-size:15px;color:#0F1426;background:linear-gradient(180deg,#7DF0F2,#3FCAD8);box-shadow:0 3px 0 #1E8A96}
 .studybar button#sbStand{background:linear-gradient(180deg,#FFD66B,#FFB020);box-shadow:0 3px 0 #B97A0C}
+#isleFight{position:fixed;z-index:6;right:max(10px,env(safe-area-inset-right,0px));bottom:var(--fb,12px);width:230px;height:230px;pointer-events:none}
+#isleFight[hidden]{display:none}
+.fbtn{position:absolute;width:58px;height:58px;border-radius:50%;border:3px solid var(--rim);pointer-events:auto;padding:0;cursor:pointer;
+  background:radial-gradient(circle at 35% 28%,rgba(255,255,255,.55),rgba(255,255,255,0) 42%),linear-gradient(160deg,var(--c1),var(--c2));
+  box-shadow:0 5px 0 rgba(0,0,0,.28),0 10px 22px rgba(0,0,0,.35),inset 0 -6px 10px rgba(0,0,0,.18);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
+  transition:transform .08s;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;touch-action:manipulation;overflow:hidden}
+.fbtn.big{width:86px;height:86px;border-width:4px}
+.fbtn b{font-size:24px;line-height:1;filter:drop-shadow(0 2px 1px rgba(0,0,0,.35))}
+.fbtn.big b{font-size:36px}
+.fbtn span{font:800 10px var(--font-b);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6);margin-top:2px}
+.fbtn.big span{font-size:12px}
+.fbtn:active{transform:scale(.9)}
+.fbtn::after{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(rgba(10,14,30,.62) calc(var(--cd,0)*360deg),transparent 0);pointer-events:none}
+.fbtn[aria-disabled=true]{filter:grayscale(.85) brightness(.75)}
+.fbtn[aria-disabled=true]::before{content:"🔒";position:absolute;right:2px;top:0;font-size:14px}
+body.isle .test{display:none}
+body.isle .panel{padding:8px 10px 10px;gap:6px}
+#isleUI .btn{font-size:13px}
+@media (min-aspect-ratio: 1/1){
+  body.isle .panel{left:calc(max(14px,env(safe-area-inset-left,0px)) + 140px)!important;right:calc(max(10px,env(safe-area-inset-right,0px)) + 236px)!important;width:auto!important;max-width:640px!important;margin:0 auto!important;
+    bottom:max(10px,env(safe-area-inset-bottom,0px))!important;border-radius:18px!important;flex-direction:column!important;align-items:stretch!important;overflow:visible!important;max-height:none!important;
+    background:linear-gradient(180deg,rgba(30,37,72,.9),rgba(18,23,46,.92))!important}
+  body.isle #isleUI{grid-template-columns:repeat(7,minmax(0,1fr))}
+  body.isle #isleUI .btn{min-height:38px;font-size:12.5px}
+}
 @keyframes geoBob{50%{transform:translateX(-50%) translateY(-4px)}}
 @media (prefers-reduced-motion: reduce){.geobtn{animation:none}}
 #geoCard .tabs3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
@@ -470,18 +495,16 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
     <button type="button" class="btn" id="boardOut">내리기</button>
   </div>
   <div id="isleUI" hidden>
-    <div id="isleInfo" style="grid-column:1/-1;text-align:center;font-weight:800;color:#FFE27A;font-size:14px">🪙 …</div>
+    <div id="isleInfo" style="grid-column:1/-1;text-align:center;font-weight:800;color:#FFE27A;font-size:12.5px">🪙 …</div>
     <button type="button" class="btn primary im" id="isleMineBtn">🏝 내 섬</button>
     <button type="button" class="btn im" id="isleAll">🗺 멀리</button>
     <button type="button" class="btn primary im" id="isleBuild">🏗 짓기</button>
     <button type="button" class="btn primary im" id="isleBlock">🧱 블록</button>
-    <button type="button" class="btn im" id="isleUp" style="grid-column:span 2">⬆ 땅 넓히기</button>
+    <button type="button" class="btn im" id="isleUp">⬆ 넓히기</button>
     <button type="button" class="btn im" id="isleDel">🗑 치우기</button>
-    <button type="button" class="btn warm im" id="isleExit">로비로</button>
+    <button type="button" class="btn warm im" id="isleExit">🚪 로비</button>
     <div id="blockBar" hidden></div>
-    <div id="isleSkills" style="grid-column:1/-1;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px">
-      <button type="button" class="btn" data-isk="punch">👊 주먹</button><button type="button" class="btn" data-isk="blast">💨 장풍</button><button type="button" class="btn" data-isk="ice">❄️ 빙결</button><button type="button" class="btn" data-isk="fire">🔥 화염</button><button type="button" class="btn" data-isk="slap">✋ 싸대기</button>
-    </div>
+    <div id="isleSkills" hidden></div>
   </div>
   <div id="spaceUI" hidden>
     <button type="button" class="btn warm" id="spFusion" hidden style="grid-column:1/-1">☀ 핵융합 보기</button>
@@ -553,7 +576,7 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
     </div>
     </div>
     <button class="btn primary" type="submit" id="enterBtn" hidden>교실 입장</button>
-    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 53</p>
+    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 55</p>
   </form>
 </div>
 
@@ -597,6 +620,13 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
 </div>
 
 <button type="button" class="geobtn" id="roomBtn" hidden>🚪 들어가기</button>
+<div id="isleFight" hidden aria-label="기술">
+  <button type="button" class="fbtn big" data-isk="punch" style="--c1:#FFB547;--c2:#F06A1F;--rim:#FFE2B0;left:137px;top:137px"><b>👊</b><span>주먹</span></button>
+  <button type="button" class="fbtn" data-isk="blast" style="--c1:#7DF0F2;--c2:#1FA9C9;--rim:#D6FDFF;left:33px;top:151px"><b>💨</b><span>장풍</span></button>
+  <button type="button" class="fbtn" data-isk="ice" style="--c1:#BFE6FF;--c2:#4D8BFF;--rim:#EAF6FF;left:49px;top:92px"><b>❄️</b><span>빙결</span></button>
+  <button type="button" class="fbtn" data-isk="fire" style="--c1:#FF8A5B;--c2:#D9261C;--rim:#FFD0B8;left:92px;top:49px"><b>🔥</b><span>화염</span></button>
+  <button type="button" class="fbtn" data-isk="slap" style="--c1:#FF9AC8;--c2:#C2357A;--rim:#FFD9EA;left:151px;top:33px"><b>✋</b><span>싸대기</span></button>
+</div>
 <div class="studybar" id="studyBar" hidden><span id="sbTime">00:00</span><button type="button" id="sbFocus">💡 집중 화면</button><button type="button" id="sbStand">🚶 일어나기</button></div>
 <div class="ninocard" id="geoCard" hidden>
   <div class="ed-head"><div><h2>📐 기하 탐구실 · 이차곡선</h2><div class="who">고2·고3 기하 미리 보기</div></div><button type="button" class="tool" id="geoExit">로비로 ⬆</button></div>
@@ -2491,6 +2521,27 @@ document.querySelectorAll('[data-fly]').forEach(b => b.addEventListener('click',
 const blasts = [], bursts = [], flames = [], puffs = [];
 function FX(){ return room === 'isle' && isleScene ? (isleOn && isleById[isleOn] ? isleById[isleOn].stage : isleScene) : scene; }   // 기술 효과를 넣을 곳 (공중섬에선 내가 서 있는 섬)
 const rmFx = o => { if(o && o.parent) o.parent.remove(o); };
+const PIT_FIGHT = 6.4, PIT_LAVA = 8.6, PIT_CAGE = 9.2, PIT_OUT = 13;   // 지하 맞짱장 (무대 칸 기준)
+const inPit = () => room === 'isle' && typeof isleOn !== 'undefined' && isleOn === 'pit';
+const zoneIn = a => Math.hypot(a.pos.x, a.pos.z) < PIT_CAGE;
+const sameZone = (a, b) => !inPit() || zoneIn(a) === zoneIn(b);   // 철창 안팎은 서로 안 맞아요
+const hands = [];
+function spawnHand(av, k, dx, dz, reach){   // 커다란 주먹/손바닥이 쭉 뻗어나가요
+  const g = new THREE.Group(), skin = new THREE.MeshLambertMaterial({ color:'#F6CBA6', emissive:'#3A2010' }), pn = k === 'punch';
+  if(pn){ const f = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.36, 0.4), skin); g.add(f);
+    for(let i=0;i<4;i++){ const kn = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.1, 0.1), skin); kn.position.set(-0.15 + i*0.1, 0.12, 0.21); g.add(kn); }
+    const th = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.12, 0.26), skin); th.position.set(-0.24, -0.06, 0.05); g.add(th);
+    const cuff = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.18, 12), new THREE.MeshLambertMaterial({ color:'#E2574C' })); cuff.rotation.x = Math.PI/2; cuff.position.z = -0.28; g.add(cuff); }
+  else { const p = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.5, 0.1), skin); g.add(p);
+    for(let i=0;i<4;i++){ const fg = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.32, 0.08), skin); fg.position.set(-0.17 + i*0.115, 0.4, 0); fg.rotation.z = (i - 1.5)*0.09; g.add(fg); }
+    const th = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.26, 0.08), skin); th.position.set(-0.3, 0.05, 0); th.rotation.z = 0.8; g.add(th);
+    const cuff = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.16, 0.16), new THREE.MeshLambertMaterial({ color:'#C2357A' })); cuff.position.y = -0.32; g.add(cuff); g.rotation.order = 'YXZ'; }
+  const trail = new THREE.Mesh(new THREE.ConeGeometry(0.26, 1, 12, 1, true), new THREE.MeshBasicMaterial({ color:'#FFFFFF', transparent:true, opacity:0.35, depthWrite:false, side:THREE.DoubleSide }));
+  trail.rotation.x = -Math.PI/2; const tg = new THREE.Group(); tg.add(trail); 
+  const root = new THREE.Group(); root.add(g); root.add(tg); FX().add(root);
+  const ry = Math.atan2(dx, dz); root.rotation.y = ry; if(!pn){ g.rotation.x = -0.2; }
+  hands.push({ root, g, tg, trail, av, dx, dz, t:0, reach, pn, y:av.group.position.y + (pn ? 1.05 : 1.25) });
+}
 const SKILLS = {
   punch:{ name:'주먹', need:0, cd:700 },
   blast:{ name:'장풍', need:0, cd:2500 },
@@ -2547,12 +2598,12 @@ function burn(av){
 function unburn(av){ (av.burnSave || []).forEach(([o, m]) => { o.material.dispose(); o.material = m; }); av.burnSave = null; av.burnT = 0; }
 function slapHit(av, dx, dz){
   popText(av, '짝!', '#FF7C93');
-  if(!av.remote){ av.path = []; av.goSeat = null; av.flying = false; av.mode = 'idle'; av.kvx = dx*12; av.kvz = dz*12; av.vy = 3.5; av.jumpY = Math.max(av.jumpY, 0.01); av.spinT = 1.0; }
+  if(!av.remote){ av.path = []; av.goSeat = null; av.flying = false; av.mode = 'idle'; av.kvx = dx*17; av.kvz = dz*17; av.vy = 4.5; av.jumpY = Math.max(av.jumpY, 0.01); av.spinT = 1.1; }
   av.say('아야!'); if(av === me) toast('싸대기를 맞았어요!');
 }
 function punchHit(av, dx, dz){
   popText(av, '퍽!', '#FFB020');
-  if(!av.remote){ av.path = []; av.goSeat = null; av.flying = false; av.mode = 'idle'; av.kvx = dx*7; av.kvz = dz*7; av.vy = 2.5; av.jumpY = Math.max(av.jumpY, 0.01); av.spinT = 0.35; }
+  if(!av.remote){ av.path = []; av.goSeat = null; av.flying = false; av.mode = 'idle'; av.kvx = dx*11; av.kvz = dz*11; av.vy = 3; av.jumpY = Math.max(av.jumpY, 0.01); av.spinT = 0.45; }
   av.say('윽!'); if(av === me) toast('주먹에 맞았어요!');
 }
 function onHit(av, kind, dx, dz){
@@ -2571,9 +2622,9 @@ function castSkill(av, k, x, z, dx, dz){
   if(!av.group.visible || av.group.parent !== FX()) return;   // 다른 곳(다른 섬)에서 쓴 기술은 안 보여요
   if(k === 'slap' || k === 'punch'){
     const pn = k === 'punch'; av.pose = pn ? 'punch' : 'slap'; av.poseT = 0; av.poseDur = pn ? 0.3 : 0.45; av.say(pn ? '주먹!' : '싸대기!');
-    let best = null, bd = pn ? 1.3 : 1.5;
-    allAvatars.forEach(a => { if(a === av || !a.group.visible || a.group.parent !== FX()) return; const ox = a.pos.x - av.pos.x, oz = a.pos.z - av.pos.z, d = Math.hypot(ox, oz);
-      if(d < bd && (ox*dx + oz*dz)/(d || 1) > 0.3){ best = a; bd = d; } });
+    let best = null, bd = pn ? 2.0 : 2.4; spawnHand(av, k, dx, dz, bd);
+    allAvatars.forEach(a => { if(a === av || !a.group.visible || a.group.parent !== FX() || !sameZone(a, av)) return; const ox = a.pos.x - av.pos.x, oz = a.pos.z - av.pos.z, d = Math.hypot(ox, oz);
+      if(d < bd && (ox*dx + oz*dz)/(d || 1) > 0.25){ best = a; bd = d; } });
     if(best) setTimeout(() => onHit(best, k, dx, dz), pn ? 120 : 180);
     return;
   }
@@ -2588,7 +2639,8 @@ function updateBlasts(dt){
     b.ring.rotation.y += dt*8; b.ring.rotation.x += dt*5; b.g.scale.setScalar(1 + Math.sin(b.dist*6)*0.08);
     if(b.kind === 'ice'){ b.g.children[0].rotation.y += dt*10; if(Math.random() < dt*20) puff(b.g.position.x, 1.1, b.g.position.z, '#DFF6FF', 0.4); }
     let hit = null;
-    for(const a of allAvatars){ if(a !== b.owner && a.group.visible && a.group.parent === FX() && Math.hypot(a.pos.x - b.g.position.x, a.pos.z - b.g.position.z) < 0.7){ hit = a; break; } }
+    if(b.z0 == null) b.z0 = Math.hypot(b.g.position.x, b.g.position.z) < PIT_CAGE; if(inPit() && (Math.hypot(b.g.position.x, b.g.position.z) < PIT_CAGE) !== b.z0) b.dist = 99;
+    for(const a of allAvatars){ if(a !== b.owner && a.group.visible && a.group.parent === FX() && sameZone(a, b.owner) && Math.hypot(a.pos.x - b.g.position.x, a.pos.z - b.g.position.z) < 0.7){ hit = a; break; } }
     if(hit || b.dist > 11 || (room !== 'isle' && (Math.abs(b.g.position.x) > W/2 || Math.abs(b.g.position.z) > D/2))){
       if(hit){
         onHit(hit, b.kind, b.dx, b.dz);
@@ -2608,11 +2660,21 @@ function updateBlasts(dt){
         m.position.set(o.pos.x + f.dx*0.55, o.group.position.y + 1.05, o.pos.z + f.dz*0.55); FX().add(m);
         puffs.push({ m, t:0, life:0.55, vx:vx*7, vz:vz*7, vy:rand(-0.3, 0.6), grow:true });
       }
-      allAvatars.forEach(a => { if(a === o || !a.group.visible || a.group.parent !== FX() || f.hit.has(a)) return;
+      allAvatars.forEach(a => { if(a === o || !a.group.visible || a.group.parent !== FX() || !sameZone(a, o)) return;
         const ox = a.pos.x - o.pos.x, oz = a.pos.z - o.pos.z, d = Math.hypot(ox, oz);
-        if(d < 4 && d > 0.01 && (ox*f.dx + oz*f.dz)/d > 0.88 && f.t > d/7){ f.hit.add(a); onHit(a, 'fire', f.dx, f.dz); } });
+        if(d < 4.5 && d > 0.01 && (ox*f.dx + oz*f.dz)/d > 0.86 && f.t > d/7){
+          if(!f.hit.has(a)){ f.hit.add(a); onHit(a, 'fire', f.dx, f.dz); }
+          if(!a.remote && a.mode !== 'sit'){ a.kvx = f.dx*6.5; a.kvz = f.dz*6.5; a.path = []; a.goSeat = null; } } });   // 불길 안에 있는 동안 계속 밀려나요
     }
     if(f.t >= 0.9) flames.splice(i, 1);
+  }
+  for(let i = hands.length - 1; i >= 0; i--){
+    const h = hands[i]; h.t += dt; const T = h.pn ? 0.32 : 0.42, u = Math.min(1, h.t/T), out = u < 0.45 ? u/0.45 : u < 0.6 ? 1 : 1 - (u - 0.6)/0.4;
+    const e = 1 - Math.pow(1 - out, 3), dist = 0.35 + e*h.reach, s = 1 + e*(h.pn ? 1.1 : 1.4);
+    const a = h.av; h.root.position.set(a.pos.x, h.y, a.pos.z); h.g.position.set(0, 0, dist); h.g.scale.setScalar(s);
+    if(!h.pn) h.g.rotation.z = (1 - e)*0.9;
+    h.tg.position.z = dist/2 + 0.1; h.trail.scale.set(s*0.9, Math.max(0.01, dist - 0.2), s*0.9); h.trail.material.opacity = 0.35*out;
+    if(u >= 1){ rmFx(h.root); hands.splice(i, 1); }
   }
   for(let i = puffs.length - 1; i >= 0; i--){
     const e = puffs[i]; e.t += dt; const k = e.t/e.life;
@@ -4543,7 +4605,7 @@ const ISLE_ITEMS = [
 ];
 const ISLE_ITEM = {}; ISLE_ITEMS.forEach(o => { ISLE_ITEM[o.t] = o; });
 const ISLE_MAX = 40, ISLE_S = 0.5, ARENA_R = 7;   // 섬 위 사람·기술은 0.5배 크기 무대(stage)에서 움직여요
-const isleRad = I => I.arena ? ARENA_R : ISLE_R[I.lv];
+const isleRad = I => I.pit ? 6.5 : I.arena ? ARENA_R : ISLE_R[I.lv];
 // 가운데 영선쌤 섬: 반 친구들이 쓴 포인트를 다 합친 만큼 저절로 커져요
 const T_LV = [0, 300, 1000, 2500, 5000];
 const T_AUTO = [[0, 'tree', 1.4, 0.6], [0, 'flower', -1.2, 1.0], [0, 'bench', 0, 1.7], [150, 'tree', -1.5, -1.0], [300, 'fountain', 0, 0], [600, 'house', 2.2, -1.4],
@@ -4682,9 +4744,49 @@ function buildIsleScene(){
       if(k % 2 === 0){ const f = addM(I.base, new THREE.PlaneGeometry(0.5, 0.32), Lm(k % 4 ? '#5CE1E6' : '#FF7C93', { side:THREE.DoubleSide }), x, 0.78, z); f.rotation.y = -a; } }
     I.base.traverse(o => { o.userData.isleId = 'arena'; });
     I.stage = new THREE.Group(); I.stage.scale.setScalar(ISLE_S); I.stage.userData.stage = true; I.g.add(I.stage);
+    { const hole = addM(I.base, new THREE.CircleGeometry(1.0, 32), Gm('#120806'), 0, 0.02, 0); hole.rotation.x = -Math.PI/2;
+      const rim = addM(I.base, new THREE.TorusGeometry(1.0, 0.09, 8, 32), Lm('#FF6A1A', { emissive:'#A02800' }), 0, 0.05, 0); rim.rotation.x = Math.PI/2; I.base.userData.rim = rim;
+      const glow = addM(I.base, new THREE.CircleGeometry(0.95, 32), new THREE.MeshBasicMaterial({ color:'#FF5A10', transparent:true, opacity:0.35, depthWrite:false }), 0, 0.03, 0); glow.rotation.x = -Math.PI/2; I.base.userData.holeGlow = glow;
+      const sg = labelSprite('⬇ 지하 맞짱장', '#FF8A3D'); sg.scale.set(2.4, 0.6, 1); sg.position.set(0, 1.4, 0); I.base.add(sg); }
     I.label = labelSprite('⚔ 전투장 · 누구나 기술 OK', '#FFB020'); I.label.scale.set(4.4, 1.1, 1); I.label.position.y = 3.2; I.g.add(I.label);
     I.visit = labelSprite('', '#8FCBFF'); I.visit.scale.set(2.8, 0.7, 1); I.visit.visible = false; I.visit.position.y = 4.1; I.g.add(I.visit);
     isles.push(I); isleById.arena = I; }
+  { // 🔥 지하 맞짱장: 가운데 무대 + 용암 고리 + 철창, 철창 밖은 관중석
+    const I = { id:'pit', name:'🔥 지하 맞짱장', idx:-3, g:new THREE.Group(), lv:0, items:{}, itemsG:new THREE.Group(), ph:0, pit:true, fixed:true, n:0 };
+    I.pos = new THREE.Vector3(0, -30, 0); I.g.position.copy(I.pos); isleScene.add(I.g); I.g.add(I.itemsG);
+    const B = new THREE.Group(); I.base = B; I.g.add(B); const S = ISLE_S;
+    const stoneT = BLK_MAT.stone.map.clone(); stoneT.wrapS = stoneT.wrapT = THREE.RepeatWrapping; stoneT.repeat.set(8, 8); stoneT.needsUpdate = true;
+    addM(B, new THREE.CylinderGeometry(PIT_FIGHT*S, PIT_FIGHT*S*0.95, 1.2, 40), new THREE.MeshLambertMaterial({ map:stoneT, color:'#B8B2A8' }), 0, -0.6, 0);
+    addM(B, new THREE.TorusGeometry(PIT_FIGHT*S, 0.07, 6, 48), Lm('#E2574C', { emissive:'#5A1000' }), 0, 0.01, 0).rotation.x = Math.PI/2;
+    const lc = document.createElement('canvas'); lc.width = lc.height = 128; { const x = lc.getContext('2d'); x.fillStyle = '#FF5A10'; x.fillRect(0, 0, 128, 128);
+      for(let i=0;i<220;i++){ x.fillStyle = ['#FFB020', '#FF3D1A', '#FFE27A', '#C21E10'][i % 4]; x.beginPath(); x.arc(Math.random()*128, Math.random()*128, 2 + Math.random()*9, 0, 7); x.fill(); } }
+    const lavaT = new THREE.CanvasTexture(lc); lavaT.wrapS = lavaT.wrapT = THREE.RepeatWrapping; lavaT.repeat.set(6, 1); I.lavaT = lavaT;
+    const lava = addM(B, new THREE.RingGeometry(PIT_FIGHT*S, PIT_CAGE*S, 64, 1), new THREE.MeshBasicMaterial({ map:lavaT, side:THREE.DoubleSide }), 0, -0.55, 0); lava.rotation.x = -Math.PI/2;
+    I.bubbles = []; for(let k=0;k<14;k++){ const a = k/14*Math.PI*2 + rand(0, 0.3), r = (PIT_FIGHT + rand(0.4, 2.2))*S; I.bubbles.push(addM(B, new THREE.SphereGeometry(rand(0.06, 0.14), 8, 6), Gm('#FFD34D'), Math.cos(a)*r, -0.5, Math.sin(a)*r)); I.bubbles[k].userData.ph = rand(0, 6); }
+    [0, 1, 2].forEach(k => { const pl = new THREE.PointLight('#FF6A1A', 1.6, 14); const a = k/3*Math.PI*2; pl.position.set(Math.cos(a)*PIT_LAVA*S, 0.4, Math.sin(a)*PIT_LAVA*S); B.add(pl); });
+    // 철창
+    const bar = new THREE.MeshLambertMaterial({ color:'#5B6170' });
+    for(let k=0;k<64;k++){ const a = k/64*Math.PI*2; addM(B, new THREE.CylinderGeometry(0.025, 0.025, 3.2, 5), bar, Math.cos(a)*PIT_CAGE*S, 1.0, Math.sin(a)*PIT_CAGE*S); }
+    [-0.55, 1.0, 2.6].forEach(y => addM(B, new THREE.TorusGeometry(PIT_CAGE*S, 0.04, 6, 64), bar, 0, y, 0).rotation.x = Math.PI/2);
+    // 관중석 바닥 + 동굴 벽 + 천장 구멍
+    const ring = addM(B, new THREE.RingGeometry(PIT_CAGE*S, PIT_OUT*S + 0.3, 64, 1), new THREE.MeshLambertMaterial({ map:stoneT, color:'#7A746C', side:THREE.DoubleSide }), 0, 0.0, 0); ring.rotation.x = -Math.PI/2; ring.userData.isleTop = true;
+    addM(B, new THREE.CylinderGeometry(PIT_OUT*S + 0.3, PIT_OUT*S + 0.3, 0.6, 64), Lm('#4A4440'), 0, -0.31, 0);
+    const wallC = document.createElement('canvas'); wallC.width = 64; wallC.height = 128; { const x = wallC.getContext('2d'), gr = x.createLinearGradient(0, 0, 0, 128); gr.addColorStop(0, '#1A1412'); gr.addColorStop(0.7, '#3A2A22'); gr.addColorStop(1, '#8A3A18'); x.fillStyle = gr; x.fillRect(0, 0, 64, 128);
+      for(let i=0;i<300;i++){ x.fillStyle = 'rgba(0,0,0,' + Math.random()*0.35 + ')'; x.fillRect(Math.random()*64, Math.random()*128, 3, 3); } }
+    const wt = new THREE.CanvasTexture(wallC); wt.wrapS = THREE.RepeatWrapping; wt.repeat.set(8, 1);
+    addM(B, new THREE.CylinderGeometry(PIT_OUT*S + 0.4, PIT_OUT*S + 0.4, 6.5, 48, 1, true), new THREE.MeshBasicMaterial({ map:wt, side:THREE.BackSide, fog:false }), 0, 3.0, 0);
+    const ceil = addM(B, new THREE.RingGeometry(0.9, PIT_OUT*S + 0.45, 48, 1), new THREE.MeshBasicMaterial({ color:'#120E0C', side:THREE.DoubleSide, fog:false }), 0, 6.25, 0); ceil.rotation.x = Math.PI/2;
+    addM(B, new THREE.CylinderGeometry(0.9, 0.9, 6, 20, 1, true), new THREE.MeshBasicMaterial({ color:'#FFE7A0', transparent:true, opacity:0.08, depthWrite:false, side:THREE.DoubleSide }), 0, 3.2, 0);
+    // 나가는 사다리 (관중석)
+    const lad = new THREE.Group(); lad.position.set(0, 0, -(PIT_OUT - 1.2)*S); B.add(lad);
+    [-0.25, 0.25].forEach(x => addM(lad, new THREE.BoxGeometry(0.06, 6.2, 0.06), Lm('#7A5638'), x, 3.1, -0.35));
+    for(let y=0.3;y<6;y+=0.4) addM(lad, new THREE.BoxGeometry(0.5, 0.05, 0.05), Lm('#8A6238'), 0, y, -0.35);
+    const lsg = labelSprite('⬆ 전투장으로', '#8FCBFF'); lsg.scale.set(2, 0.5, 1); lsg.position.set(0, 1.6, 0); lad.add(lsg);
+    B.traverse(o => { o.userData.isleId = 'pit'; });
+    I.stage = new THREE.Group(); I.stage.scale.setScalar(ISLE_S); I.stage.userData.stage = true; I.g.add(I.stage);
+    I.label = labelSprite('🔥 지하 맞짱장', '#FF8A3D'); I.label.scale.set(3.2, 0.8, 1); I.label.position.y = 4.4; I.g.add(I.label);
+    I.visit = labelSprite('', '#8FCBFF'); I.visit.scale.set(2.8, 0.7, 1); I.visit.visible = false; I.visit.position.y = 5.2; I.g.add(I.visit);
+    isles.push(I); isleById.pit = I; }
   refreshIsles();
 }
 function teacherSpent(){ let s = 0; Object.keys(isleData).forEach(k => { if(k !== 't') s += num(isleData[k] && isleData[k].spent, 0, 1e7, 0); }); return s; }
@@ -4693,7 +4795,7 @@ function refreshIsles(){
   isleMine = null; Object.keys(isleData).forEach(k => { const d = isleData[k]; if(d && d.owner === myUid && k !== 't') isleMine = k; });
   const tsp = teacherSpent();
   isles.forEach(I => {
-    if(I.arena) return;
+    if(I.arena || I.pit) return;
     const d = isleData[I.id] || {}, teacher = I.id === 't';
     const lv = teacher ? Math.min(6, 2 + T_LV.filter(v => tsp >= v).length - 1) : clamp(Math.floor(num(d.lv, 1, 6, 1)), 1, 6);
     if(lv !== I.lv){ if(I.base) I.g.remove(I.base); I.base = isleBase(ISLE_R[lv]); I.base.traverse(o => { o.userData.isleId = I.id; }); I.g.add(I.base); I.lv = lv; }
@@ -4726,7 +4828,7 @@ function updIsleUI(){
   const p = islePoints(), d = isleMine && isleData[isleMine], lv = d ? clamp(Math.floor(num(d.lv, 1, 6, 1)), 1, 6) : 0;
   $('#isleInfo').textContent = isleMine ? '🪙 ' + (p == null ? '…' : p + 'P') + ' · 내 섬 Lv' + lv + ' · 공부 1분 = 1P' : '아직 내 섬이 없어요 · 명단에서 내 이름을 골라요';
   $('#isleBuild').disabled = $('#isleUp').disabled = $('#isleDel').disabled = !isleMine;
-  $('#isleUp').textContent = lv >= 6 ? '⬆ 최대 크기' : '⬆ 땅 넓히기 ' + (ISLE_UP[lv + 1] || '') + 'P';
+  $('#isleUp').textContent = lv >= 6 ? '⬆ 최대' : '⬆ 넓히기 ' + (ISLE_UP[lv + 1] || '') + 'P';
   $('#isleMineBtn').textContent = isleMine ? (isleOn && isleOn !== isleMine ? '🏝 내 섬으로' : '🏝 내 섬') : '🏝 내 섬 고르기';
   document.querySelectorAll('[data-isk]').forEach(b => { const k = b.dataset.isk, ok = !!me && skillOk(me, k); b.setAttribute('aria-disabled', String(!ok)); b.title = ok ? '' : '하루 ' + (SKILLS[k].need/3600) + '시간 공부하면 열려요'; });
 }
@@ -4785,6 +4887,7 @@ function isleTap(x, y){
       isleWrite({ ['items/' + k]:null, spent:Math.max(0, num(d.spent, 0, 1e7, 0) - back) }); toast(it.e + ' ' + it.name + ' 치웠어요 · +' + back + 'P 돌려받음'); return; }
     if(id === isleOn && !isleFly && !isleFall){ const I0 = isleById[id]; I0.stage.updateMatrixWorld(); I0.stage.worldToLocal(_ipt.copy(h.point)); isleGo = { x:_ipt.x, z:_ipt.z }; return; }
     if(id === 'arena'){ toast('⚔ 전투장 · 점프 발판으로 갈 수 있어요'); return; }
+    if(id === 'pit'){ toast('🔥 지하 맞짱장 · 전투장 가운데 구멍으로 내려가요'); return; }
     const I2 = isleById[id], d2 = isleData[id] || {}; toast('👀 ' + (id === 't' ? '영선쌤 섬 · 우리 반이 같이 키워요' : I2.name + (d2.owner ? '의 섬 · Lv' + I2.lv + ' · 건물 ' + I2.n + '개' : ' · 아직 주인이 없어요')) + ' · 점프 발판으로 놀러 갈 수 있어요'); return;
   }
 }
@@ -4793,7 +4896,7 @@ function enterIsle(){
   camera.far = 400; camera.updateProjectionMatrix();
   Object.assign(camLim, { pmin:-0.25, pmax:1.35, dmin:2.5, dmax:95 });
   cam.yaw = 0; cam.pitch = 0.42; cam.dist = 72; cam.t.set(0, 0, 0); isleFocus = null; isleMode = null;
-  $('#panel').hidden = false; $('#joy').hidden = false; $('#isleUI').hidden = false;
+  $('#panel').hidden = false; $('#joy').hidden = false; $('#isleUI').hidden = false; document.body.classList.add('isle');
   isleLocal = !rtdb;
   if(!isleLocal){ isleRef = rtdb.ref('isles'); isleRef.on('value', s => { isleData = s.val() || {}; refreshIsles(); if(!isleMine && isleClaimT === 0){ isleClaimT = 1; setTimeout(() => { if(room === 'isle' && !isleMine) isleClaim(); }, 600); } }, netErr); }
   else { refreshIsles(); setTimeout(() => { if(room === 'isle' && !isleMine) isleClaim(); }, 600); }
@@ -4803,7 +4906,7 @@ function enterIsle(){
 function leaveIsle(){
   if(isleRef){ isleRef.off(); isleRef = null; }
   if(blockMode) setBlockMode(false); mining = null; isleNightK = -1;
-  isleClaimT = 0; isleMode = null; isleFocus = null; isleGo = null; isleOn = null; isleFly = null; isleFall = null; $('#isleUI').hidden = true; if(me){ me.group.scale.setScalar(1); me.kvx = me.kvz = 0; }
+  isleClaimT = 0; isleMode = null; isleFocus = null; isleGo = null; isleOn = null; isleFly = null; isleFall = null; $('#isleUI').hidden = true; $('#isleFight').hidden = true; document.body.classList.remove('isle'); if(me){ me.group.scale.setScalar(1); me.kvx = me.kvz = 0; }
   remotes.forEach(r => { const a = r.av; if(a.group.parent && a.group.parent.userData.stage){ scene.add(a.group); a.group.visible = false; } });
   if(room === 'isle' || camera.far === 400){ camera.far = 140; camera.updateProjectionMatrix(); }
 }
@@ -4818,10 +4921,14 @@ function islePlaceMe(id, at){
   me.isleY = blockSupport(I, me.pos.x, me.pos.z, 99); isleVy = 0; mining = null;
   if(!at) me.ry = me.targetRy = 0; isleKeepOn(I, true);
   if(!at){ cam.dist = clamp(isleRad(I)*1.1 + 2.5, 4, 14); cam.pitch = 0.42; cam.yaw = 0; }
-  isleFocus = I.id; lastSent = ''; pushPresence();
+  isleFocus = I.id; camLim.dmax = I.pit ? 8 : 95; if(I.pit) cam.dist = Math.min(cam.dist, 7); if(!I.pit) me.pitIn = false; lastSent = ''; pushPresence();
 }
 function islePad(I){ return _iv2.set(0, 0, -(isleRad(I) - 0.75)/ISLE_S); }
 function isleKeepOn(I, soft){   // 섬 밖으로 밀려나면 떨어져요 · 건물은 피해서 걸어요
+  if(I.pit){ const d = Math.hypot(me.pos.x, me.pos.z) || 1e-4;
+    if(me.pitIn){ if(d > PIT_FIGHT && !isleFall && !soft){ isleFall = { t:0, vx:0, vz:0, lava:true }; me.say('앗 뜨거!!'); burn(me); } else if(d > PIT_FIGHT && soft){ me.pos.x *= (PIT_FIGHT - 0.6)/d; me.pos.z *= (PIT_FIGHT - 0.6)/d; } }
+    else { const lo = PIT_CAGE + 0.5, hi = PIT_OUT - 0.4; if(d < lo){ me.pos.x *= lo/d; me.pos.z *= lo/d; } else if(d > hi){ me.pos.x *= hi/d; me.pos.z *= hi/d; } }
+    me.pos.y = 0; return; }
   const S = 1/ISLE_S, R = isleRad(I)*S - 0.45, d = Math.hypot(me.pos.x, me.pos.z);
   if(d > R){ const hard = Math.hypot(me.kvx || 0, me.kvz || 0) > 1.5 || me.jumpY > 0.05;
     if(!soft && hard && !isleFall){ isleFall = { t:0, vx:(me.kvx || 0), vz:(me.kvz || 0) }; me.say('으아아!'); return; }
@@ -4834,10 +4941,16 @@ function isleJumpSheet(){
   const body = showSheet('🚀 점프 발판 · 어디로 갈까요?');
   const go = (id, label) => { if(id === isleOn) return; const b = el('button', 'quizopt', label); b.type = 'button'; b.addEventListener('click', () => { $('#spSheet').hidden = true; isleJump(id); }); body.appendChild(b); };
   if(isleMine) go(isleMine, '🏝 내 섬');
-  go('arena', '⚔ 전투장 (누구나 기술 OK)'); go('t', '👩‍🏫 영선쌤 섬');
+  go('arena', '⚔ 전투장 (누구나 기술 OK)'); go('pit', '🔥 지하 맞짱장 (용암 + 철창)'); go('t', '👩‍🏫 영선쌤 섬');
   ISLE_ROSTER.forEach((name, i) => { const id = 's' + i, d = isleData[id]; if(id !== isleMine && d && d.owner) go(id, '🏝 ' + name + '의 섬 · Lv' + (isleById[id] ? isleById[id].lv : 1)); });
 }
+function isleTele(id, at, msg){   // 지하로 내려가거나 올라올 땐 화면을 어둡게 했다가 옮겨요
+  const ov = $('#fadeOv'); ov.style.background = '#000'; ov.style.opacity = 1; ctxBtn(''); isleGo = null; if(blockMode) setBlockMode(false);
+  setTimeout(() => { if(room !== 'isle') return; me.pitIn = false; islePlaceMe(id, at); if(at) cam.dist = id === 'pit' ? 7 : 9; ov.style.opacity = 0; setTimeout(() => { ov.style.background = ''; }, 700); if(msg) toast(msg); }, 550);
+}
+function isleGoPit(){ isleTele('pit', { x:0, z:PIT_CAGE + 1.6 }, '🔥 지하 맞짱장! 철창 안으로 들어가 싸우거나 관중석에서 구경해요'); }
 function isleJump(id){   // 포물선을 그리며 날아가요
+  if(isleOn === 'pit' || id === 'pit'){ if(id === 'pit') isleGoPit(); else isleTele(id, id === 'arena' ? { x:0, z:3.2 } : null, id === 'arena' ? '⬆ 전투장으로 올라왔어요' : ''); return; }
   const A = isleById[isleOn], B = isleById[id]; if(!B || !me || isleFly) return;
   me.group.getWorldPosition(_iv); isleScene.add(me.group); me.group.position.copy(_iv); me.group.scale.setScalar(ISLE_S);
   const land = islePad(B).clone(); land.z += 1.6;
@@ -4867,8 +4980,10 @@ function isleTick(dt){
     if(u >= 1){ isleFly = null; me.ry = me.targetRy = Math.PI; islePlaceMe(f.to, f.land); toast(f.to === 'arena' ? '⚔ 전투장 도착! 기술로 친구를 밀어 떨어뜨려 봐요' : '착지! 걷고 싸울 수 있어요 (짓기는 내 섬에서만)'); }
   } else if(MI && me && isleFall){   // 섬에서 떨어지는 중 → 내 섬에서 다시 나타나요
     isleFall.t += dt; me.pos.x += isleFall.vx*dt*0.5; me.pos.z += isleFall.vz*dt*0.5;
-    me.group.position.set(me.pos.x, -isleFall.t*isleFall.t*14, me.pos.z); me.group.rotation.y += dt*10;
-    if(isleFall.t > 1.3){ isleFall = null; me.ry = me.targetRy = 0; islePlaceMe(isleMine); toast('☁ 구름 아래로 떨어졌어요! 내 섬에서 다시 시작해요'); }
+    me.group.position.set(me.pos.x, isleFall.lava ? -0.4 - isleFall.t*1.6 : -isleFall.t*isleFall.t*14, me.pos.z); me.group.rotation.y += dt*(isleFall.lava ? 4 : 10);
+    if(isleFall.lava && Math.random() < dt*20) puff(me.pos.x + rand(-0.4, 0.4), -0.6, me.pos.z + rand(-0.4, 0.4), '#FF8A2A', 0.6);
+    if(isleFall.lava && isleFall.t > 0.9){ isleFall = null; me.pitIn = false; const a = rand(0, Math.PI*2); islePlaceMe('pit', { x:Math.cos(a)*(PIT_CAGE + 1.5), z:Math.sin(a)*(PIT_CAGE + 1.5) }); toast('🔥 용암에 빠졌어요! 철창 밖 관중석으로 나왔어요'); }
+    else if(isleFall.t > 1.3){ isleFall = null; me.ry = me.targetRy = 0; islePlaceMe(isleMine); toast('☁ 구름 아래로 떨어졌어요! 내 섬에서 다시 시작해요'); }
   } else if(MI && me){   // 섬 위를 걸어다녀요
     if(!isleOn || !isleById[isleOn] || me.group.parent !== isleById[isleOn].stage) islePlaceMe(isleOn && isleById[isleOn] ? isleOn : isleMine);
     const I = isleById[isleOn];
@@ -4888,16 +5003,27 @@ function isleTick(dt){
     miningTick(dt); oreNodes.forEach(o => { o.spark.rotation.y += dt*3; o.spark.position.y = 1.25 + Math.sin(performance.now()/300 + o.x)*0.1; });
     I.g.updateMatrixWorld(); me.group.getWorldPosition(_ipt); _ipt.y += 0.5; cam.t.lerp(_ipt, 1 - Math.exp(-dt*5));
     // 점프 발판 위에 서면 버튼
-    if(!isleMode && !mining){ const pd = islePad(I), onPad = Math.hypot(me.pos.x - pd.x, me.pos.z - pd.z) < 1.1 && (me.isleY || 0) < 0.5;
+    if(!isleMode && !mining){ const pd = islePad(I), onPad = !I.pit && Math.hypot(me.pos.x - pd.x, me.pos.z - pd.z) < 1.1 && (me.isleY || 0) < 0.5;
       let ore = null; if(isleOn === isleMine) oreNodes.forEach(o => { if(Math.hypot(me.pos.x - o.x, me.pos.z - o.z) < 1.7) ore = o; });
-      if(onPad) ctxBtn('🚀 다른 섬으로', isleJumpSheet); else if(ore) ctxBtn('⛏ 캐기 (' + oreAvail() + ')', () => mineOre(ore)); else ctxBtn(''); }
+      const hole = isleOn === 'arena' && Math.hypot(me.pos.x, me.pos.z) < 2.4;
+      if(I.pit){ const lad = Math.hypot(me.pos.x, me.pos.z + (PIT_OUT - 1.2)) < 1.8;
+        if(me.pitIn) ctxBtn('');
+        else if(lad) ctxBtn('⬆ 전투장으로', () => isleTele('arena', { x:0, z:3.2 }, '⬆ 전투장으로 올라왔어요'));
+        else ctxBtn('⚔ 철창 안으로 (맞짱)', () => { const a = Math.atan2(me.pos.z, me.pos.x); me.pitIn = true; me.pos.set(Math.cos(a)*(PIT_FIGHT - 1.2), 0, Math.sin(a)*(PIT_FIGHT - 1.2)); me.targetRy = Math.atan2(-me.pos.x, -me.pos.z); lastSent = ''; pushPresence(); toast('⚔ 맞짱 시작! 용암에 떨어지면 관중석으로 나가요'); }); }
+      else if(hole) ctxBtn('⬇ 지하 맞짱장으로', isleGoPit);
+      else if(onPad) ctxBtn('🚀 다른 섬으로', isleJumpSheet); else if(ore) ctxBtn('⛏ 캐기 (' + oreAvail() + ')', () => mineOre(ore)); else ctxBtn(''); }
   } else if(mag >= 0.12){ cam.yaw -= ix*dt*1.6; cam.dist = clamp(cam.dist + iy*dt*(6 + cam.dist*0.6), camLim.dmin, camLim.dmax); }
   isleSyncT -= dt; if(isleSyncT <= 0){ isleSyncT = 0.3; isleSyncRemotes(); }
   remotes.forEach(r => { const a = r.av; if(a.group.parent && a.group.parent.userData.stage) a.group.position.y += a.isleY || 0; });
   isles.forEach(I => { const near = I.id === isleOn && cam.dist < 30; I.label.visible = !near; if(near) I.visit.visible = false; });
   isleDayNight();
+  { const F = $('#isleFight'), show = !!(isleMine && isleOn && !blockMode && !isleFly && !isleFall); if(F.hidden === show) F.hidden = !show;
+    if(show){ const now = Date.now(); F.querySelectorAll('.fbtn').forEach(b => { const k = b.dataset.isk, r = Math.max(0, ((skillCd[k] || 0) - now)/SKILLS[k].cd); b.style.setProperty('--cd', r.toFixed(3)); });
+      const port = window.innerWidth < window.innerHeight, ph = $('#panel').hidden ? 0 : $('#panel').getBoundingClientRect().height; F.style.setProperty('--fb', (port ? ph + 6 : 8) + 'px'); } }
   isles.forEach(I => { if(I.base && I.base.userData.padArrow) I.base.userData.padArrow.position.y = 0.45 + Math.sin(t*3)*0.08; });
-  isles.forEach(I => { I.g.position.y = I.pos.y + Math.sin(t*0.5 + I.ph)*0.25; });
+  isles.forEach(I => { if(!I.fixed) I.g.position.y = I.pos.y + Math.sin(t*0.5 + I.ph)*0.25; });
+  { const P = isleById.pit; if(P && (isleOn === 'pit' || isleOn === 'arena')){ P.lavaT.offset.x += dt*0.03; P.lavaT.offset.y += dt*0.05; P.bubbles.forEach(b => { b.position.y = -0.5 + Math.max(0, Math.sin(t*2 + b.userData.ph))*0.25; });
+    const A = isleById.arena; if(A.base.userData.holeGlow) A.base.userData.holeGlow.material.opacity = 0.25 + Math.sin(t*3)*0.12; } }
   if(!(MI && me) && isleFocus && isleById[isleFocus]){ const I = isleById[isleFocus]; _ipt.set(I.g.position.x, I.g.position.y + 0.8, I.g.position.z); cam.t.lerp(_ipt, 1 - Math.exp(-dt*3)); }
   isleSpin.forEach(g => { if(g.userData.spin) g.userData.spin.rotation.z += dt*1.5; if(g.userData.bob) g.userData.bob.position.y = (g.userData.bobY || 0.95) + Math.sin(t*4)*0.05; if(g.userData.flag) g.userData.flag.rotation.y = Math.sin(t*3)*0.4;
     if(g.userData.flame){ g.userData.fan.rotation.z += dt*25; const f = 0.85 + Math.random()*0.3; g.userData.flame.scale.set(f, f, 0.8 + Math.random()*0.5); } });
@@ -4993,7 +5119,7 @@ function renderBlockBar(){
 const BLK_SW = { grass:'#5DAA3A', dirt:'#8B5A2B', planks:'#B98A4E', log:'#6B4A2E', leaf:'#3E8F2E', glass:'#CFEFFF', brick:'#B5523C', lamp:'#FFE27A', stone:'#8A8F96', iron:'#E6E6E6', gold:'#F2C230', diamond:'#4EE2D8' };
 function setBlockMode(on){
   blockMode = on; if(on){ isleMode = null; ctxBtn(''); }
-  $('#blockBar').hidden = !on; $('#isleSkills').hidden = on; $('#isleUI').classList.toggle('bm', on); updateUI && setTimeout(updateUI, 0);
+  $('#blockBar').hidden = !on; $('#isleUI').classList.toggle('bm', on); updateUI && setTimeout(updateUI, 0);
   if(on){ $('#blockBar').dataset.k = ''; renderBlockBar(); toast('🧱 블록 모드 · 섬이나 블록을 누르면 쌓여요'); }
 }
 function blockTap(hits){   // 블록 놓기/부수기 (내 섬에서만)
