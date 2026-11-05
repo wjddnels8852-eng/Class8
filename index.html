@@ -309,9 +309,15 @@ body.isle .panel{padding:8px 10px 10px;gap:6px}
   body.isle .panel{left:calc(max(14px,env(safe-area-inset-left,0px)) + 140px)!important;right:calc(max(10px,env(safe-area-inset-right,0px)) + 236px)!important;width:auto!important;max-width:640px!important;margin:0 auto!important;
     bottom:max(10px,env(safe-area-inset-bottom,0px))!important;border-radius:18px!important;flex-direction:column!important;align-items:stretch!important;overflow:visible!important;max-height:none!important;
     background:linear-gradient(180deg,rgba(30,37,72,.9),rgba(18,23,46,.92))!important}
-  body.isle #isleUI{grid-template-columns:repeat(7,minmax(0,1fr))}
+  body.isle #isleUI{grid-template-columns:repeat(6,minmax(0,1fr))}
   body.isle #isleUI .btn{min-height:38px;font-size:12.5px}
 }
+.shopgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
+.shopcard{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 6px 9px;border-radius:14px;border:1.5px solid var(--line);background:var(--panel-2);color:var(--fg);cursor:pointer;font:700 12px var(--font-b)}
+.shopcard .sil{width:72px;height:72px;border-radius:12px;background-color:#C9DDF5;background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;font-size:30px;box-shadow:inset 0 -6px 12px rgba(0,0,0,.12)}
+.shopcard b{font-size:13px}.shopcard span{font-size:11.5px;color:#FFE27A}
+.shopcard.poor{opacity:.6}.shopcard.lock{opacity:.4}.shopcard.lock .sil{filter:brightness(.6)}
+.shopcard:not(:disabled):active{transform:scale(.96)}
 @keyframes geoBob{50%{transform:translateX(-50%) translateY(-4px)}}
 @media (prefers-reduced-motion: reduce){.geobtn{animation:none}}
 #geoCard .tabs3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
@@ -339,19 +345,13 @@ body.isle .panel{padding:8px 10px 10px;gap:6px}
 .dexrow b{font-size:14px}
 /* 우주 */
 #spaceUI{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-#isleUI{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+#isleUI{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
 #isleUI.bm .im{display:none}
+#btnDemo.on{background:linear-gradient(180deg,#FFD66B,#FFB020);color:#0F1426;border-color:#FFE27A}
 #isleUI[hidden]{display:none}
 #isleUI .btn{min-height:42px;padding:0 4px;font-size:13.5px;white-space:nowrap}
 #isleSkills .btn{min-height:40px;font-size:12px;padding:0 2px;white-space:nowrap}
 #isleSkills .btn[aria-disabled=true]{opacity:.45}
-#blockBar[hidden],#isleSkills[hidden]{display:none!important}
-#blockBar{grid-column:1/-1;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px}
-#blockBar .blk{min-height:48px;font-size:10.5px;padding:2px;gap:2px;white-space:nowrap;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1}
-#blockBar .blk i{display:block;width:18px;height:18px;border-radius:4px;border:1px solid rgba(0,0,0,.35);flex:none}
-#blockBar .wide{grid-column:span 3;min-height:42px;flex-direction:row;font-size:13.5px}
-@media (orientation: landscape) and (max-height: 520px){ #blockBar{grid-template-columns:repeat(7,minmax(0,1fr));gap:4px} #blockBar .blk{min-height:42px} #blockBar .wide{grid-column:span 1;min-height:42px;flex-direction:column;font-size:11px;white-space:normal;line-height:1.15} #isleInfo{font-size:12px!important} #isleUI{gap:5px} #isleUI .btn{min-height:38px} #isleSkills .btn{min-height:36px} }
-#blockBar .blk.on{outline:2px solid #FFE27A;outline-offset:-2px}
 #padUI,#boardUI{display:grid;grid-template-columns:2fr 1fr;gap:8px}
 #boardUI .btn{min-height:50px}
 #padUI .btn{min-height:50px}
@@ -416,6 +416,7 @@ body.isle .panel{padding:8px 10px 10px;gap:6px}
   <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
     <div class="chip"><span class="dot"></span><span><b id="count">7</b>명 접속</span></div>
     <button type="button" class="chip rankbtn" id="btnView"><span id="viewTxt">👁 3인칭</span></button>
+    <button type="button" class="chip rankbtn" id="btnDemo" hidden><span id="demoTxt">🎓 시연 모드 OFF</span></button>
     <button type="button" class="chip rankbtn" id="btnFull"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span id="fullTxt">전체화면</span></button>
   </div>
 </div>
@@ -501,11 +502,9 @@ body.isle .panel{padding:8px 10px 10px;gap:6px}
     <button type="button" class="btn primary im" id="isleMineBtn">🏝 내 섬</button>
     <button type="button" class="btn im" id="isleAll">🗺 멀리</button>
     <button type="button" class="btn primary im" id="isleBuild">🏗 짓기</button>
-    <button type="button" class="btn primary im" id="isleBlock">🧱 블록</button>
     <button type="button" class="btn im" id="isleUp">⬆ 넓히기</button>
     <button type="button" class="btn im" id="isleDel">🗑 치우기</button>
     <button type="button" class="btn warm im" id="isleExit">🚪 로비</button>
-    <div id="blockBar" hidden></div>
     <div id="isleSkills" hidden></div>
   </div>
   <div id="spaceUI" hidden>
@@ -578,7 +577,7 @@ body.isle .panel{padding:8px 10px 10px;gap:6px}
     </div>
     </div>
     <button class="btn primary" type="submit" id="enterBtn" hidden>교실 입장</button>
-    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 57</p>
+    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 59</p>
   </form>
 </div>
 
@@ -1561,7 +1560,7 @@ const POSES = ['wave','hooray','clap','dance','bow'];
 const DATA_VER = 2;
 function myState(){
   return { name:me.name, hair:me.hair, shirt:me.shirt, x:+me.pos.x.toFixed(2), z:+me.pos.z.toFixed(2), ry:+me.ry.toFixed(2), jy:+me.jumpY.toFixed(2),
-    mode:me.mode, seat:me.seat, subject:me.subject, studyStart:me.studyStart, total:Math.floor(me.total), fly:me.flying, date:todayStr, v:DATA_VER, streak:me.streak || 0, steady:!!me.steady, best:Math.floor(me.best || 0), room, geo:!!geoDone, where:roomStudy ? roomStudy.where : '', isl:room === 'isle' ? (isleOn || '') : '', iy:room === 'isle' ? +(me.isleY || 0).toFixed(2) : 0,
+    mode:me.mode, seat:me.seat, subject:me.subject, studyStart:me.studyStart, total:Math.floor(me.total), fly:me.flying, date:todayStr, v:DATA_VER, streak:me.streak || 0, steady:!!me.steady, best:Math.floor(me.best || 0), room, geo:!!geoDone, where:roomStudy ? roomStudy.where : '', isl:room === 'isle' ? (isleOn || '') : '',
     sea:seaState(),
     sp:spaceState() };
 }
@@ -1606,7 +1605,7 @@ function handlePlayers(){
     av.subject = SUBJECTS.indexOf(s.subject) >= 0 ? s.subject : '수학';
     av.studyStart = num(s.studyStart, 0, now, now);
     av.total = (s.date === todayStr && s.v === DATA_VER) ? num(s.total, 0, 86400, 0) : 0; av.flying = s.fly === true;
-    av.streak = Math.floor(num(s.streak, 0, 999, 0)); av.steady = s.steady === true; av.geo = s.geo === true; av.isl = typeof s.isl === 'string' ? s.isl.slice(0, 5) : ''; av.isleY = num(s.iy, 0, 30, 0); av.where = typeof s.where === 'string' ? s.where.slice(0, 24) : ''; av.best = num(s.best, 0, 86400, 0);
+    av.streak = Math.floor(num(s.streak, 0, 999, 0)); av.steady = s.steady === true; av.geo = s.geo === true; av.isl = typeof s.isl === 'string' ? s.isl.slice(0, 5) : ''; av.where = typeof s.where === 'string' ? s.where.slice(0, 24) : ''; av.best = num(s.best, 0, 86400, 0);
     av.room = (s.room === 'sea' || s.room === 'nino' || s.room === 'space' || s.room === 'geo' || s.room === 'isle' || s.room === 'lobby') ? s.room : 'class';
     if(av.room === 'isle'){ if(room !== 'isle'){ if(av.group.parent !== scene) scene.add(av.group); av.group.visible = false; } }   // 공중섬 친구는 섬 위에 따로 세워요
     else { const want = av.room === 'lobby' ? lobbyScene : scene; if(av.group.parent !== want) want.add(av.group); av.group.visible = av.room === 'class' || av.room === 'lobby'; }
@@ -1720,7 +1719,7 @@ if(fbOk){
       if(!inApp) showAuth('authOk');
       $('#whoAcct').textContent = u.isAnonymous ? '👤 익명 계정 (이 기기에서만 쓸 수 있어요)' : '✅ 구글 계정: ' + (u.email || u.displayName || '이름 없음');
       if(myUid !== u.uid){
-        startNetwork(u.uid);
+        startNetwork(u.uid); setTimeout(checkDemoOwner, 1500);
         // 오늘 공부시간을 서버에서 이어받기 (다른 기기에서 공부한 것도 이어져요)
         myRef.once('value').then(s => { const d = s.val(); if(d && d.date === todayStr && d.v === DATA_VER && typeof d.total === 'number') savedTotal = Math.max(savedTotal, d.total);
           if(d && d.v === DATA_VER){ myBest = Math.max(myBest, num(d.best, 0, 86400, 0), num(d.total, 0, 86400, 0)); recalcStreak(); }   // 어제까지 얻은 기술 이어받기
@@ -1840,7 +1839,7 @@ function tap(x, y){
   if(me && room === 'lobby'){
     ndc.set(x / window.innerWidth * 2 - 1, -(y / window.innerHeight) * 2 + 1); ray.setFromCamera(ndc, camera);
     for(const h of ray.intersectObjects(lobbyTargets, true)){
-      if(h.object.userData.door){ openDoor(h.object.userData.door); return; }
+      if(h.object.userData.door){ if(demoHidden(h.object.userData.door)) continue; openDoor(h.object.userData.door); return; }
       if(h.object === lobbyFloor){ lobbyGo = { x:clamp(h.point.x, LX0 + 0.6, LX1 - 0.6), z:clamp(h.point.z, -LZ + 0.6, LZ - 0.6) }; return; } }
     return;
   }
@@ -2877,9 +2876,27 @@ const hubCv = document.createElement('canvas'); hubCv.width = hubCv.height = 128
 hubDoor.userData.win.material = new THREE.MeshBasicMaterial({ map:hubTex });
 let hubT = 0, hubI = -1;
 function hubTick(dt){   // 체험관 문 창문에 방 아이콘이 번갈아 떠요
-  hubT += dt; const i = Math.floor(hubT/1.4) % 5; if(i === hubI) return; hubI = i;
+  hubT += dt; let i = Math.floor(hubT/1.4) % 5; if(demoMode) i = [1, 2][Math.floor(hubT/1.4) % 2]; if(i === hubI) return; hubI = i;
   const x = hubCv.getContext('2d'), cols = ['#0A3A66', '#0B0F2A', '#123E6E', '#0B1530', '#3D8FE0'];
   x.fillStyle = cols[i]; x.fillRect(0, 0, 128, 128); x.font = '72px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(['🌊', '🚀', '🌏', '📐', '☁️'][i], 64, 70); hubTex.needsUpdate = true;
+}
+// 🎓 시연 모드: 체험관에 엘니뇨·우주만 보여요 (내 화면에서만, 다시 끄면 돌아와요)
+const DEMO_HIDE = ['sea', 'geo', 'isle'];
+let demoMode = /[?&]demo=1/.test(location.search) || store.get('class8-demo', false) === true;
+function demoHidden(k){ return demoMode && DEMO_HIDE.indexOf(k) >= 0; }
+function applyDemo(){
+  [seaDoor, geoDoor, isleDoor].forEach(d => { d.visible = !demoMode; });
+  if(doorFx.sea){ doorFx.sea.puddle.visible = doorFx.sea.stream.visible = !demoMode; }
+  doorFx.ripples.forEach(r => { r.m.visible = !demoMode; }); doorFx.fish.forEach(f => { f.g.visible = !demoMode; }); (doorFx.shapes || []).forEach(s => { s.m.visible = !demoMode; });
+  if(doorFx.geoGlow) doorFx.geoGlow.visible = !demoMode;
+  document.querySelectorAll('#lobbyUI [data-go]').forEach(b => { b.hidden = demoHidden(b.dataset.go); });
+  $('#demoTxt').textContent = demoMode ? '🎓 시연 모드 ON' : '🎓 시연 모드 OFF'; $('#btnDemo').classList.toggle('on', demoMode);
+  if(demoHidden(room)) exitRoom();
+}
+$('#btnDemo').addEventListener('click', () => { demoMode = !demoMode; store.set('class8-demo', demoMode); applyDemo(); lobbyNear = ''; toast(demoMode ? '🎓 시연 모드: 체험관엔 엘니뇨·우주만 보여요' : '시연 모드 끔: 모든 방이 다시 보여요'); });
+function checkDemoOwner(){   // 시연 모드 버튼은 정우진 섬 주인(나)한테만 보여요
+  if(!rtdb || !myUid){ return; }
+  rtdb.ref('isles/s0/owner').once('value').then(s => { $('#btnDemo').hidden = s.val() !== myUid; }).catch(() => {});
 }
 let lobbyGo = null;
 function enterLobby(from){
@@ -2915,9 +2932,9 @@ function lobbyTick(dt){
   lobbyBack.visible = camera.position.z > -LZ + 0.2; lobbyFront.visible = camera.position.z < LZ - 0.2;
   // 문 앞에 서면 "들어가기" 버튼
   let near = '';
-  if(me.pos.x < LX0 + 2.2) Object.keys(DOOR_Z).forEach(k => { if(Math.abs(me.pos.z - DOOR_Z[k]) < 1) near = k; });
+  if(me.pos.x < LX0 + 2.2) Object.keys(DOOR_Z).forEach(k => { if(Math.abs(me.pos.z - DOOR_Z[k]) < 1 && !demoHidden(k)) near = k; });
   if(me.pos.x > LX1 - 2.2 && Math.abs(me.pos.z) < 1) near = 'class';
-  if(me.pos.z > LZ - 2.2 && Math.abs(me.pos.x - (LX0 + LX1)/2) < 1) near = 'isle';
+  if(me.pos.z > LZ - 2.2 && Math.abs(me.pos.x - (LX0 + LX1)/2) < 1 && !demoHidden('isle')) near = 'isle';
   if(near !== lobbyNear){ lobbyNear = near; roomBtnAct = null; const b = $('#roomBtn'); b.hidden = !near; if(near) b.textContent = near === 'class' ? '⬅ 교실로 돌아가기' : '🚪 ' + DOOR_NAME[near] + ' 들어가기'; }
 }
 let roomBtnAct = null;
@@ -2927,7 +2944,7 @@ $('#lobbyBack').addEventListener('click', () => openDoor('class'));
 $('#btnHub').addEventListener('click', () => openDoor('hub'));
 
 function openDoor(k){
-  if(!me) return;
+  if(!me || demoHidden(k)) return;
   if(k === 'hub'){ enterLobby('class'); return; }
   if(k === 'class'){ exitRoom(); return; }
   if(k === 'geo'){   // 기하 탐구실은 지하라서 계단을 내려가요
@@ -4603,6 +4620,7 @@ const C_WARM = new THREE.Color('#FF9B5C'), C_COLD = new THREE.Color('#5CB8FF');
     x.strokeStyle = '#FFC93C'; x.lineWidth = 2; x.beginPath(); x.ellipse(64, 64, 52, 22, ang*0.5, 0, 7); x.stroke();
   });
 }
+applyDemo();   // 문 효과까지 다 만든 뒤에 시연 모드 적용
 function doorFxTick(dt){
   const F = doorFx; F.t += dt; const t = F.t;
   // 창문 그림은 1초에 20번만 다시 그려요
@@ -4663,20 +4681,59 @@ const T_AUTO = [[0, 'tree', 1.4, 0.6], [0, 'flower', -1.2, 1.0], [0, 'bench', 0,
   [1000, 'tree', -2.6, 0.6], [1500, 'bighouse', -2.2, -2.2], [2500, 'tower', 3.0, 1.6], [3500, 'windmill', -3.4, 2.0], [5000, 'castle', 0, -3.6]];
 let isleScene = null, isles = [], isleById = {}, isleData = {}, isleRef = null, isleFocus = null, isleMine = null, isleBaseSec = null, isleMode = null, isleClouds = [], isleSpin = [], isleLocal = false, isleClaimT = 0, isleVisitKey = '';
 
+// ☁ 고퀄 공중섬: 울퉁불퉁한 잔디 윗면 + 흙·바위 층 + 늘어진 뿌리·덩굴 + 둥둥 뜬 바위 (큰 섬엔 폭포)
+const ISLE_TEX = (() => {
+  const mk = (base, cols, n, w, h) => { const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d'); x.fillStyle = base; x.fillRect(0, 0, 128, 128);
+    for(let i=0;i<n;i++){ x.fillStyle = cols[i % cols.length]; x.fillRect(Math.random()*128, Math.random()*128, w, h); } const tx = new THREE.CanvasTexture(c); tx.wrapS = tx.wrapT = THREE.RepeatWrapping; return tx; };
+  const grass = mk('#62B544', ['#56A83A', '#6FC24E', '#4E9A34', '#7ACC58', '#5BAF40'], 2600, 1.5, 3); grass.repeat.set(3, 3);
+  const dirt = mk('#8A5A35', ['#7A4E2C', '#966A42', '#6E4628', '#A07448'], 1600, 3, 2); dirt.repeat.set(6, 1);
+  const rock = mk('#76695C', ['#6A5E52', '#827566', '#5E544A', '#8C7F70'], 1400, 4, 3); rock.repeat.set(5, 2);
+  return { grass, dirt, rock };
+})();
+const ISLE_M = {
+  grass:new THREE.MeshLambertMaterial({ map:ISLE_TEX.grass }), lip:new THREE.MeshLambertMaterial({ color:'#4E9A34' }),
+  dirt:new THREE.MeshLambertMaterial({ map:ISLE_TEX.dirt }), rock:new THREE.MeshLambertMaterial({ map:ISLE_TEX.rock, flatShading:true }),
+  rock2:new THREE.MeshLambertMaterial({ color:'#5E544A', flatShading:true }), root:new THREE.MeshLambertMaterial({ color:'#6B4A2E' }),
+  vine:new THREE.MeshLambertMaterial({ color:'#3E8F2E', side:THREE.DoubleSide }), tuft:new THREE.MeshLambertMaterial({ color:'#4FA838' }),
+  water:new THREE.MeshBasicMaterial({ color:'#9FE6FF', transparent:true, opacity:0.75, side:THREE.DoubleSide, depthWrite:false })
+};
+function jitterRing(geo, amt, seed, yMin){   // 둘레를 울퉁불퉁하게
+  const p = geo.attributes.position; for(let i=0;i<p.count;i++){ const x = p.getX(i), y = p.getY(i), z = p.getZ(i), r = Math.hypot(x, z); if(r < 1e-3 || (yMin != null && y < yMin)) continue;
+    const a = Math.atan2(z, x), k = 1 + (Math.sin(a*5 + seed)*0.5 + Math.sin(a*11 + seed*2.3)*0.3 + Math.sin(a*3 - seed)*0.2)*amt; p.setX(i, x*k); p.setZ(i, z*k); }
+  geo.computeVertexNormals(); return geo; }
 function isleBase(r){
-  const g = new THREE.Group();
-  const top = addM(g, new THREE.CylinderGeometry(r, r*0.97, 0.3, 40), Lm('#6CC04A'), 0, -0.15, 0); top.userData.isleTop = true;
-  addM(g, new THREE.TorusGeometry(r*0.985, 0.07, 6, 40), Lm('#5AA83C'), 0, -0.02, 0).rotation.x = Math.PI/2;
-  addM(g, new THREE.CylinderGeometry(r*0.97, r*0.88, 0.55, 40), Lm('#8A5A35'), 0, -0.57, 0);
-  const ch = r*1.25 + 0.8; addM(g, new THREE.ConeGeometry(r*0.88, ch, 10), Lm('#73675B'), 0, -0.85 - ch/2, 0).rotation.x = Math.PI;
-  for(let k=0;k<Math.round(r*3);k++){ const a = rand(0, 6.28), s = rand(0.25, 0.55)*Math.min(1.6, r/2.2);
-    addM(g, new THREE.DodecahedronGeometry(s, 0), Lm(k % 2 ? '#7E7266' : '#695E53'), Math.cos(a)*r*rand(0.45, 0.75), -1.1 - rand(0, r*0.5), Math.sin(a)*r*rand(0.45, 0.75)).rotation.set(rand(0, 3), rand(0, 3), 0); }
-  for(let k=0;k<Math.round(r*2.5);k++){ const a = rand(0, 6.28), h = rand(0.5, 1.4);
-    addM(g, new THREE.CylinderGeometry(0.03, 0.02, h, 4), Lm('#4E8F3A'), Math.cos(a)*r*0.97, -0.3 - h/2, Math.sin(a)*r*0.97); }
+  const g = new THREE.Group(), sd = Math.random()*10;
+  // 잔디 윗면 (살짝 볼록) + 가장자리 잔디 턱
+  const top = new THREE.Mesh(jitterRing(new THREE.CylinderGeometry(r, r*0.985, 0.26, 56, 1), 0.035, sd), [ISLE_M.lip, ISLE_M.grass, ISLE_M.grass]); top.position.y = -0.13; g.add(top); top.userData.isleTop = true;
+  // 흙 층 → 바위 층 (아래로 갈수록 좁아지고 울퉁불퉁)
+  const dirt = new THREE.Mesh(jitterRing(new THREE.CylinderGeometry(r*0.99, r*0.86, 0.7, 48, 2), 0.06, sd + 1), ISLE_M.dirt); dirt.position.y = -0.6; g.add(dirt);
+  const ch = r*1.15 + 1.0, rock = new THREE.Mesh(jitterRing(new THREE.CylinderGeometry(r*0.86, r*0.18, ch, 14, 4), 0.14, sd + 2), ISLE_M.rock); rock.position.y = -0.95 - ch/2; g.add(rock);
+  for(let k=0;k<Math.round(4 + r*2.2);k++){ const a = rand(0, 6.28), rr = r*rand(0.3, 0.8), s = rand(0.3, 0.7)*Math.min(1.7, r/2.2), y = -1.0 - rand(0.2, 1)*ch*(1 - rr/r)*0.9;
+    addM(g, new THREE.DodecahedronGeometry(s, 0), k % 3 ? ISLE_M.rock : ISLE_M.rock2, Math.cos(a)*rr, y, Math.sin(a)*rr).rotation.set(rand(0, 3), rand(0, 3), 0); }
+  addM(g, new THREE.ConeGeometry(r*0.22, ch*0.5, 7), ISLE_M.rock2, 0, -0.95 - ch - ch*0.2, 0).rotation.x = Math.PI;   // 맨 아래 뾰족 바위
+  // 늘어진 뿌리와 덩굴
+  for(let k=0;k<Math.round(r*3);k++){ const a = rand(0, 6.28), h = rand(0.5, 1.6), x = Math.cos(a)*r*0.95, z = Math.sin(a)*r*0.95;
+    if(k % 2){ const v = addM(g, new THREE.PlaneGeometry(0.16, h), ISLE_M.vine, x, -0.25 - h/2, z); v.rotation.y = -a + Math.PI/2; v.userData.vine = true; }
+    else { const rt = addM(g, new THREE.CylinderGeometry(0.035, 0.012, h, 5), ISLE_M.root, x*0.98, -0.5 - h/2, z*0.98); rt.rotation.z = rand(-0.25, 0.25); } }
+  // 잔디 덤불 · 꽃 (가장자리 쪽)
+  for(let k=0;k<Math.round(r*4);k++){ const a = rand(0, 6.28), rr = r*rand(0.72, 0.93), x = Math.cos(a)*rr, z = Math.sin(a)*rr;
+    for(let q=0;q<3;q++){ const b = addM(g, new THREE.ConeGeometry(0.05, rand(0.18, 0.32), 4), ISLE_M.tuft, x + rand(-0.08, 0.08), 0.1, z + rand(-0.08, 0.08)); b.rotation.set(rand(-0.3, 0.3), 0, rand(-0.3, 0.3)); }
+    if(k % 3 === 0) addM(g, new THREE.SphereGeometry(0.05, 6, 4), Lm(['#FF7C93', '#FFD34D', '#FFFFFF', '#C9A8FF'][k % 4]), x, 0.2, z); }
+  // 큰 섬(반지름 4 이상)엔 작은 폭포
+  if(r >= 4){ const a = rand(0, 6.28), x = Math.cos(a)*r*1.0, z = Math.sin(a)*r*1.0, fh = ch*0.8;
+    const wc = document.createElement('canvas'); wc.width = 32; wc.height = 128; const wx = wc.getContext('2d'); wx.fillStyle = '#BFF0FF'; wx.fillRect(0, 0, 32, 128);
+    for(let i=0;i<60;i++){ wx.fillStyle = 'rgba(255,255,255,' + Math.random()*0.8 + ')'; wx.fillRect(Math.random()*32, Math.random()*128, 2, 10 + Math.random()*20); }
+    const wt = new THREE.CanvasTexture(wc); wt.wrapS = wt.wrapT = THREE.RepeatWrapping; wt.repeat.set(1, 2);
+    const fall = addM(g, new THREE.PlaneGeometry(0.7, fh), new THREE.MeshBasicMaterial({ map:wt, transparent:true, opacity:0.8, side:THREE.DoubleSide, depthWrite:false }), x, -fh/2, z); fall.rotation.y = -a + Math.PI/2; g.userData.fall = wt;
+    const pool = addM(g, new THREE.CircleGeometry(0.45, 20), ISLE_M.water, Math.cos(a)*r*0.82, 0.03, Math.sin(a)*r*0.82); pool.rotation.x = -Math.PI/2;
+    const mist = addM(g, new THREE.SphereGeometry(0.5, 10, 8), new THREE.MeshBasicMaterial({ color:'#FFFFFF', transparent:true, opacity:0.25, depthWrite:false }), x, -fh, z); mist.scale.y = 0.6; }
   { const pad = new THREE.Group(); pad.position.set(0, 0.02, -(r - 0.75)); g.add(pad);   // 점프 발판
     addM(pad, new THREE.CylinderGeometry(0.5, 0.55, 0.08, 24), Lm('#3A4470'), 0, 0.02, 0); addM(pad, new THREE.CylinderGeometry(0.4, 0.4, 0.1, 24), Lm('#5CE1E6', { emissive:'#1E8A96' }), 0, 0.04, 0);
     const ar = addM(pad, new THREE.ConeGeometry(0.16, 0.3, 4), Lm('#FFE27A', { emissive:'#6A5000' }), 0, 0.45, 0); ar.rotation.x = Math.PI; g.userData.padArrow = ar; }
-  for(let k=0;k<2;k++){ const a = rand(0, 6.28), s = rand(0.2, 0.4); addM(g, new THREE.DodecahedronGeometry(s, 0), Lm('#7E7266'), Math.cos(a)*(r + 1.2), rand(-2, -0.5), Math.sin(a)*(r + 1.2)); }
+  // 섬 주위를 도는 작은 바위들
+  const orb = new THREE.Group(); g.add(orb); g.userData.orb = orb;
+  for(let k=0;k<3;k++){ const a = k/3*Math.PI*2 + rand(0, 1), s = rand(0.18, 0.38), m = addM(orb, new THREE.DodecahedronGeometry(s, 0), ISLE_M.rock, Math.cos(a)*(r + 1.3), rand(-1.6, -0.4), Math.sin(a)*(r + 1.3)); m.rotation.set(rand(0, 3), rand(0, 3), 0);
+    if(k === 0) addM(m, new THREE.ConeGeometry(0.06, 0.16, 4), ISLE_M.tuft, 0, s*0.8, 0); }
   return g;
 }
 function makeIsleItem(t){
@@ -4760,14 +4817,7 @@ function buildIsleScene(){
   { const c = document.createElement('canvas'); c.width = 16; c.height = 256; const x = c.getContext('2d'), gr = x.createLinearGradient(0, 0, 0, 256);
     gr.addColorStop(0, '#2F6FD0'); gr.addColorStop(0.35, '#5EA4EA'); gr.addColorStop(0.5, '#B9DDF7'); gr.addColorStop(1, '#E8F4FF'); x.fillStyle = gr; x.fillRect(0, 0, 16, 256);
     const sky = new THREE.Mesh(new THREE.SphereGeometry(300, 24, 16), new THREE.MeshBasicMaterial({ map:new THREE.CanvasTexture(c), side:THREE.BackSide, fog:false, depthWrite:false })); sky.renderOrder = -1; isleScene.add(sky); isleScene.userData.sky = sky;
-    // 밤하늘 별 · 해 · 달
-    const N = 900, pos = new Float32Array(N*3); for(let i=0;i<N;i++){ const u = Math.random()*2 - 1, a = Math.random()*Math.PI*2, r = 280, s = Math.sqrt(1 - u*u); pos[i*3] = Math.cos(a)*s*r; pos[i*3+1] = Math.abs(u)*r*0.9 + 10; pos[i*3+2] = Math.sin(a)*s*r; }
-    const sg = new THREE.BufferGeometry(); sg.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    isleStars = new THREE.Points(sg, new THREE.PointsMaterial({ color:'#FFFFFF', size:1.6, sizeAttenuation:false, transparent:true, opacity:0, fog:false, depthWrite:false })); isleStars.visible = false; sky.add(isleStars);
-    const disc = (c1, c2) => { const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d'), g = x.createRadialGradient(64, 64, 0, 64, 64, 64); g.addColorStop(0, c1); g.addColorStop(0.35, c1); g.addColorStop(0.45, c2); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect(0, 0, 128, 128);
-      return new THREE.Sprite(new THREE.SpriteMaterial({ map:new THREE.CanvasTexture(c), transparent:true, fog:false, depthWrite:false })); };
-    const sunS = disc('#FFF6D0', 'rgba(255,220,140,.5)'); sunS.scale.set(60, 60, 1); sunS.position.set(150, 160, -140); sky.add(sunS); isleScene.userData.sunS = sunS;
-    const moon = disc('#F2F4FF', 'rgba(190,200,255,.35)'); moon.scale.set(40, 40, 1); moon.position.set(-160, 150, 120); moon.visible = false; sky.add(moon); isleScene.userData.moon = moon; }
+    }
   // 구름 바다 (섬 아래) + 위쪽 구름: 반투명 그림 대신 몽글몽글한 입체 구름
   const cloudM = new THREE.MeshLambertMaterial({ color:'#FFFFFF', emissive:'#B8C4D8' }), cloudGeo = new THREE.IcosahedronGeometry(1, 2); isleScene.userData.cloudM = cloudM;
   const puff = (x, y, z, s) => { const g = new THREE.Group(); g.position.set(x, y, z); g.scale.setScalar(s); isleScene.add(g);
@@ -4804,7 +4854,7 @@ function buildIsleScene(){
     const I = { id:'pit', name:'🔥 지하 맞짱장', idx:-3, g:new THREE.Group(), lv:0, items:{}, itemsG:new THREE.Group(), ph:0, pit:true, fixed:true, n:0 };
     I.pos = new THREE.Vector3(0, -30, 0); I.g.position.copy(I.pos); isleScene.add(I.g); I.g.add(I.itemsG);
     const B = new THREE.Group(); I.base = B; I.g.add(B); const S = ISLE_S;
-    const stoneT = BLK_MAT.stone.map.clone(); stoneT.wrapS = stoneT.wrapT = THREE.RepeatWrapping; stoneT.repeat.set(8, 8); stoneT.needsUpdate = true;
+    const stoneT = PIT_STONE.clone(); stoneT.wrapS = stoneT.wrapT = THREE.RepeatWrapping; stoneT.repeat.set(8, 8); stoneT.needsUpdate = true;
     addM(B, new THREE.CylinderGeometry(PIT_FIGHT*S, PIT_FIGHT*S*0.95, 1.2, 40), new THREE.MeshLambertMaterial({ map:stoneT, color:'#B8B2A8' }), 0, -0.6, 0);
     addM(B, new THREE.TorusGeometry(PIT_FIGHT*S, 0.07, 6, 48), Lm('#E2574C', { emissive:'#5A1000' }), 0, 0.01, 0).rotation.x = Math.PI/2;
     const lc = document.createElement('canvas'); lc.width = lc.height = 128; { const x = lc.getContext('2d'); x.fillStyle = '#FF5A10'; x.fillRect(0, 0, 128, 128);
@@ -4862,9 +4912,8 @@ function refreshIsles(){
     const txt = teacher ? '👩‍🏫 영선쌤 섬 · Lv' + lv : I.name + (d.owner ? ' · Lv' + lv : ' · 빈 섬');
     if(I.label.userData.txt !== txt + mine){ I.label.userData.txt = txt + mine; setLabel(I.label, txt, mine ? '#FFE27A' : d.owner || teacher ? '#FFFFFF' : '#A9B0D6'); }
     I.label.position.y = 2.6 + lv*0.35; I.visit.position.y = I.label.position.y + 0.8; I.n = n;
-    if(!teacher) isleBlocks(I, d.blocks || {});
   });
-  oreSig = ''; refreshOres(); if(blockMode){ $('#blockBar').dataset.k = ''; renderBlockBar(); }
+  isleRefundBlocks();
   updIsleUI();
 }
 function islePoints(){ if(isleBaseSec == null) return null; const d = isleMine && isleData[isleMine]; return Math.floor((isleBaseSec + (me ? me.total || 0 : 0))/60) - num(d && d.spent, 0, 1e7, 0); }
@@ -4906,27 +4955,60 @@ function isleWrite(upd){
   if(isleLocal){ const d = isleData[isleMine] = isleData[isleMine] || {}; Object.keys(upd).forEach(k => { const ps = k.split('/'); let o = d; for(let i=0;i<ps.length - 1;i++) o = o[ps[i]] = o[ps[i]] || {}; const last = ps[ps.length - 1]; if(upd[k] == null) delete o[last]; else o[last] = upd[k]; }); refreshIsles(); return; }
   rtdb.ref('isles/' + isleMine).update(upd).catch(netErr);
 }
+const isleThumbs = {};
+function isleThumb(tp){   // 건물 모양을 그림자(실루엣)로 그려서 작은 그림으로 만들어요
+  if(isleThumbs[tp]) return isleThumbs[tp];
+  try {
+    const S = 128, sc = new THREE.Scene(), obj = makeIsleItem(tp); sc.add(obj);
+    const box = new THREE.Box3().setFromObject(obj), size = box.getSize(new THREE.Vector3()), cen = box.getCenter(new THREE.Vector3()), m = Math.max(size.x, size.y, size.z) || 1;
+    const cam2 = new THREE.PerspectiveCamera(30, 1, 0.01, 100); cam2.position.set(cen.x + m*1.6, cen.y + m*0.9, cen.z + m*2.4); cam2.lookAt(cen);
+    sc.overrideMaterial = new THREE.MeshBasicMaterial({ color:'#1B1F3B' });
+    const rt = new THREE.WebGLRenderTarget(S, S), oc = renderer.getClearColor(new THREE.Color()), oa = renderer.getClearAlpha();
+    renderer.setRenderTarget(rt); renderer.setClearColor(0x000000, 0); renderer.clear(); renderer.render(sc, cam2);
+    const px = new Uint8Array(S*S*4); renderer.readRenderTargetPixels(rt, 0, 0, S, S, px);
+    renderer.setRenderTarget(null); renderer.setClearColor(oc, oa); rt.dispose();
+    const c = document.createElement('canvas'); c.width = c.height = S; const x = c.getContext('2d'), im = x.createImageData(S, S);
+    for(let y=0;y<S;y++) for(let i=0;i<S*4;i++) im.data[y*S*4 + i] = px[(S - 1 - y)*S*4 + i];
+    let any = false; for(let i=3;i<px.length;i+=16) if(px[i] > 0){ any = true; break; }
+    x.putImageData(im, 0, 0); isleThumbs[tp] = any ? c.toDataURL() : ''; } catch(e) { isleThumbs[tp] = ''; }
+  return isleThumbs[tp];
+}
 function isleBuildSheet(){
   if(!isleMine){ isleClaim(); return; }
   const d = isleData[isleMine] || {}, lv = clamp(Math.floor(num(d.lv, 1, 6, 1)), 1, 6), p = islePoints() || 0, n = Object.keys(d.items || {}).length;
   const body = showSheet('짓기 · 🪙 ' + p + 'P');
   if(n >= ISLE_MAX) body.appendChild(el('p', null, '섬이 꽉 찼어요 (' + ISLE_MAX + '개). 치우기로 자리를 만들어요.'));
-  ISLE_ITEMS.forEach(it => { const lock = it.lv > lv, poor = it.cost > p, btn = el('button', 'quizopt', it.e + ' ' + it.name + ' · ' + it.cost + 'P' + (lock ? ' · 🔒 섬 Lv' + it.lv : poor ? ' · 포인트 부족' : ''));
-    btn.type = 'button'; btn.disabled = lock || poor || n >= ISLE_MAX; if(btn.disabled) btn.style.opacity = 0.45;
-    btn.addEventListener('click', () => { $('#spSheet').hidden = true; isleMode = { kind:'place', t:it.t }; isleAt(isleMine); ctxBtn('✖ ' + it.name + ' 놓기 취소', () => { isleMode = null; ctxBtn(''); }); toast(it.e + ' 내 섬 위를 눌러서 놓을 곳을 골라요'); });
-    body.appendChild(btn); });
+  const grid = el('div', 'shopgrid'); body.appendChild(grid);
+  ISLE_ITEMS.forEach(it => { const lock = it.lv > lv, poor = it.cost > p, btn = el('button', 'shopcard' + (lock ? ' lock' : poor ? ' poor' : ''));
+    const im = el('div', 'sil'); const src = isleThumb(it.t); if(src) im.style.backgroundImage = 'url(' + src + ')'; else im.textContent = it.e; btn.appendChild(im);
+    btn.appendChild(el('b', null, it.name)); btn.appendChild(el('span', null, lock ? '🔒 섬 Lv' + it.lv : it.cost + 'P' + (poor ? ' · 부족' : '')));
+    btn.type = 'button'; btn.disabled = lock || poor || n >= ISLE_MAX;
+    btn.addEventListener('click', () => { $('#spSheet').hidden = true; isleMode = { kind:'place', t:it.t }; isleAt(isleMine); ctxBtn('✖ ' + it.name + ' 놓기 취소', () => { isleGhostOff(); isleMode = null; ctxBtn(''); }); toast(it.e + ' 내 섬 위를 눌러서 놓을 곳을 골라요'); });
+    grid.appendChild(btn); });
 }
 const _iplane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), _ipt = new THREE.Vector3();
+function isleGhostOff(){ if(isleMode && isleMode.ghost){ rmFx(isleMode.ghost); isleMode.ghost = null; } }
+function isleGhost(I, it, lx, lz){
+  isleGhostOff(); const g = makeIsleItem(it.t), gm = new THREE.MeshBasicMaterial({ color:'#1B1F3B', transparent:true, opacity:0.45, depthWrite:false });
+  g.traverse(o => { if(o.isMesh) o.material = gm; }); g.position.set(lx, 0.01, lz); g.rotation.y = Math.atan2(lx, lz); I.itemsG.add(g);
+  const ring = new THREE.Mesh(new THREE.RingGeometry(it.r*0.9, it.r*0.9 + 0.08, 32), new THREE.MeshBasicMaterial({ color:'#FFE27A', transparent:true, opacity:0.9, depthWrite:false })); ring.rotation.x = -Math.PI/2; ring.position.y = 0.03; g.add(ring);
+  isleMode.ghost = g; isleMode.gx = lx; isleMode.gz = lz;
+  ctxBtn('✔ 여기에 ' + it.name + ' 짓기 (' + it.cost + 'P)', () => { const I2 = isleById[isleMine]; if(!I2 || !isleMode || !isleMode.ghost) return; I2.g.updateMatrixWorld(); const v = I2.g.localToWorld(new THREE.Vector3(isleMode.gx, 0, isleMode.gz)).project(camera);
+    isleTap((v.x + 1)/2*window.innerWidth, (1 - v.y)/2*window.innerHeight); });
+  toast('그림자가 지어질 모양이에요 · 같은 곳을 한 번 더 누르거나 ✔ 버튼을 눌러요');
+}
 function isleTap(x, y){
   ndc.set(x / window.innerWidth * 2 - 1, -(y / window.innerHeight) * 2 + 1); ray.setFromCamera(ndc, camera);
-  if(blockMode){ const hits = ray.intersectObjects(isles.map(o => o.g), true).filter(h => !(me && h.object.parent && isDesc(h.object, me.group))); if(blockTap(hits)) return; }
   const I = isleMine && isleById[isleMine];
   if(isleMode && isleMode.kind === 'place' && I){
     _iplane.constant = -I.g.position.y; if(!ray.ray.intersectPlane(_iplane, _ipt)) return;
     const lx = _ipt.x - I.g.position.x, lz = _ipt.z - I.g.position.z, it = ISLE_ITEM[isleMode.t], R = ISLE_R[I.lv];
     if(Math.hypot(lx, lz) > R - it.r*0.8){ toast('섬 밖이에요. 섬 위를 눌러요'); return; }
     for(const k in I.items){ const o = I.items[k]; if(Math.hypot(o.x - lx, o.z - lz) < (ISLE_ITEM[o.t].r + it.r)*0.8){ toast('다른 건물이랑 너무 가까워요'); return; } }
-    const p = islePoints() || 0; if(p < it.cost){ toast('포인트가 모자라요'); isleMode = null; ctxBtn(''); return; }
+    // 먼저 그 자리에 그림자(반투명 실루엣)를 보여주고, 한 번 더 누르거나 ✔ 버튼을 누르면 지어요
+    if(!isleMode.ghost || Math.hypot(isleMode.gx - lx, isleMode.gz - lz) > 0.35){ isleGhost(I, it, lx, lz); return; }
+    const p = islePoints() || 0; if(p < it.cost){ toast('포인트가 모자라요'); isleGhostOff(); isleMode = null; ctxBtn(''); return; }
+    isleGhostOff();
     const d = isleData[isleMine] || {}, k = 'i' + Date.now().toString(36) + Math.floor(Math.random()*1e4).toString(36);
     isleWrite({ ['items/' + k]:{ t:it.t, x:+lx.toFixed(2), z:+lz.toFixed(2), r:+Math.atan2(lx, lz).toFixed(2) }, spent:num(d.spent, 0, 1e7, 0) + it.cost });
     toast(it.e + ' ' + it.name + ' 완성! -' + it.cost + 'P'); isleMode = null; ctxBtn(''); return;
@@ -4956,8 +5038,7 @@ function enterIsle(){
 }
 function leaveIsle(){
   if(isleRef){ isleRef.off(); isleRef = null; }
-  if(blockMode) setBlockMode(false); mining = null; isleNightK = -1;
-  isleClaimT = 0; isleMode = null; isleFocus = null; isleGo = null; isleOn = null; isleFly = null; isleFall = null; $('#isleUI').hidden = true; $('#isleFight').hidden = true; document.body.classList.remove('isle'); if(me){ me.group.scale.setScalar(1); me.kvx = me.kvz = 0; }
+  isleGhostOff(); isleClaimT = 0; isleMode = null; isleFocus = null; isleGo = null; isleOn = null; isleFly = null; isleFall = null; $('#isleUI').hidden = true; $('#isleFight').hidden = true; document.body.classList.remove('isle'); if(me){ me.group.scale.setScalar(1); me.kvx = me.kvz = 0; }
   remotes.forEach(r => { const a = r.av; if(a.group.parent && a.group.parent.userData.stage){ scene.add(a.group); a.group.visible = false; } });
   if(room === 'isle' || camera.far === 400){ camera.far = 140; camera.updateProjectionMatrix(); }
 }
@@ -4969,7 +5050,6 @@ function islePlaceMe(id, at){
   if(me.flying) setFly(false); me.path = []; me.goSeat = null; me.mode = 'idle'; me.manual = false; me.jumpY = 0; me.vy = 0; me.kvx = me.kvz = 0;
   const R = isleRad(I)/ISLE_S;
   if(at) me.pos.set(at.x, 0, at.z); else me.pos.set(0, 0, R*0.5);
-  me.isleY = blockSupport(I, me.pos.x, me.pos.z, 99); isleVy = 0; mining = null;
   if(!at) me.ry = me.targetRy = 0; isleKeepOn(I, true);
   if(!at){ cam.dist = clamp(isleRad(I)*1.1 + 2.5, 4, 14); cam.pitch = 0.42; cam.yaw = 0; }
   isleFocus = I.id; camLim.dmax = I.pit ? 8 : 95; if(I.pit) cam.dist = Math.min(cam.dist, 7); if(!I.pit) me.pitIn = false; lastSent = ''; pushPresence();
@@ -4996,7 +5076,7 @@ function isleJumpSheet(){
   ISLE_ROSTER.forEach((name, i) => { const id = 's' + i, d = isleData[id]; if(id !== isleMine && d && d.owner) go(id, '🏝 ' + name + '의 섬 · Lv' + (isleById[id] ? isleById[id].lv : 1)); });
 }
 function isleTele(id, at, msg){   // 지하로 내려가거나 올라올 땐 화면을 어둡게 했다가 옮겨요
-  const ov = $('#fadeOv'); ov.style.background = '#000'; ov.style.opacity = 1; ctxBtn(''); isleGo = null; if(blockMode) setBlockMode(false);
+  const ov = $('#fadeOv'); ov.style.background = '#000'; ov.style.opacity = 1; ctxBtn(''); isleGo = null;
   setTimeout(() => { if(room !== 'isle') return; me.pitIn = false; islePlaceMe(id, at); if(at) cam.dist = id === 'pit' ? 7 : 9; ov.style.opacity = 0; setTimeout(() => { ov.style.background = ''; }, 700); if(msg) toast(msg); }, 550);
 }
 function isleGoPit(){ isleTele('pit', { x:0, z:PIT_CAGE + 1.6 }, '🔥 지하 맞짱장! 철창 안으로 들어가 싸우거나 관중석에서 구경해요'); }
@@ -5005,8 +5085,7 @@ function isleJump(id){   // 포물선을 그리며 날아가요
   const A = isleById[isleOn], B = isleById[id]; if(!B || !me || isleFly) return;
   me.group.getWorldPosition(_iv); isleScene.add(me.group); me.group.position.copy(_iv); me.group.scale.setScalar(ISLE_S);
   const land = islePad(B).clone(); land.z += 1.6;
-  if(blockMode) setBlockMode(false); mining = null;
-  isleFly = { t:0, dur:1.8, from:_iv.clone(), to:id, land }; isleOn = null; isleGo = null; isleMode = null; ctxBtn(''); me.mode = 'idle'; me.say('점프!');
+  isleFly = { t:0, dur:1.8, from:_iv.clone(), to:id, land }; isleOn = null; isleGo = null; isleGhostOff(); isleMode = null; ctxBtn(''); me.mode = 'idle'; me.say('점프!');
   lastSent = ''; pushPresence(); toast('🚀 ' + (id === 'arena' ? '전투장' : id === 't' ? '영선쌤 섬' : id === isleMine ? '내 섬' : B.name + '의 섬') + '으로 날아가요!');
 }
 function isDesc(o, root){ while(o){ if(o === root) return true; o = o.parent; } return false; }
@@ -5042,37 +5121,29 @@ function isleTick(dt){
     if(mag >= 0.12 && !(me.frozenT > 0)){ isleGo = null; const fx = -Math.sin(cam.yaw), fz = -Math.cos(cam.yaw), rx = Math.cos(cam.yaw), rz = -Math.sin(cam.yaw);
       mx = fx*(-iy) + rx*ix; mz = fz*(-iy) + rz*ix; const ml = Math.hypot(mx, mz) || 1; mx /= ml; mz /= ml; sp = 3.2*mag; }
     else if(isleGo && !(me.frozenT > 0)){ const dx = isleGo.x - me.pos.x, dz = isleGo.z - me.pos.z, dl = Math.hypot(dx, dz); if(dl > 0.12){ mx = dx/dl; mz = dz/dl; sp = 3; } else isleGo = null; }
-    if(mining) sp = 0;
-    const feet = me.isleY || 0, ox = me.pos.x, oz = me.pos.z;
     if(sp){ me.pos.x += mx*sp*dt; me.pos.z += mz*sp*dt; me.targetRy = Math.atan2(mx, mz); me.mode = 'walk'; me.manual = true; }
     else if(me.mode === 'walk'){ me.mode = 'idle'; me.manual = false; }
     if(me.kvx || me.kvz){ me.pos.x += me.kvx*dt; me.pos.z += me.kvz*dt; const f = Math.exp(-2.2*dt); me.kvx *= f; me.kvz *= f; if(Math.hypot(me.kvx, me.kvz) < 0.2) me.kvx = me.kvz = 0; }
-    if(blockWall(I, me.pos.x, me.pos.z, feet)){ if(!blockWall(I, me.pos.x, oz, feet)) me.pos.z = oz; else if(!blockWall(I, ox, me.pos.z, feet)) me.pos.x = ox; else { me.pos.x = ox; me.pos.z = oz; } isleGo = null; }
-    { const sup = blockSupport(I, me.pos.x, me.pos.z, feet); if(sup > feet){ me.isleY = sup; isleVy = 0; } else if(sup < feet){ isleVy -= 22*dt; me.isleY = Math.max(sup, feet + isleVy*dt); if(me.isleY <= sup) isleVy = 0; } }
     isleKeepOn(I);
-    if(!isleFall){ const kx = me.kvx, kz = me.kvz; me.kvx = me.kvz = 0; me.update(dt); me.kvx = kx; me.kvz = kz; me.group.position.y += me.isleY || 0; }
-    miningTick(dt); oreNodes.forEach(o => { o.spark.rotation.y += dt*3; o.spark.position.y = 1.25 + Math.sin(performance.now()/300 + o.x)*0.1; });
+    if(!isleFall){ const kx = me.kvx, kz = me.kvz; me.kvx = me.kvz = 0; me.update(dt); me.kvx = kx; me.kvz = kz; }
     I.g.updateMatrixWorld(); me.group.getWorldPosition(_ipt); _ipt.y += 0.5; cam.t.lerp(_ipt, 1 - Math.exp(-dt*5));
     // 점프 발판 위에 서면 버튼
-    if(!isleMode && !mining){ const pd = islePad(I), onPad = !I.pit && Math.hypot(me.pos.x - pd.x, me.pos.z - pd.z) < 1.1 && (me.isleY || 0) < 0.5;
-      let ore = null; if(isleOn === isleMine) oreNodes.forEach(o => { if(Math.hypot(me.pos.x - o.x, me.pos.z - o.z) < 1.7) ore = o; });
+    if(!isleMode){ const pd = islePad(I), onPad = !I.pit && Math.hypot(me.pos.x - pd.x, me.pos.z - pd.z) < 1.1;
       const hole = isleOn === 'arena' && Math.hypot(me.pos.x, me.pos.z) < 1.5;
       if(I.pit){ const lad = Math.hypot(me.pos.x, me.pos.z + (PIT_OUT - 1.2)) < 1.8;
         if(me.pitIn) ctxBtn('');
         else if(lad) ctxBtn('⬆ 전투장으로', () => isleTele('arena', { x:0, z:3.2 }, '⬆ 전투장으로 올라왔어요'));
         else ctxBtn('⚔ 맞짱 들어가기', () => { const a = Math.atan2(me.pos.z, me.pos.x); me.pitIn = true; me.pos.set(Math.cos(a)*(PIT_FIGHT - 1.2), 0, Math.sin(a)*(PIT_FIGHT - 1.2)); me.targetRy = Math.atan2(-me.pos.x, -me.pos.z); lastSent = ''; pushPresence(); toast('⚔ 맞짱 시작! 용암에 떨어지면 관중석으로 나가요'); }); }
       else if(hole) ctxBtn('⬇ 구멍으로 내려가기', isleGoPit);
-      else if(onPad) ctxBtn('🚀 다른 섬으로', isleJumpSheet); else if(ore) ctxBtn('⛏ 캐기 (' + oreAvail() + ')', () => mineOre(ore)); else ctxBtn(''); }
+      else if(onPad) ctxBtn('🚀 다른 섬으로', isleJumpSheet); else ctxBtn(''); }
   } else if(mag >= 0.12){ cam.yaw -= ix*dt*1.6; cam.dist = clamp(cam.dist + iy*dt*(6 + cam.dist*0.6), camLim.dmin, camLim.dmax); }
   isleSyncT -= dt; if(isleSyncT <= 0){ isleSyncT = 0.3; isleSyncRemotes(); }
-  remotes.forEach(r => { const a = r.av; if(a.group.parent && a.group.parent.userData.stage) a.group.position.y += a.isleY || 0; });
   isles.forEach(I => { const near = I.id === isleOn && cam.dist < 30; I.label.visible = !near; if(near) I.visit.visible = false; });
-  isleDayNight();
-  { const F = $('#isleFight'), show = !!(isleMine && isleOn && !blockMode && !isleFly && !isleFall); if(F.hidden === show) F.hidden = !show;
+  { const F = $('#isleFight'), show = !!(isleMine && isleOn && !isleFly && !isleFall); if(F.hidden === show) F.hidden = !show;
     if(show){ const now = Date.now(); F.querySelectorAll('.fbtn').forEach(b => { const k = b.dataset.isk || (b.id === 'isleUlt' ? 'ult' : ''); if(!k) return; const r = Math.max(0, ((skillCd[k] || 0) - now)/SKILLS[k].cd); b.style.setProperty('--cd', r.toFixed(3)); });
       const uo = ultOk(); if($('#isleUlt').hidden === uo) $('#isleUlt').hidden = !uo;
       const port = window.innerWidth < window.innerHeight, ph = $('#panel').hidden ? 0 : $('#panel').getBoundingClientRect().height; F.style.setProperty('--fb', (port ? ph + 6 : 8) + 'px'); } }
-  isles.forEach(I => { if(I.base && I.base.userData.padArrow) I.base.userData.padArrow.position.y = 0.45 + Math.sin(t*3)*0.08; });
+  isles.forEach(I => { const U = I.base && I.base.userData; if(!U) return; if(U.padArrow) U.padArrow.position.y = 0.45 + Math.sin(t*3)*0.08; if(U.orb) U.orb.rotation.y += dt*0.12; if(U.fall) U.fall.offset.y += dt*0.9; });
   isles.forEach(I => { if(!I.fixed) I.g.position.y = I.pos.y + Math.sin(t*0.5 + I.ph)*0.25; });
   { const P = isleById.pit; if(P && (isleOn === 'pit' || isleOn === 'arena')){ P.lavaT.offset.x += dt*0.03; P.lavaT.offset.y += dt*0.05; P.bubbles.forEach(b => { b.position.y = -0.3 + Math.max(0, Math.sin(t*2 + b.userData.ph))*0.22; }); if(P.lavaGlow) P.lavaGlow.material.opacity = 0.2 + Math.sin(t*2.5)*0.1;
     const A = isleById.arena; if(A.base.userData.holeGlow) A.base.userData.holeGlow.material.opacity = 0.25 + Math.sin(t*3)*0.12; } }
@@ -5084,10 +5155,10 @@ function isleTick(dt){
   isleVisT -= dt; if(isleVisT <= 0){ isleVisT = 1;   // 누가 어느 섬을 구경하는지
     const by = {}; remotes.forEach(r => { const a = r.av; if(a.room === 'isle' && a.isl && isleById[a.isl]) (by[a.isl] = by[a.isl] || []).push(a.name); });
     const key = JSON.stringify(by); if(key !== isleVisitKey){ isleVisitKey = key; isles.forEach(I => { const n = by[I.id]; I.visit.visible = !!n; if(n) setLabel(I.visit, '👀 ' + n[0] + (n.length > 1 ? ' 외 ' + (n.length - 1) + '명' : ''), '#8FCBFF'); }); }
-    updIsleUI(); refreshOres(); if(blockMode) renderBlockBar(); }
+    updIsleUI(); }
 }
 $('#isleMineBtn').addEventListener('click', () => { if(!isleMine){ isleClaim(); return; } if(isleOn && isleOn !== isleMine) isleJump(isleMine); else { cam.dist = clamp(isleRad(isleById[isleMine])*1.1 + 2.5, 4, 14); cam.pitch = 0.42; } });
-$('#isleAll').addEventListener('click', () => { isleMode = null; ctxBtn(''); cam.dist = 72; cam.pitch = 0.42; toast('🗺 멀리서 다 같이 구경해요'); });
+$('#isleAll').addEventListener('click', () => { isleGhostOff(); isleMode = null; ctxBtn(''); cam.dist = 72; cam.pitch = 0.42; toast('🗺 멀리서 다 같이 구경해요'); });
 $('#isleBuild').addEventListener('click', () => { if(isleMine && isleOn !== isleMine){ toast('짓기는 내 섬에 있을 때만 할 수 있어요 · 🏝 내 섬을 눌러요'); return; } isleBuildSheet(); });
 $('#isleUp').addEventListener('click', () => {
   if(!isleMine) return; const d = isleData[isleMine] || {}, lv = clamp(Math.floor(num(d.lv, 1, 6, 1)), 1, 6);
@@ -5099,153 +5170,20 @@ $('#isleUp').addEventListener('click', () => {
 $('#isleDel').addEventListener('click', () => { if(!isleMine) return; if(isleOn !== isleMine){ toast('치우기는 내 섬에 있을 때만 할 수 있어요'); return; } isleMode = { kind:'del' }; isleAt(isleMine); ctxBtn('✖ 치우기 끝내기', () => { isleMode = null; ctxBtn(''); }); toast('치울 건물을 눌러요 · 값의 절반을 돌려받아요'); });
 $('#isleExit').addEventListener('click', exitRoom);
 $('#isleUlt').addEventListener('click', () => doSkill('ult'));
-$('#isleBlock').addEventListener('click', () => { if(!isleMine){ isleClaim(); return; } if(!blockMode && isleOn !== isleMine){ toast('블록은 내 섬에서만 쌓을 수 있어요 · 🏝 내 섬을 눌러요'); return; } setBlockMode(!blockMode); });
 document.querySelectorAll('[data-isk]').forEach(b => b.addEventListener('click', () => { if(!isleOn){ toast(isleMine ? '섬 위에 서 있을 때 쓸 수 있어요' : '먼저 내 섬을 골라요'); return; } doSkill(b.dataset.isk); }));
 
-/* ===== ⛏ 마크처럼: 블록 쌓기·부수기, 곡괭이 채굴, 낮과 밤 ===== */
-// 블록 1칸 = 무대(stage) 1칸 = 섬 0.5칸. 내 섬에서만 놓고 부술 수 있어요.
-const BLK = [
-  { t:'grass', name:'잔디', cost:1 }, { t:'dirt', name:'흙', cost:1 }, { t:'planks', name:'나무판자', cost:1 }, { t:'log', name:'통나무', cost:2 },
-  { t:'leaf', name:'나뭇잎', cost:1 }, { t:'glass', name:'유리', cost:2 }, { t:'brick', name:'벽돌', cost:3 }, { t:'lamp', name:'발광석', cost:3 },
-  { t:'stone', name:'돌', cost:2, ore:true }, { t:'iron', name:'철', cost:0, ore:true }, { t:'gold', name:'금', cost:0, ore:true }, { t:'diamond', name:'다이아', cost:0, ore:true }
-];
-const BLK_BY = {}; BLK.forEach(b => { BLK_BY[b.t] = b; });
-const BLK_MAX = 400, BLK_HMAX = 24, ORE_MIN = 5;   // 섬당 블록 400개, 높이 24칸, 공부 5분마다 광석 1개
+// 지하 맞짱장 바닥에 쓰는 돌 무늬 (작은 픽셀 그림)
 function pixTex(draw){ const c = document.createElement('canvas'); c.width = c.height = 16; const x = c.getContext('2d'); draw(x);
   const tx = new THREE.CanvasTexture(c); tx.magFilter = THREE.NearestFilter; tx.minFilter = THREE.NearestFilter; return tx; }
-function noiseFill(x, cols){ for(let i=0;i<16;i++) for(let j=0;j<16;j++){ x.fillStyle = cols[(Math.random()*cols.length)|0]; x.fillRect(i, j, 1, 1); } }
-const BLK_MAT = (() => {
-  const L = (tx, o) => new THREE.MeshLambertMaterial(Object.assign({ map:tx }, o || {}));
-  const dirt = pixTex(x => noiseFill(x, ['#8B5A2B', '#7A4E25', '#966336', '#6E4420']));
-  const grassTop = pixTex(x => noiseFill(x, ['#5DAA3A', '#4E9A30', '#6BB846', '#559F35']));
-  const grassSide = pixTex(x => { noiseFill(x, ['#8B5A2B', '#7A4E25', '#966336']); for(let i=0;i<16;i++){ const h = 3 + ((Math.random()*3)|0); for(let j=0;j<h;j++){ x.fillStyle = ['#5DAA3A', '#4E9A30'][(i + j) % 2]; x.fillRect(i, j, 1, 1); } } });
-  const planks = pixTex(x => { noiseFill(x, ['#B98A4E', '#A97C44', '#C49557']); x.fillStyle = '#7A5530'; [3, 7, 11, 15].forEach(y => x.fillRect(0, y, 16, 1)); [[5, 0], [12, 4], [2, 8], [9, 12]].forEach(([a, b]) => x.fillRect(a, b, 1, 3)); });
-  const logSide = pixTex(x => { for(let i=0;i<16;i++) for(let j=0;j<16;j++){ x.fillStyle = (i % 4 === 0) ? '#4E3520' : ['#6B4A2E', '#5E4128', '#735033'][(Math.random()*3)|0]; x.fillRect(i, j, 1, 1); } });
-  const logTop = pixTex(x => { x.fillStyle = '#B98A4E'; x.fillRect(0, 0, 16, 16); x.strokeStyle = '#8A6238'; [6, 4, 2].forEach(r => { x.strokeRect(8 - r, 8 - r, r*2, r*2); }); x.fillStyle = '#5E4128'; x.fillRect(0, 0, 16, 1); x.fillRect(0, 15, 16, 1); x.fillRect(0, 0, 1, 16); x.fillRect(15, 0, 1, 16); });
-  const leaf = pixTex(x => { noiseFill(x, ['#3E8F2E', '#2F7A24', '#4CA33A', '#1F5C18']); });
-  const glass = pixTex(x => { x.clearRect(0, 0, 16, 16); x.fillStyle = 'rgba(200,235,255,.25)'; x.fillRect(0, 0, 16, 16); x.fillStyle = '#E8F6FF'; x.fillRect(0, 0, 16, 1); x.fillRect(0, 15, 16, 1); x.fillRect(0, 0, 1, 16); x.fillRect(15, 0, 1, 16); x.fillRect(3, 3, 1, 3); x.fillRect(4, 3, 2, 1); });
-  const brick = pixTex(x => { x.fillStyle = '#C9C3B8'; x.fillRect(0, 0, 16, 16); for(let r=0;r<4;r++) for(let c=0;c<3;c++){ x.fillStyle = ['#A8473A', '#B5523C', '#9A3F33'][(r + c) % 3]; x.fillRect(((c*6 + (r % 2)*3) % 18) - 1, r*4, 5, 3); } });
-  const lamp = pixTex(x => { noiseFill(x, ['#FFE27A', '#FFD34D', '#FFF3B0', '#E8B830']); });
-  const stone = pixTex(x => noiseFill(x, ['#8A8F96', '#7A7F86', '#959AA0', '#6E7379']));
-  const ore = c => pixTex(x => { noiseFill(x, ['#8A8F96', '#7A7F86', '#959AA0']); for(let k=0;k<7;k++){ x.fillStyle = c[k % c.length]; const a = (Math.random()*13)|0, b = (Math.random()*13)|0; x.fillRect(a, b, 2, 2); x.fillRect(a + 1, b + 2, 1, 1); } });
-  const block = (c1, c2, c3) => pixTex(x => { noiseFill(x, [c1, c2, c3]); x.fillStyle = c2; x.fillRect(0, 0, 16, 1); x.fillRect(0, 0, 1, 16); x.fillStyle = 'rgba(0,0,0,.18)'; x.fillRect(0, 15, 16, 1); x.fillRect(15, 0, 1, 16); });
-  const six = (side, top, bot) => [side, side, top, bot || side, side, side];
-  return {
-    grass:six(L(grassSide), L(grassTop), L(dirt)), dirt:L(dirt), planks:L(planks), log:six(L(logSide), L(logTop), L(logTop)), leaf:L(leaf, { transparent:false }),
-    glass:L(glass, { transparent:true, depthWrite:false, side:THREE.DoubleSide }), brick:L(brick), lamp:L(lamp, { emissive:'#C99A20', emissiveIntensity:0.9 }),
-    stone:L(stone), iron:L(block('#D9D9D9', '#F2F2F2', '#BDBDBD')), gold:L(block('#F2C230', '#FFE27A', '#D9A520'), { emissive:'#3A2A00' }), diamond:L(block('#4EE2D8', '#9FFFF8', '#2EBFB5'), { emissive:'#063A36' }),
-    oreRock:L(ore(['#D9D9D9', '#F2C230', '#4EE2D8', '#E2574C']))
-  };
-})();
-const blkGeo = new THREE.BoxGeometry(1, 1, 1), _bm = new THREE.Matrix4();
-const bkey = (x, y, z) => x + '_' + y + '_' + z;
-function parseB(k){ const p = k.split('_').map(Number); return p.length === 3 && p.every(Number.isInteger) ? p : null; }
-// 섬마다 블록을 종류별 InstancedMesh로 그려요 (블록이 많아도 가벼워요)
-function isleBlocks(I, data){
-  const sig = JSON.stringify(data || {}); if(sig === I.bSig) return; I.bSig = sig;
-  (I.bMeshes || []).forEach(m => { I.stage.remove(m); m.dispose && m.dispose(); });
-  I.bMeshes = []; I.blocks = {}; I.cols = {};
-  const by = {}; Object.keys(data || {}).slice(0, BLK_MAX).forEach(k => { const p = parseB(k), t = data[k]; if(!p || !BLK_BY[t]) return; I.blocks[k] = t; (by[t] = by[t] || []).push(p);
-    const ck = p[0] + '_' + p[2]; (I.cols[ck] = I.cols[ck] || []).push(p[1]); });
-  Object.keys(by).forEach(t => { const list = by[t], m = new THREE.InstancedMesh(blkGeo, BLK_MAT[t], list.length); m.userData.keys = []; m.userData.isleId = I.id; m.userData.blk = true;
-    list.forEach((p, i) => { _bm.makeTranslation(p[0], p[1] + 0.5, p[2]); m.setMatrixAt(i, _bm); m.userData.keys.push(bkey(p[0], p[1], p[2])); });
-    m.instanceMatrix.needsUpdate = true; m.computeBoundingSphere && m.computeBoundingSphere(); m.frustumCulled = false; I.stage.add(m); I.bMeshes.push(m); });
-}
-// 걷기: 1칸까지는 자동으로 올라가고, 2칸 이상 벽이면 막혀요
-function colAt(I, x, z){ return (I.cols && I.cols[Math.round(x) + '_' + Math.round(z)]) || null; }
-function blockWall(I, x, z, feet){ const c = colAt(I, x, z); if(!c) return false; return c.some(k => k + 1 > feet + 1.05 && k < feet + 1.7); }
-function blockSupport(I, x, z, feet){ const c = colAt(I, x, z); let s = 0; if(c) c.forEach(k => { if(k + 1 <= feet + 1.05 && k + 1 > s) s = k + 1; }); return s; }
-let blockMode = false, blockSel = 'grass', blockBreak = false, isleVy = 0;
-function isleInv(){ const d = isleMine && isleData[isleMine]; return (d && d.inv) || {}; }
-function oreAvail(){ const d = isleMine && isleData[isleMine]; if(isleBaseSec == null || !me) return 0; return Math.max(0, Math.floor((isleBaseSec + (me.total || 0))/60/ORE_MIN) - num(d && d.mined, 0, 1e7, 0)); }
-function renderBlockBar(){
-  const bar = $('#blockBar'); if(!bar || bar.hidden) return; const inv = isleInv(), p = islePoints() || 0;
-  const key = JSON.stringify([inv, p, blockSel, blockBreak]); if(bar.dataset.k === key) return; bar.dataset.k = key; bar.textContent = '';
-  BLK.forEach(b => { const n = num(inv[b.t], 0, 1e6, 0), btn = el('button', 'btn blk' + (b.t === blockSel && !blockBreak ? ' on' : ''));
-    btn.type = 'button'; btn.title = b.name; const sw = el('i'); sw.style.background = BLK_SW[b.t]; btn.appendChild(sw); btn.appendChild(el('span', null, b.name.length > 3 ? b.name.slice(0, 3) : b.name)); btn.appendChild(el('span', null, n ? n + '개' : b.ore && !b.cost ? '0개' : b.cost + 'P'));
-    if(!n && (b.ore && !b.cost)) btn.style.opacity = 0.45;
-    btn.addEventListener('click', () => { blockSel = b.t; blockBreak = false; renderBlockBar(); toast(b.name + ' · 놓을 곳을 눌러요' + (n ? '' : b.cost ? ' (없으면 ' + b.cost + 'P로 사요)' : ' (⛏ 캐서 얻어요)')); });
-    bar.appendChild(btn); });
-  const br = el('button', 'btn blk wide warm' + (blockBreak ? ' on' : ''), blockBreak ? '🔨 부수는 중' : '🔨 부수기'); br.type = 'button'; br.addEventListener('click', () => { blockBreak = !blockBreak; renderBlockBar(); toast(blockBreak ? '부술 블록을 눌러요 · 부순 블록은 가방에 들어가요' : '놓기 모드'); }); bar.appendChild(br);
-  const ex = el('button', 'btn blk wide', '✖ 블록 끝'); ex.type = 'button'; ex.addEventListener('click', () => setBlockMode(false)); bar.appendChild(ex);
-}
-const BLK_SW = { grass:'#5DAA3A', dirt:'#8B5A2B', planks:'#B98A4E', log:'#6B4A2E', leaf:'#3E8F2E', glass:'#CFEFFF', brick:'#B5523C', lamp:'#FFE27A', stone:'#8A8F96', iron:'#E6E6E6', gold:'#F2C230', diamond:'#4EE2D8' };
-function setBlockMode(on){
-  blockMode = on; if(on){ isleMode = null; ctxBtn(''); }
-  $('#blockBar').hidden = !on; $('#isleUI').classList.toggle('bm', on); updateUI && setTimeout(updateUI, 0);
-  if(on){ $('#blockBar').dataset.k = ''; renderBlockBar(); toast('🧱 블록 모드 · 섬이나 블록을 누르면 쌓여요'); }
-}
-function blockTap(hits){   // 블록 놓기/부수기 (내 섬에서만)
-  const I = isleById[isleMine]; if(!I || isleOn !== isleMine){ toast('블록은 내 섬에 있을 때만 쌓을 수 있어요'); return true; }
-  let cell = null, hitKey = null;
-  for(const h of hits){
-    if(h.object.userData.blk && h.object.userData.isleId === isleMine && h.instanceId != null){ hitKey = h.object.userData.keys[h.instanceId]; const p = parseB(hitKey);
-      const n = h.face.normal; cell = [p[0] + Math.round(n.x), p[1] + Math.round(n.y), p[2] + Math.round(n.z)]; break; }
-    if(h.object.userData.isleId === isleMine && !h.object.userData.blk && !h.object.userData.ik){ I.stage.updateMatrixWorld(); I.stage.worldToLocal(_ipt.copy(h.point)); if(_ipt.y > -0.6){ cell = [Math.round(_ipt.x), 0, Math.round(_ipt.z)]; break; } }
-    if(h.object.userData.ik) return false;
-  }
-  if(!cell && !hitKey) return false;
-  const d = isleData[isleMine] || {}, inv = Object.assign({}, d.inv || {});
-  if(blockBreak){ if(!hitKey){ toast('부술 블록을 눌러요'); return true; } const tt = I.blocks[hitKey];
-    isleWrite({ ['blocks/' + hitKey]:null, ['inv/' + tt]:num(inv[tt], 0, 1e6, 0) + 1 }); popAt(I, parseB(hitKey), '+1 ' + BLK_BY[tt].name); return true; }
-  const [x, y, z] = cell, R = isleRad(I)/ISLE_S - 0.6;
-  if(y < 0 || y >= BLK_HMAX || Math.hypot(x, z) > R){ toast('여기엔 놓을 수 없어요'); return true; }
-  if(I.blocks[bkey(x, y, z)]) return true;
-  if(Object.keys(I.blocks).length >= BLK_MAX){ toast('블록이 꽉 찼어요 (' + BLK_MAX + '개)'); return true; }
-  if(Math.round(me.pos.x) === x && Math.round(me.pos.z) === z && y + 1 > (me.isleY || 0) && y < (me.isleY || 0) + 1.7){ toast('내가 서 있는 자리예요'); return true; }
-  for(const k in I.items){ const o = I.items[k]; if(Math.hypot(o.x/ISLE_S - x, o.z/ISLE_S - z) < ISLE_ITEM[o.t].r/ISLE_S*0.8 && y < 4){ toast('건물이랑 겹쳐요'); return true; } }
-  const b = BLK_BY[blockSel], have = num(inv[b.t], 0, 1e6, 0), upd = { ['blocks/' + bkey(x, y, z)]:b.t };
-  if(have > 0) upd['inv/' + b.t] = have - 1;
-  else if(b.cost){ const p = islePoints() || 0; if(p < b.cost){ toast('포인트가 모자라요 · 공부하면 늘어요'); return true; } upd.spent = num(d.spent, 0, 1e7, 0) + b.cost; }
-  else { toast(b.name + ' 블록은 ⛏ 광석을 캐야 얻을 수 있어요'); return true; }
-  isleWrite(upd); return true;
-}
-function popAt(I, p, text){ const sp = labelSprite(text, '#FFE27A'); sp.scale.set(2, 0.5, 1); sp.position.set(p[0], p[1] + 1.6, p[2]); I.stage.add(sp); bursts.push({ fx:sp, t:0, pop:true }); }
-// ⛏ 광석: 공부 5분마다 1개씩 내 섬에 생겨요 (최대 3개 보여요)
-let oreNodes = [], oreSig = '', mining = null;
-function seeded(s){ let h = 2166136261; for(const ch of s){ h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } return () => { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; return ((h >>> 0) % 10000)/10000; }; }
-function refreshOres(){
-  const I = isleMine && isleById[isleMine]; const n = I ? Math.min(3, oreAvail()) : 0, d = isleMine && isleData[isleMine];
-  const sig = isleMine + '|' + n + '|' + (d ? d.mined || 0 : 0) + '|' + (I ? I.lv : 0); if(sig === oreSig) return; oreSig = sig;
-  oreNodes.forEach(o => o.g.parent && o.g.parent.remove(o.g)); oreNodes = []; if(!I || !n) return;
-  const rnd = seeded(isleMine + ':' + (d ? d.mined || 0 : 0)), R = isleRad(I)/ISLE_S - 1.2;
-  for(let i=0, tries=0; i<n && tries<60; tries++){ const a = rnd()*Math.PI*2, r = Math.sqrt(rnd())*R, x = Math.round(Math.cos(a)*r), z = Math.round(Math.sin(a)*r);
-    if(colAt(I, x, z) || oreNodes.some(o => Math.hypot(o.x - x, o.z - z) < 2)) continue;
-    if(Object.keys(I.items).some(k => Math.hypot(I.items[k].x/ISLE_S - x, I.items[k].z/ISLE_S - z) < ISLE_ITEM[I.items[k].t].r/ISLE_S + 0.8)) continue;
-    const g = new THREE.Group(); g.position.set(x, 0, z); I.stage.add(g);
-    const m = addM(g, new THREE.DodecahedronGeometry(0.6, 0), BLK_MAT.oreRock, 0, 0.45, 0); m.scale.y = 0.8; m.rotation.set(rnd()*3, rnd()*3, 0);
-    const spark = addM(g, new THREE.OctahedronGeometry(0.12, 0), Gm('#FFFFFF'), 0, 1.25, 0);
-    oreNodes.push({ g, x, z, spark }); i++; }
-}
-const ORE_DROP = [['stone', 52, 2], ['iron', 28, 1], ['gold', 14, 1], ['diamond', 6, 1]];
-function mineOre(o){
-  if(mining || !me) return; mining = { t:0, o, swings:0 }; me.targetRy = Math.atan2(o.x - me.pos.x, o.z - me.pos.z); toast('⛏ 캐는 중…');
-}
-function miningTick(dt){
-  if(!mining) return; const m = mining; m.t += dt;
-  if(m.t > m.swings*0.32){ m.swings++; me.pose = 'punch'; me.poseT = 0; me.poseDur = 0.25; m.o.g.scale.setScalar(1 - m.swings*0.12); for(let k=0;k<3;k++) puff(m.o.x + rand(-0.3, 0.3), 0.6, m.o.z + rand(-0.3, 0.3), '#9AA0A8', 0.4); }
-  if(m.swings >= 4){ mining = null; let r = Math.random()*100, got = ORE_DROP[0]; for(const dd of ORE_DROP){ if(r < dd[1]){ got = dd; break; } r -= dd[1]; }
-    const d = isleData[isleMine] || {}, inv = d.inv || {};
-    isleWrite({ ['inv/' + got[0]]:num(inv[got[0]], 0, 1e6, 0) + got[2], mined:num(d.mined, 0, 1e7, 0) + 1 });
-    const E = { stone:'🪨', iron:'⚙️', gold:'🟨', diamond:'💎' }[got[0]]; popAt(isleById[isleMine], [m.o.x, 0, m.o.z], E + ' ' + BLK_BY[got[0]].name + ' +' + got[2]);
-    toast(E + ' ' + BLK_BY[got[0]].name + ' 블록 +' + got[2] + (got[0] === 'diamond' ? ' · 와 다이아!!' : '') + ' · 🧱 블록에서 쓸 수 있어요'); oreSig = ''; }
-}
-// 🌗 낮과 밤: 12분에 하루 (낮 8분, 밤 4분). 모두 같은 시계라 친구랑 같은 하늘을 봐요
-let isleNightK = -1, isleStars = null;
-const C_DAYBG = new THREE.Color('#9FCFF2'), C_NIGHTBG = new THREE.Color('#0B1230'), C_DUSK = new THREE.Color('#F2A36B'), _dc = new THREE.Color();
-function isleDayNight(){
-  const ph = (Date.now()/1000 % 720)/720;   // 0~1
-  let night = 0; if(ph > 0.62 && ph < 0.7) night = (ph - 0.62)/0.08; else if(ph >= 0.7 && ph < 0.95) night = 1; else if(ph >= 0.95) night = 1 - (ph - 0.95)/0.05;
-  const dusk = Math.max(0, 1 - Math.abs(ph - 0.66)/0.05) + Math.max(0, 1 - Math.abs(ph - 0.975)/0.03);
-  const k = Math.round(night*60)/60 + Math.round(Math.min(1, dusk)*20)/2000; if(k === isleNightK) return; isleNightK = k;
-  const U = isleScene.userData; _dc.copy(C_DAYBG).lerp(C_NIGHTBG, night).lerp(C_DUSK, Math.min(1, dusk)*0.35*(1 - night*0.5));
-  isleScene.background.copy(_dc); isleScene.fog.color.copy(_dc);
-  U.sky.material.color.setRGB(1 - night*0.85, 1 - night*0.82, 1 - night*0.6).lerp(C_DUSK, Math.min(1, dusk)*0.3);
-  U.hemi.intensity = 0.75 - night*0.5; U.sun.intensity = 0.85*(1 - night) + 0.12; U.sun.color.set(night > 0.5 ? '#9FB6FF' : '#FFF4E0');
-  if(U.cloudM) U.cloudM.emissive.setRGB(0.72 - night*0.62, 0.77 - night*0.65, 0.85 - night*0.6);
-  if(isleStars){ isleStars.visible = night > 0.05; isleStars.material.opacity = night; }
-  if(U.moon){ U.moon.visible = night > 0.05; U.moon.material.opacity = night; } if(U.sunS){ U.sunS.visible = night < 0.95; U.sunS.material.opacity = 1 - night; }
-  BLK_MAT.lamp.emissiveIntensity = 0.9 + night*1.4;
+const PIT_STONE = pixTex(x => { for(let i=0;i<16;i++) for(let j=0;j<16;j++){ x.fillStyle = ['#8A8F96', '#7A7F86', '#959AA0', '#6E7379'][(Math.random()*4)|0]; x.fillRect(i, j, 1, 1); } });
+// 예전 블록 기능에 쓴 포인트 돌려주기 (블록·가방을 지우고 산 값만큼 spent에서 빼요)
+const BLK_REFUND = { grass:1, dirt:1, planks:1, log:2, leaf:1, glass:2, brick:3, lamp:3 };
+let isleRefundDone = false;
+function isleRefundBlocks(){
+  if(isleRefundDone || !isleMine) return; const d = isleData[isleMine]; if(!d || !(d.blocks || d.inv || d.mined)) return; isleRefundDone = true;
+  let back = 0; Object.values(d.blocks || {}).forEach(tp => { back += BLK_REFUND[tp] || 0; }); Object.keys(d.inv || {}).forEach(tp => { back += (BLK_REFUND[tp] || 0)*num(d.inv[tp], 0, 1e6, 0); });
+  isleWrite({ blocks:null, inv:null, mined:null, spent:Math.max(0, num(d.spent, 0, 1e7, 0) - back) });
+  if(back) setTimeout(() => toast('🧱 블록 기능이 없어져서 블록에 쓴 ' + back + 'P를 돌려받았어요'), 600);
 }
 
 function fpEye(){
