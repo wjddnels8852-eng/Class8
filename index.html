@@ -577,7 +577,7 @@ body.isle .panel{padding:8px 10px 10px;gap:6px}
     </div>
     </div>
     <button class="btn primary" type="submit" id="enterBtn" hidden>교실 입장</button>
-    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 59</p>
+    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 60</p>
   </form>
 </div>
 
@@ -4650,7 +4650,7 @@ $('#btnView').addEventListener('click', () => { firstPerson = !firstPerson; stor
 const _eye = new THREE.Vector3();
 function fwd(o, d){ return _eye.set(o.g.position.x + Math.sin(o.h || 0)*d, 0, o.g.position.z + Math.cos(o.h || 0)*d); }
 /* ===== ☁ 공중섬: 공부한 만큼 땅을 넓히고 집을 지어요 (공부 1분 = 1포인트) ===== */
-const ISLE_ROSTER = ['정우진', '구재성', '권해준', '김건훈', '김DO희', '노경민', '박준원', '시혁', '유용준', '이성준', '조현빈', '천승우', '추성민', '황태율', '최건'];   // 순서 바꾸지 말기 (섬 번호)
+const ISLE_ROSTER = ['정우진', '구재성', '권해준', '김건훈', '김DO희', '노경민', '박준원', '시혁', '유용준', '이성준', '조현빈', '천승우', '추성민', '황태율', '최건', '빈 섬 1', '빈 섬 2'];   // 순서 바꾸지 말기 (섬 번호)
 const ISLE_R = [0, 2.2, 3.0, 3.8, 4.6, 5.4, 6.2];
 const ISLE_UP = [0, 0, 60, 150, 300, 500, 800];   // 그 레벨로 넓히는 데 드는 포인트
 const ISLE_ITEMS = [
@@ -4909,7 +4909,7 @@ function refreshIsles(){
       g.traverse(o => { o.userData.isleId = I.id; o.userData.ik = k; }); I.itemsG.add(g); I.items[k] = { t:w.t, g, x:w.x, z:w.z };
       if(g.userData.spin || g.userData.bob || g.userData.flag || g.userData.flame) isleSpin.push(g); });
     const mine = I.id === isleMine, n = Object.keys(I.items).length;
-    const txt = teacher ? '👩‍🏫 영선쌤 섬 · Lv' + lv : I.name + (d.owner ? ' · Lv' + lv : ' · 빈 섬');
+    const txt = teacher ? '👩‍🏫 영선쌤 섬 · Lv' + lv : isleName(I.id) + (d.owner ? ' · Lv' + lv : /^빈 섬/.test(I.name) ? '' : ' · 빈 섬');
     if(I.label.userData.txt !== txt + mine){ I.label.userData.txt = txt + mine; setLabel(I.label, txt, mine ? '#FFE27A' : d.owner || teacher ? '#FFFFFF' : '#A9B0D6'); }
     I.label.position.y = 2.6 + lv*0.35; I.visit.position.y = I.label.position.y + 0.8; I.n = n;
   });
@@ -4933,7 +4933,7 @@ function updIsleUI(){
   document.querySelectorAll('[data-isk]').forEach(b => { const k = b.dataset.isk, ok = !!me && skillOk(me, k); b.setAttribute('aria-disabled', String(!ok)); b.title = ok ? '' : '하루 ' + (SKILLS[k].need/3600) + '시간 공부하면 열려요'; });
 }
 function isleAt(id){ isleFocus = id; const I = isleById[id]; if(!I) return; cam.dist = id === isleMine ? clamp(ISLE_R[I.lv]*1.6 + 3, 6, 16) : clamp(ISLE_R[I.lv]*2.6 + 6, 9, 30); lastSent = ''; pushPresence();
-  const d = isleData[id] || {}; toast(id === 't' ? '👩‍🏫 영선쌤 섬 · 우리 반이 포인트를 쓸수록 같이 커져요' : I.name + (d.owner ? '의 섬 · Lv' + I.lv + ' · 건물 ' + I.n + '개' : ' · 아직 주인이 없어요')); }
+  const d = isleData[id] || {}; toast(id === 't' ? '👩‍🏫 영선쌤 섬 · 우리 반이 포인트를 쓸수록 같이 커져요' : isleName(id) + (d.owner ? '의 섬 · Lv' + I.lv + ' · 건물 ' + I.n + '개' : ' · 아직 주인이 없어요')); }
 function isleClaim(){
   const body = showSheet('내 섬 고르기 · 명단에서 내 이름'); $('#spSheet').hidden = false;
   body.appendChild(el('p', null, '한 번 고르면 바꿀 수 없어요. 꼭 내 이름을 골라요.'));
@@ -4944,8 +4944,10 @@ function isleClaim(){
       ok.addEventListener('click', () => { $('#spSheet').hidden = true; isleTake(id, name); }); no.addEventListener('click', isleClaim); b2.appendChild(ok); b2.appendChild(no); });
     body.appendChild(btn); });
 }
+const isleName = id => { const I = isleById[id], d = isleData[id] || {}; if(!I) return ''; return /^빈 섬/.test(I.name) && d.nm ? String(d.nm).slice(0, 8) : I.name; };   // 빈 섬은 주인 닉네임으로 보여요
 function isleTake(id, name){
-  const fresh = { owner:myUid, lv:1, spent:0, at:Date.now(), items:{ i0:{ t:'tree', x:0.6, z:-0.4, r:0 } } };
+  if(/^빈 섬/.test(name) && me) name = me.name;
+  const fresh = { owner:myUid, nm:(me && me.name || '').slice(0, 8), lv:1, spent:0, at:Date.now(), items:{ i0:{ t:'tree', x:0.6, z:-0.4, r:0 } } };
   const done = () => { toast('🎉 ' + name + '의 섬이 생겼어요! 공부한 만큼 포인트로 꾸며요'); isleAt(id); };
   if(isleLocal){ isleData[id] = fresh; refreshIsles(); done(); return; }
   rtdb.ref('isles/' + id).transaction(cur => cur ? undefined : fresh).then(r => { if(r.committed) done(); else toast('앗, 다른 친구가 먼저 골랐어요'); }).catch(netErr);
@@ -5021,7 +5023,7 @@ function isleTap(x, y){
     if(id === isleOn && !isleFly && !isleFall){ const I0 = isleById[id]; I0.stage.updateMatrixWorld(); I0.stage.worldToLocal(_ipt.copy(h.point)); isleGo = { x:_ipt.x, z:_ipt.z }; return; }
     if(id === 'arena'){ toast('⚔ 전투장 · 점프 발판으로 갈 수 있어요'); return; }
     if(id === 'pit') return;
-    const I2 = isleById[id], d2 = isleData[id] || {}; toast('👀 ' + (id === 't' ? '영선쌤 섬 · 우리 반이 같이 키워요' : I2.name + (d2.owner ? '의 섬 · Lv' + I2.lv + ' · 건물 ' + I2.n + '개' : ' · 아직 주인이 없어요')) + ' · 점프 발판으로 놀러 갈 수 있어요'); return;
+    const I2 = isleById[id], d2 = isleData[id] || {}; toast('👀 ' + (id === 't' ? '영선쌤 섬 · 우리 반이 같이 키워요' : isleName(id) + (d2.owner ? '의 섬 · Lv' + I2.lv + ' · 건물 ' + I2.n + '개' : ' · 아직 주인이 없어요')) + ' · 점프 발판으로 놀러 갈 수 있어요'); return;
   }
 }
 function enterIsle(){
@@ -5073,7 +5075,7 @@ function isleJumpSheet(){
   const go = (id, label) => { if(id === isleOn) return; const b = el('button', 'quizopt', label); b.type = 'button'; b.addEventListener('click', () => { $('#spSheet').hidden = true; isleJump(id); }); body.appendChild(b); };
   if(isleMine) go(isleMine, '🏝 내 섬');
   go('arena', '⚔ 전투장 (누구나 기술 OK)'); go('t', '👩‍🏫 영선쌤 섬');
-  ISLE_ROSTER.forEach((name, i) => { const id = 's' + i, d = isleData[id]; if(id !== isleMine && d && d.owner) go(id, '🏝 ' + name + '의 섬 · Lv' + (isleById[id] ? isleById[id].lv : 1)); });
+  ISLE_ROSTER.forEach((name, i) => { const id = 's' + i, d = isleData[id]; if(id !== isleMine && d && d.owner) go(id, '🏝 ' + isleName(id) + '의 섬 · Lv' + (isleById[id] ? isleById[id].lv : 1)); });
 }
 function isleTele(id, at, msg){   // 지하로 내려가거나 올라올 땐 화면을 어둡게 했다가 옮겨요
   const ov = $('#fadeOv'); ov.style.background = '#000'; ov.style.opacity = 1; ctxBtn(''); isleGo = null;
@@ -5086,7 +5088,7 @@ function isleJump(id){   // 포물선을 그리며 날아가요
   me.group.getWorldPosition(_iv); isleScene.add(me.group); me.group.position.copy(_iv); me.group.scale.setScalar(ISLE_S);
   const land = islePad(B).clone(); land.z += 1.6;
   isleFly = { t:0, dur:1.8, from:_iv.clone(), to:id, land }; isleOn = null; isleGo = null; isleGhostOff(); isleMode = null; ctxBtn(''); me.mode = 'idle'; me.say('점프!');
-  lastSent = ''; pushPresence(); toast('🚀 ' + (id === 'arena' ? '전투장' : id === 't' ? '영선쌤 섬' : id === isleMine ? '내 섬' : B.name + '의 섬') + '으로 날아가요!');
+  lastSent = ''; pushPresence(); toast('🚀 ' + (id === 'arena' ? '전투장' : id === 't' ? '영선쌤 섬' : id === isleMine ? '내 섬' : isleName(id) + '의 섬') + '으로 날아가요!');
 }
 function isDesc(o, root){ while(o){ if(o === root) return true; o = o.parent; } return false; }
 function isleSyncRemotes(){   // 공중섬에 있는 친구를 그 친구가 서 있는 섬 위에 세워요
