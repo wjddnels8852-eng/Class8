@@ -536,7 +536,7 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
     </div>
     </div>
     <button class="btn primary" type="submit" id="enterBtn" hidden>교실 입장</button>
-    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 47</p>
+    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 48</p>
   </form>
 </div>
 
@@ -4742,12 +4742,13 @@ function leaveIsle(){
   if(room === 'isle' || camera.far === 400){ camera.far = 140; camera.updateProjectionMatrix(); }
 }
 let isleVisT = 0, isleGo = null, isleOn = null;
-const ISLE_ME = 0.42;   // 섬에서는 캐릭터를 작게 (건물이랑 크기 맞추기)
+const ISLE_ME = 0.5;   // 섬에서는 캐릭터를 작게 (건물이랑 크기 맞추기)
 function islePlaceMe(){
   const I = isleById[isleMine]; if(!I || !me) return;
   I.g.add(me.group); isleOn = isleMine; me.group.scale.setScalar(ISLE_ME); me.group.visible = true;
   if(me.flying) setFly(false); me.path = []; me.goSeat = null; me.mode = 'idle'; me.manual = false; me.jumpY = 0;
-  me.pos.set(0, 0, ISLE_R[I.lv]*0.55); me.ry = me.targetRy = Math.PI; isleKeepOn(I);
+  me.pos.set(0, 0, ISLE_R[I.lv]*0.55); me.ry = me.targetRy = 0; isleKeepOn(I);
+  isleFocus = isleMine; cam.dist = clamp(ISLE_R[I.lv]*1.1 + 2.5, 4, 12); cam.pitch = 0.42; cam.yaw = 0;   // 내 캐릭터가 잘 보이게 가까이
   lastSent = ''; pushPresence();
 }
 function isleKeepOn(I){   // 섬 밖으로 안 떨어지고, 건물은 피해서 걸어요
