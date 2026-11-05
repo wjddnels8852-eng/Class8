@@ -299,6 +299,8 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
 .fbtn:active{transform:scale(.9)}
 .fbtn::after{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(rgba(10,14,30,.62) calc(var(--cd,0)*360deg),transparent 0);pointer-events:none}
 .fbtn[aria-disabled=true]{filter:grayscale(.85) brightness(.75)}
+#isleUlt{animation:ultGlow 1.4s ease-in-out infinite}#isleUlt[hidden]{display:none}
+@keyframes ultGlow{50%{box-shadow:0 5px 0 rgba(0,0,0,.28),0 0 26px 6px rgba(180,140,255,.75),inset 0 -6px 10px rgba(0,0,0,.18)}}
 .fbtn[aria-disabled=true]::before{content:"🔒";position:absolute;right:2px;top:0;font-size:14px}
 body.isle .test{display:none}
 body.isle .panel{padding:8px 10px 10px;gap:6px}
@@ -576,7 +578,7 @@ body.isle .panel{padding:8px 10px 10px;gap:6px}
     </div>
     </div>
     <button class="btn primary" type="submit" id="enterBtn" hidden>교실 입장</button>
-    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 56</p>
+    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 57</p>
   </form>
 </div>
 
@@ -622,6 +624,7 @@ body.isle .panel{padding:8px 10px 10px;gap:6px}
 <button type="button" class="geobtn" id="roomBtn" hidden>🚪 들어가기</button>
 <div id="isleFight" hidden aria-label="기술">
   <button type="button" class="fbtn big" data-isk="punch" style="--c1:#FFB547;--c2:#F06A1F;--rim:#FFE2B0;left:137px;top:137px"><b>👊</b><span>주먹</span></button>
+  <button type="button" class="fbtn" id="isleUlt" hidden style="--c1:#C9A8FF;--c2:#5B2BC9;--rim:#EFE6FF;left:0px;top:22px"><b style="font:900 28px var(--font-d);color:#fff;text-shadow:0 2px 0 #3A1A80">L</b><span>궁극기</span></button>
   <button type="button" class="fbtn" data-isk="blast" style="--c1:#7DF0F2;--c2:#1FA9C9;--rim:#D6FDFF;left:33px;top:151px"><b>💨</b><span>장풍</span></button>
   <button type="button" class="fbtn" data-isk="ice" style="--c1:#BFE6FF;--c2:#4D8BFF;--rim:#EAF6FF;left:49px;top:92px"><b>❄️</b><span>빙결</span></button>
   <button type="button" class="fbtn" data-isk="fire" style="--c1:#FF8A5B;--c2:#D9261C;--rim:#FFD0B8;left:92px;top:49px"><b>🔥</b><span>화염</span></button>
@@ -1421,6 +1424,9 @@ class Avatar {
       else if(this.pose === 'hooray'){ L.rotation.x = 0; R.rotation.x = 0; L.rotation.z = -2.8; R.rotation.z = 2.8; this.body.position.y = Math.abs(Math.sin(t*8))*0.12; }
       else if(this.pose === 'clap'){ const c = Math.abs(Math.sin(t*13)); L.rotation.x = -1.25; R.rotation.x = -1.25; R.rotation.z = -0.7 + 0.45*c; L.rotation.z = 0.7 - 0.45*c; }
       else if(this.pose === 'dance'){ const s = Math.sin(t*6); this.body.rotation.y = s*0.5; L.rotation.x = 0; R.rotation.x = 0; L.rotation.z = -1.4 - s*0.7; R.rotation.z = 1.4 - s*0.7; this.body.position.y = Math.abs(Math.sin(t*12))*0.08; if(this.mode !== 'sit'){ this.legs[0].rotation.x = Math.sin(t*12)*0.3; this.legs[1].rotation.x = -Math.sin(t*12)*0.3; } }
+      else if(this.pose === 'takeL'){ const s = Math.sin(t*10);
+        R.rotation.x = -0.35; R.rotation.z = 2.55; L.rotation.x = 0; L.rotation.z = -0.5 - Math.abs(s)*0.5;
+        this.legs[0].rotation.x = -Math.max(0, s)*1.1; this.legs[1].rotation.x = -Math.max(0, -s)*1.1; this.body.position.y = Math.abs(Math.cos(t*10))*0.08; this.body.rotation.y = s*0.25; }
       else if(this.pose === 'punch'){ const q = Math.min(1, t/0.1); L.rotation.x = 0.3; R.rotation.z = 0; R.rotation.x = -1.6*q; this.body.rotation.y = -0.35*q; }
       else if(this.pose === 'slap'){ const q = Math.min(1, t/0.22); L.rotation.x = 0; R.rotation.x = -1.35; R.rotation.z = 1.5 - 2.4*q; this.body.rotation.y = 0.5 - 0.9*q; }
       else if(this.pose === 'blast'){ L.rotation.x = -1.5; R.rotation.x = -1.5; L.rotation.z = 0.25; R.rotation.z = -0.25; this.body.rotation.x = 0.15; }
@@ -2519,6 +2525,7 @@ document.querySelectorAll('[data-fly]').forEach(b => b.addEventListener('click',
 /* 장풍 (1등 보상): 앞으로 기 덩어리를 쏘고, 맞은 친구는 날아가요.
    친구 폰에서는 '내가 맞았는지'를 각자 계산해서 스스로 날아가요 (자기 위치는 자기만 바꿀 수 있어서). */
 const blasts = [], bursts = [], flames = [], puffs = [];
+function ultOk(){ return room === 'isle' && isleMine === 's0' && isleOn === 'pit'; }   // 테스트: 정우진 섬 주인만, 맞짱장에서만
 function FX(){ return room === 'isle' && isleScene ? (isleOn && isleById[isleOn] ? isleById[isleOn].stage : isleScene) : scene; }   // 기술 효과를 넣을 곳 (공중섬에선 내가 서 있는 섬)
 const rmFx = o => { if(o && o.parent) o.parent.remove(o); };
 const PIT_FIGHT = 6.4, PIT_LAVA = 8.6, PIT_CAGE = 9.2, PIT_OUT = 13;   // 지하 맞짱장 (무대 칸 기준)
@@ -2544,6 +2551,7 @@ function spawnHand(av, k, dx, dz, reach){   // 커다란 주먹/손바닥이 쭉
 }
 const SKILLS = {
   punch:{ name:'주먹', need:0, cd:700 },
+  ult:{ name:'L을 가져가', need:0, cd:12000 },   // 궁극기 (지금은 테스트로 정우진 섬 주인만, 지하 맞짱장에서만)
   blast:{ name:'장풍', need:0, cd:2500 },
   ice:{ name:'빙결', need:3600, cd:3000 },         // 오늘 1시간 공부하면
   fire:{ name:'화염방사', need:7200, cd:4000 },    // 오늘 2시간
@@ -2606,6 +2614,45 @@ function punchHit(av, dx, dz){
   if(!av.remote){ av.path = []; av.goSeat = null; av.flying = false; av.mode = 'idle'; av.kvx = dx*11; av.kvz = dz*11; av.vy = 3; av.jumpY = Math.max(av.jumpY, 0.01); av.spinT = 0.45; }
   av.say('윽!'); if(av === me) toast('주먹에 맞았어요!');
 }
+function ultHit(av, dx, dz){
+  popText(av, 'L!!', '#B48CFF');
+  if(!av.remote){ av.path = []; av.goSeat = null; av.flying = false; av.mode = 'idle'; av.kvx = dx*24; av.kvz = dz*24; av.vy = 6.5; av.jumpY = Math.max(av.jumpY, 0.01); av.spinT = 1.5; }
+  av.say('L 받았다…'); if(av === me) toast('L을 가져가 궁극기에 맞았어요!');
+}
+// 궁극기: 내 앞에 커다란 내 모습이 L을 가져가 춤을 추면서 앞으로 돌진해서 다 밀쳐내요
+const ults = [];
+function spawnUlt(av, dx, dz){
+  const src = av.group, g = src.clone(true), srcList = [], dstList = [];
+  src.traverse(o => srcList.push(o)); g.traverse(o => dstList.push(o));
+  const map = o => dstList[srcList.indexOf(o)];
+  dstList.forEach(o => { if(o.isSprite){ o.visible = false; return; }
+    if(o.isMesh){ const c = o.material && o.material.color ? o.material.color.clone() : new THREE.Color('#FFFFFF');
+      o.material = new THREE.MeshLambertMaterial({ color:c.lerp(new THREE.Color('#B48CFF'), 0.35), emissive:'#4A1FA0', transparent:true, opacity:0.82, depthWrite:false }); } });
+  const arms = av.arms.map(map), legs = av.legs.map(map), body = map(av.body);
+  const aura = new THREE.Mesh(new THREE.SphereGeometry(0.9, 20, 14), new THREE.MeshBasicMaterial({ color:'#B48CFF', transparent:true, opacity:0.18, depthWrite:false })); aura.position.y = 0.9; g.add(aura);
+  const L = labelSprite('L', '#6EE7A8'); L.scale.set(1.4, 0.35, 1); L.position.set(0, 2.3, 0); g.add(L);
+  g.position.set(av.pos.x + dx*0.8, 0, av.pos.z + dz*0.8); g.rotation.set(0, Math.atan2(dx, dz), 0); g.scale.setScalar(0.01); FX().add(g);
+  av.pose = 'takeL'; av.poseT = 0; av.poseDur = 1.9; av.say('L을 가져가!!');
+  ults.push({ g, arms, legs, body, aura, L, owner:av, x0:av.pos.x + dx*0.8, z0:av.pos.z + dz*0.8, dx, dz, t:0, hit:new Set() });
+  if(av === me) toast('💜 궁극기: L을 가져가!!');
+}
+function ultTick(dt){
+  for(let i = ults.length - 1; i >= 0; i--){
+    const u = ults[i]; u.t += dt; const T = u.t;
+    const grow = Math.min(1, T/0.3), fade = T > 1.7 ? Math.max(0, 1 - (T - 1.7)/0.3) : 1, sc = 2.6*(grow < 1 ? 1 - Math.pow(1 - grow, 3) : 1);
+    const dash = T < 0.35 ? 0 : Math.min(1, (T - 0.35)/1.3), dist = (1 - Math.pow(1 - dash, 2))*7.5;
+    const x = u.x0 + u.dx*dist, z = u.z0 + u.dz*dist; u.g.position.set(x, Math.abs(Math.sin(T*9))*0.25, z); u.g.scale.setScalar(Math.max(0.01, sc));
+    const s = Math.sin(T*10);   // L을 가져가 춤 (이마에 L 손, 다리 번갈아 차기)
+    if(u.arms[1]){ u.arms[1].rotation.set(-0.35, 0, 2.55); } if(u.arms[0]){ u.arms[0].rotation.set(0, 0, -0.5 - Math.abs(s)*0.5); }
+    if(u.legs[0]){ u.legs[0].rotation.set(-Math.max(0, s)*1.1, 0, 0.15); } if(u.legs[1]){ u.legs[1].rotation.set(-Math.max(0, -s)*1.1, 0, -0.15); }
+    if(u.body){ u.body.rotation.y = s*0.3; }
+    u.aura.material.opacity = (0.14 + Math.abs(s)*0.1)*fade; u.g.traverse(o => { if(o.isMesh && o !== u.aura) o.material.opacity = 0.82*fade; });
+    if(Math.random() < dt*30) puff(x + rand(-0.6, 0.6), rand(0.3, 2.4), z + rand(-0.6, 0.6), pick(['#B48CFF', '#6EE7A8', '#E6DAFF']), 0.5);
+    if(dash > 0 && dash < 1) allAvatars.forEach(a => { if(a === u.owner || u.hit.has(a) || !a.group.visible || a.group.parent !== FX() || !sameZone(a, u.owner)) return;
+      if(Math.hypot(a.pos.x - x, a.pos.z - z) < 1.6){ u.hit.add(a); onHit(a, 'ult', u.dx, u.dz); } });
+    if(T > 2){ rmFx(u.g); ults.splice(i, 1); }
+  }
+}
 function onHit(av, kind, dx, dz){
   if(av.mode === 'sit'){   // 공부 중이어도 날아가요 · 공부시간은 그대로, 90초 안에 다시 앉으면 타이머도 이어져요
     if(av.remote) return;
@@ -2616,10 +2663,12 @@ function onHit(av, kind, dx, dz){
   else if(kind === 'fire') burn(av);
   else if(kind === 'slap') slapHit(av, dx, dz);
   else if(kind === 'punch') punchHit(av, dx, dz);
+  else if(kind === 'ult') ultHit(av, dx, dz);
 }
 // 기술 쓰기 (내 폰에서도, 친구 폰에서도 똑같이 실행돼요)
 function castSkill(av, k, x, z, dx, dz){
   if(!av.group.visible || av.group.parent !== FX()) return;   // 다른 곳(다른 섬)에서 쓴 기술은 안 보여요
+  if(k === 'ult'){ spawnUlt(av, dx, dz); return; }
   if(k === 'slap' || k === 'punch'){
     const pn = k === 'punch'; av.pose = pn ? 'punch' : 'slap'; av.poseT = 0; av.poseDur = pn ? 0.3 : 0.45; av.say(pn ? '주먹!' : '싸대기!');
     let best = null, bd = pn ? 2.0 : 2.4; spawnHand(av, k, dx, dz, bd);
@@ -2668,6 +2717,7 @@ function updateBlasts(dt){
     }
     if(f.t >= 0.9) flames.splice(i, 1);
   }
+  ultTick(dt);
   for(let i = hands.length - 1; i >= 0; i--){
     const h = hands[i]; h.t += dt; const T = h.pn ? 0.32 : 0.42, u = Math.min(1, h.t/T), out = u < 0.45 ? u/0.45 : u < 0.6 ? 1 : 1 - (u - 0.6)/0.4;
     const e = 1 - Math.pow(1 - out, 3), dist = 0.35 + e*h.reach, s = 1 + e*(h.pn ? 1.1 : 1.4);
@@ -2698,6 +2748,7 @@ function doSkill(k){
   if(me.mode === 'sit'){ toast('일어난 다음에 쓸 수 있어요'); return; }
   if(me.frozenT > 0){ toast('얼어서 못 움직여요!'); return; }
   if(room === 'isle' && (!isleOn || isleFly || isleFall)) return;
+  if(k === 'ult' && !ultOk()){ toast('궁극기는 지하 맞짱장에서만 쓸 수 있어요'); return; }
   const now = Date.now(); if(now < (skillCd[k] || 0)){ toast(S.name + ' 모으는 중…'); return; }
   skillCd[k] = now + S.cd;
   const dx = Math.sin(me.ry), dz = Math.cos(me.ry), x = me.pos.x + dx*0.6, z = me.pos.z + dz*0.6;
@@ -5018,7 +5069,8 @@ function isleTick(dt){
   isles.forEach(I => { const near = I.id === isleOn && cam.dist < 30; I.label.visible = !near; if(near) I.visit.visible = false; });
   isleDayNight();
   { const F = $('#isleFight'), show = !!(isleMine && isleOn && !blockMode && !isleFly && !isleFall); if(F.hidden === show) F.hidden = !show;
-    if(show){ const now = Date.now(); F.querySelectorAll('.fbtn').forEach(b => { const k = b.dataset.isk, r = Math.max(0, ((skillCd[k] || 0) - now)/SKILLS[k].cd); b.style.setProperty('--cd', r.toFixed(3)); });
+    if(show){ const now = Date.now(); F.querySelectorAll('.fbtn').forEach(b => { const k = b.dataset.isk || (b.id === 'isleUlt' ? 'ult' : ''); if(!k) return; const r = Math.max(0, ((skillCd[k] || 0) - now)/SKILLS[k].cd); b.style.setProperty('--cd', r.toFixed(3)); });
+      const uo = ultOk(); if($('#isleUlt').hidden === uo) $('#isleUlt').hidden = !uo;
       const port = window.innerWidth < window.innerHeight, ph = $('#panel').hidden ? 0 : $('#panel').getBoundingClientRect().height; F.style.setProperty('--fb', (port ? ph + 6 : 8) + 'px'); } }
   isles.forEach(I => { if(I.base && I.base.userData.padArrow) I.base.userData.padArrow.position.y = 0.45 + Math.sin(t*3)*0.08; });
   isles.forEach(I => { if(!I.fixed) I.g.position.y = I.pos.y + Math.sin(t*0.5 + I.ph)*0.25; });
@@ -5046,6 +5098,7 @@ $('#isleUp').addEventListener('click', () => {
 });
 $('#isleDel').addEventListener('click', () => { if(!isleMine) return; if(isleOn !== isleMine){ toast('치우기는 내 섬에 있을 때만 할 수 있어요'); return; } isleMode = { kind:'del' }; isleAt(isleMine); ctxBtn('✖ 치우기 끝내기', () => { isleMode = null; ctxBtn(''); }); toast('치울 건물을 눌러요 · 값의 절반을 돌려받아요'); });
 $('#isleExit').addEventListener('click', exitRoom);
+$('#isleUlt').addEventListener('click', () => doSkill('ult'));
 $('#isleBlock').addEventListener('click', () => { if(!isleMine){ isleClaim(); return; } if(!blockMode && isleOn !== isleMine){ toast('블록은 내 섬에서만 쌓을 수 있어요 · 🏝 내 섬을 눌러요'); return; } setBlockMode(!blockMode); });
 document.querySelectorAll('[data-isk]').forEach(b => b.addEventListener('click', () => { if(!isleOn){ toast(isleMine ? '섬 위에 서 있을 때 쓸 수 있어요' : '먼저 내 섬을 골라요'); return; } doSkill(b.dataset.isk); }));
 
