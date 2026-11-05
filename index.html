@@ -536,7 +536,7 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
     </div>
     </div>
     <button class="btn primary" type="submit" id="enterBtn" hidden>교실 입장</button>
-    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 46</p>
+    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 47</p>
   </form>
 </div>
 
@@ -1323,6 +1323,8 @@ class Avatar {
     const s = seats[i]; s.occ = this; this.seat = i; this.mode = 'sit'; this.path = []; this.flying = false;
     this.pos.set(s.x, 0, s.z); this.targetRy = s.ry != null ? s.ry : Math.PI;
     this.studyStart = Date.now() - (minutesAgo || 0)*60000;
+    if(this.keepStudy && Date.now() < this.keepStudy.until && !minutesAgo){ this.studyStart = this.keepStudy.start; if(this.isMe) toast('타이머 이어서 공부해요!'); }
+    this.keepStudy = null;
   }
   update(dt){
     if(this.frozenT > 0){ this.frozenT -= dt; if(this.iceBox) this.iceBox.visible = this.frozenT > 0;
@@ -1930,7 +1932,7 @@ function renderRankList(){
   });
   const rk = ranking(), r = $('#reward'); r.textContent = '';
   const b = document.createElement('b'), s = document.createElement('span');
-  b.textContent = '공부할수록 열리는 기술'; s.textContent = '공중부양·장풍은 누구나 · 하루에 1시간 공부하면 빙결, 2시간 화염방사, 4시간 싸대기가 열리고, 한 번 열리면 계속 써요. 자리에 앉아 공부 중일 땐 어떤 기술도 안 맞아요(면역).';
+  b.textContent = '공부할수록 열리는 기술'; s.textContent = '공중부양·장풍은 누구나 · 하루에 1시간 공부하면 빙결, 2시간 화염방사, 4시간 싸대기가 열리고, 한 번 열리면 계속 써요. 공부 중에 맞으면 자리에서 날아가지만, 공부시간은 그대로고 90초 안에 다시 앉으면 타이머도 이어져요.';
   r.append(b, s);
   document.querySelectorAll('#rankTabs [data-tab]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.tab === rankTab)));
 }
@@ -2527,7 +2529,10 @@ function slapHit(av, dx, dz){
   av.say('아야!'); if(av === me) toast('싸대기를 맞았어요!');
 }
 function onHit(av, kind, dx, dz){
-  if(av.mode === 'sit'){ immune(av); return; }
+  if(av.mode === 'sit'){   // 공부 중이어도 날아가요 · 공부시간은 그대로, 90초 안에 다시 앉으면 타이머도 이어져요
+    if(av.remote) return;
+    av.keepStudy = { start:av.studyStart, until:Date.now() + 90000 }; av.standUp(); av.rest = true;
+    if(av === me){ focusPeek = false; setTimeout(() => toast('공부하다 날아갔어요! 공부시간은 그대로예요 · 90초 안에 다시 앉으면 타이머가 이어져요'), 900); } }
   if(kind === 'blast'){ if(!av.remote) knock(av, dx, dz); }   // 위치는 맞은 친구 폰에서 움직여요
   else if(kind === 'ice') freeze(av);
   else if(kind === 'fire') burn(av);
