@@ -577,7 +577,7 @@ body.isle .panel{padding:8px 10px 10px;gap:6px}
     </div>
     </div>
     <button class="btn primary" type="submit" id="enterBtn" hidden>교실 입장</button>
-    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 60</p>
+    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 61</p>
   </form>
 </div>
 
@@ -2524,7 +2524,7 @@ document.querySelectorAll('[data-fly]').forEach(b => b.addEventListener('click',
 /* 장풍 (1등 보상): 앞으로 기 덩어리를 쏘고, 맞은 친구는 날아가요.
    친구 폰에서는 '내가 맞았는지'를 각자 계산해서 스스로 날아가요 (자기 위치는 자기만 바꿀 수 있어서). */
 const blasts = [], bursts = [], flames = [], puffs = [];
-function ultOk(){ return room === 'isle' && isleMine === 's0' && isleOn === 'pit'; }   // 테스트: 정우진 섬 주인만, 맞짱장에서만
+function ultOk(){ return room === 'isle' && !!isleMine && isleOn === 'pit'; }   // 궁극기: 누구나, 지하 맞짱장에서만
 function FX(){ return room === 'isle' && isleScene ? (isleOn && isleById[isleOn] ? isleById[isleOn].stage : isleScene) : scene; }   // 기술 효과를 넣을 곳 (공중섬에선 내가 서 있는 섬)
 const rmFx = o => { if(o && o.parent) o.parent.remove(o); };
 const PIT_FIGHT = 6.4, PIT_LAVA = 8.6, PIT_CAGE = 9.2, PIT_OUT = 13;   // 지하 맞짱장 (무대 칸 기준)
@@ -2550,7 +2550,7 @@ function spawnHand(av, k, dx, dz, reach){   // 커다란 주먹/손바닥이 쭉
 }
 const SKILLS = {
   punch:{ name:'주먹', need:0, cd:700 },
-  ult:{ name:'L을 가져가', need:0, cd:12000 },   // 궁극기 (지금은 테스트로 정우진 섬 주인만, 지하 맞짱장에서만)
+  ult:{ name:'L을 가져가', need:0, cd:12000 },   // 궁극기 (누구나, 지하 맞짱장에서만)
   blast:{ name:'장풍', need:0, cd:2500 },
   ice:{ name:'빙결', need:3600, cd:3000 },         // 오늘 1시간 공부하면
   fire:{ name:'화염방사', need:7200, cd:4000 },    // 오늘 2시간
@@ -2615,7 +2615,7 @@ function punchHit(av, dx, dz){
 }
 function ultHit(av, dx, dz){
   popText(av, 'L!!', '#B48CFF');
-  if(!av.remote){ av.path = []; av.goSeat = null; av.flying = false; av.mode = 'idle'; av.kvx = dx*24; av.kvz = dz*24; av.vy = 6.5; av.jumpY = Math.max(av.jumpY, 0.01); av.spinT = 1.5; }
+  if(!av.remote){ av.path = []; av.goSeat = null; av.flying = false; av.mode = 'idle'; av.kvx = dx*20; av.kvz = dz*20; av.vy = 5.5; av.jumpY = Math.max(av.jumpY, 0.01); av.spinT = 1.5; }
   av.say('L 받았다…'); if(av === me) toast('L을 가져가 궁극기에 맞았어요!');
 }
 // 궁극기: 내 앞에 커다란 내 모습이 L을 가져가 춤을 추면서 앞으로 돌진해서 다 밀쳐내요
