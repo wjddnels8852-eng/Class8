@@ -576,7 +576,7 @@ body.isle .panel{padding:8px 10px 10px;gap:6px}
     </div>
     </div>
     <button class="btn primary" type="submit" id="enterBtn" hidden>교실 입장</button>
-    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 55</p>
+    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 56</p>
   </form>
 </div>
 
@@ -4745,9 +4745,7 @@ function buildIsleScene(){
     I.base.traverse(o => { o.userData.isleId = 'arena'; });
     I.stage = new THREE.Group(); I.stage.scale.setScalar(ISLE_S); I.stage.userData.stage = true; I.g.add(I.stage);
     { const hole = addM(I.base, new THREE.CircleGeometry(1.0, 32), Gm('#120806'), 0, 0.02, 0); hole.rotation.x = -Math.PI/2;
-      const rim = addM(I.base, new THREE.TorusGeometry(1.0, 0.09, 8, 32), Lm('#FF6A1A', { emissive:'#A02800' }), 0, 0.05, 0); rim.rotation.x = Math.PI/2; I.base.userData.rim = rim;
-      const glow = addM(I.base, new THREE.CircleGeometry(0.95, 32), new THREE.MeshBasicMaterial({ color:'#FF5A10', transparent:true, opacity:0.35, depthWrite:false }), 0, 0.03, 0); glow.rotation.x = -Math.PI/2; I.base.userData.holeGlow = glow;
-      const sg = labelSprite('⬇ 지하 맞짱장', '#FF8A3D'); sg.scale.set(2.4, 0.6, 1); sg.position.set(0, 1.4, 0); I.base.add(sg); }
+      const rim = addM(I.base, new THREE.TorusGeometry(1.0, 0.06, 8, 32), Lm('#4A3A30'), 0, 0.03, 0); rim.rotation.x = Math.PI/2; }
     I.label = labelSprite('⚔ 전투장 · 누구나 기술 OK', '#FFB020'); I.label.scale.set(4.4, 1.1, 1); I.label.position.y = 3.2; I.g.add(I.label);
     I.visit = labelSprite('', '#8FCBFF'); I.visit.scale.set(2.8, 0.7, 1); I.visit.visible = false; I.visit.position.y = 4.1; I.g.add(I.visit);
     isles.push(I); isleById.arena = I; }
@@ -4761,8 +4759,9 @@ function buildIsleScene(){
     const lc = document.createElement('canvas'); lc.width = lc.height = 128; { const x = lc.getContext('2d'); x.fillStyle = '#FF5A10'; x.fillRect(0, 0, 128, 128);
       for(let i=0;i<220;i++){ x.fillStyle = ['#FFB020', '#FF3D1A', '#FFE27A', '#C21E10'][i % 4]; x.beginPath(); x.arc(Math.random()*128, Math.random()*128, 2 + Math.random()*9, 0, 7); x.fill(); } }
     const lavaT = new THREE.CanvasTexture(lc); lavaT.wrapS = lavaT.wrapT = THREE.RepeatWrapping; lavaT.repeat.set(6, 1); I.lavaT = lavaT;
-    const lava = addM(B, new THREE.RingGeometry(PIT_FIGHT*S, PIT_CAGE*S, 64, 1), new THREE.MeshBasicMaterial({ map:lavaT, side:THREE.DoubleSide }), 0, -0.55, 0); lava.rotation.x = -Math.PI/2;
-    I.bubbles = []; for(let k=0;k<14;k++){ const a = k/14*Math.PI*2 + rand(0, 0.3), r = (PIT_FIGHT + rand(0.4, 2.2))*S; I.bubbles.push(addM(B, new THREE.SphereGeometry(rand(0.06, 0.14), 8, 6), Gm('#FFD34D'), Math.cos(a)*r, -0.5, Math.sin(a)*r)); I.bubbles[k].userData.ph = rand(0, 6); }
+    const lava = addM(B, new THREE.RingGeometry(PIT_FIGHT*S, PIT_CAGE*S, 64, 1), new THREE.MeshBasicMaterial({ map:lavaT, side:THREE.DoubleSide, fog:false }), 0, -0.3, 0); lava.rotation.x = -Math.PI/2;
+    { const gl = addM(B, new THREE.RingGeometry(PIT_FIGHT*S, PIT_CAGE*S, 64, 1), new THREE.MeshBasicMaterial({ color:'#FFB020', transparent:true, opacity:0.25, depthWrite:false, side:THREE.DoubleSide, blending:THREE.AdditiveBlending }), 0, -0.15, 0); gl.rotation.x = -Math.PI/2; I.lavaGlow = gl; }
+    I.bubbles = []; for(let k=0;k<14;k++){ const a = k/14*Math.PI*2 + rand(0, 0.3), r = (PIT_FIGHT + rand(0.4, 2.2))*S; I.bubbles.push(addM(B, new THREE.SphereGeometry(rand(0.06, 0.14), 8, 6), Gm('#FFD34D'), Math.cos(a)*r, -0.28, Math.sin(a)*r)); I.bubbles[k].userData.ph = rand(0, 6); }
     [0, 1, 2].forEach(k => { const pl = new THREE.PointLight('#FF6A1A', 1.6, 14); const a = k/3*Math.PI*2; pl.position.set(Math.cos(a)*PIT_LAVA*S, 0.4, Math.sin(a)*PIT_LAVA*S); B.add(pl); });
     // 철창
     const bar = new THREE.MeshLambertMaterial({ color:'#5B6170' });
@@ -4770,7 +4769,8 @@ function buildIsleScene(){
     [-0.55, 1.0, 2.6].forEach(y => addM(B, new THREE.TorusGeometry(PIT_CAGE*S, 0.04, 6, 64), bar, 0, y, 0).rotation.x = Math.PI/2);
     // 관중석 바닥 + 동굴 벽 + 천장 구멍
     const ring = addM(B, new THREE.RingGeometry(PIT_CAGE*S, PIT_OUT*S + 0.3, 64, 1), new THREE.MeshLambertMaterial({ map:stoneT, color:'#7A746C', side:THREE.DoubleSide }), 0, 0.0, 0); ring.rotation.x = -Math.PI/2; ring.userData.isleTop = true;
-    addM(B, new THREE.CylinderGeometry(PIT_OUT*S + 0.3, PIT_OUT*S + 0.3, 0.6, 64), Lm('#4A4440'), 0, -0.31, 0);
+    addM(B, new THREE.CylinderGeometry(PIT_CAGE*S, PIT_CAGE*S, 0.9, 64, 1, true), Lm('#3A302A', { side:THREE.DoubleSide }), 0, -0.45, 0);   // 용암 웅덩이 벽
+    { const bot = addM(B, new THREE.CircleGeometry(PIT_CAGE*S, 48), Gm('#5A1A08'), 0, -0.88, 0); bot.rotation.x = -Math.PI/2; }
     const wallC = document.createElement('canvas'); wallC.width = 64; wallC.height = 128; { const x = wallC.getContext('2d'), gr = x.createLinearGradient(0, 0, 0, 128); gr.addColorStop(0, '#1A1412'); gr.addColorStop(0.7, '#3A2A22'); gr.addColorStop(1, '#8A3A18'); x.fillStyle = gr; x.fillRect(0, 0, 64, 128);
       for(let i=0;i<300;i++){ x.fillStyle = 'rgba(0,0,0,' + Math.random()*0.35 + ')'; x.fillRect(Math.random()*64, Math.random()*128, 3, 3); } }
     const wt = new THREE.CanvasTexture(wallC); wt.wrapS = THREE.RepeatWrapping; wt.repeat.set(8, 1);
@@ -4887,7 +4887,7 @@ function isleTap(x, y){
       isleWrite({ ['items/' + k]:null, spent:Math.max(0, num(d.spent, 0, 1e7, 0) - back) }); toast(it.e + ' ' + it.name + ' 치웠어요 · +' + back + 'P 돌려받음'); return; }
     if(id === isleOn && !isleFly && !isleFall){ const I0 = isleById[id]; I0.stage.updateMatrixWorld(); I0.stage.worldToLocal(_ipt.copy(h.point)); isleGo = { x:_ipt.x, z:_ipt.z }; return; }
     if(id === 'arena'){ toast('⚔ 전투장 · 점프 발판으로 갈 수 있어요'); return; }
-    if(id === 'pit'){ toast('🔥 지하 맞짱장 · 전투장 가운데 구멍으로 내려가요'); return; }
+    if(id === 'pit') return;
     const I2 = isleById[id], d2 = isleData[id] || {}; toast('👀 ' + (id === 't' ? '영선쌤 섬 · 우리 반이 같이 키워요' : I2.name + (d2.owner ? '의 섬 · Lv' + I2.lv + ' · 건물 ' + I2.n + '개' : ' · 아직 주인이 없어요')) + ' · 점프 발판으로 놀러 갈 수 있어요'); return;
   }
 }
@@ -4941,7 +4941,7 @@ function isleJumpSheet(){
   const body = showSheet('🚀 점프 발판 · 어디로 갈까요?');
   const go = (id, label) => { if(id === isleOn) return; const b = el('button', 'quizopt', label); b.type = 'button'; b.addEventListener('click', () => { $('#spSheet').hidden = true; isleJump(id); }); body.appendChild(b); };
   if(isleMine) go(isleMine, '🏝 내 섬');
-  go('arena', '⚔ 전투장 (누구나 기술 OK)'); go('pit', '🔥 지하 맞짱장 (용암 + 철창)'); go('t', '👩‍🏫 영선쌤 섬');
+  go('arena', '⚔ 전투장 (누구나 기술 OK)'); go('t', '👩‍🏫 영선쌤 섬');
   ISLE_ROSTER.forEach((name, i) => { const id = 's' + i, d = isleData[id]; if(id !== isleMine && d && d.owner) go(id, '🏝 ' + name + '의 섬 · Lv' + (isleById[id] ? isleById[id].lv : 1)); });
 }
 function isleTele(id, at, msg){   // 지하로 내려가거나 올라올 땐 화면을 어둡게 했다가 옮겨요
@@ -5005,12 +5005,12 @@ function isleTick(dt){
     // 점프 발판 위에 서면 버튼
     if(!isleMode && !mining){ const pd = islePad(I), onPad = !I.pit && Math.hypot(me.pos.x - pd.x, me.pos.z - pd.z) < 1.1 && (me.isleY || 0) < 0.5;
       let ore = null; if(isleOn === isleMine) oreNodes.forEach(o => { if(Math.hypot(me.pos.x - o.x, me.pos.z - o.z) < 1.7) ore = o; });
-      const hole = isleOn === 'arena' && Math.hypot(me.pos.x, me.pos.z) < 2.4;
+      const hole = isleOn === 'arena' && Math.hypot(me.pos.x, me.pos.z) < 1.5;
       if(I.pit){ const lad = Math.hypot(me.pos.x, me.pos.z + (PIT_OUT - 1.2)) < 1.8;
         if(me.pitIn) ctxBtn('');
         else if(lad) ctxBtn('⬆ 전투장으로', () => isleTele('arena', { x:0, z:3.2 }, '⬆ 전투장으로 올라왔어요'));
-        else ctxBtn('⚔ 철창 안으로 (맞짱)', () => { const a = Math.atan2(me.pos.z, me.pos.x); me.pitIn = true; me.pos.set(Math.cos(a)*(PIT_FIGHT - 1.2), 0, Math.sin(a)*(PIT_FIGHT - 1.2)); me.targetRy = Math.atan2(-me.pos.x, -me.pos.z); lastSent = ''; pushPresence(); toast('⚔ 맞짱 시작! 용암에 떨어지면 관중석으로 나가요'); }); }
-      else if(hole) ctxBtn('⬇ 지하 맞짱장으로', isleGoPit);
+        else ctxBtn('⚔ 맞짱 들어가기', () => { const a = Math.atan2(me.pos.z, me.pos.x); me.pitIn = true; me.pos.set(Math.cos(a)*(PIT_FIGHT - 1.2), 0, Math.sin(a)*(PIT_FIGHT - 1.2)); me.targetRy = Math.atan2(-me.pos.x, -me.pos.z); lastSent = ''; pushPresence(); toast('⚔ 맞짱 시작! 용암에 떨어지면 관중석으로 나가요'); }); }
+      else if(hole) ctxBtn('⬇ 구멍으로 내려가기', isleGoPit);
       else if(onPad) ctxBtn('🚀 다른 섬으로', isleJumpSheet); else if(ore) ctxBtn('⛏ 캐기 (' + oreAvail() + ')', () => mineOre(ore)); else ctxBtn(''); }
   } else if(mag >= 0.12){ cam.yaw -= ix*dt*1.6; cam.dist = clamp(cam.dist + iy*dt*(6 + cam.dist*0.6), camLim.dmin, camLim.dmax); }
   isleSyncT -= dt; if(isleSyncT <= 0){ isleSyncT = 0.3; isleSyncRemotes(); }
@@ -5022,7 +5022,7 @@ function isleTick(dt){
       const port = window.innerWidth < window.innerHeight, ph = $('#panel').hidden ? 0 : $('#panel').getBoundingClientRect().height; F.style.setProperty('--fb', (port ? ph + 6 : 8) + 'px'); } }
   isles.forEach(I => { if(I.base && I.base.userData.padArrow) I.base.userData.padArrow.position.y = 0.45 + Math.sin(t*3)*0.08; });
   isles.forEach(I => { if(!I.fixed) I.g.position.y = I.pos.y + Math.sin(t*0.5 + I.ph)*0.25; });
-  { const P = isleById.pit; if(P && (isleOn === 'pit' || isleOn === 'arena')){ P.lavaT.offset.x += dt*0.03; P.lavaT.offset.y += dt*0.05; P.bubbles.forEach(b => { b.position.y = -0.5 + Math.max(0, Math.sin(t*2 + b.userData.ph))*0.25; });
+  { const P = isleById.pit; if(P && (isleOn === 'pit' || isleOn === 'arena')){ P.lavaT.offset.x += dt*0.03; P.lavaT.offset.y += dt*0.05; P.bubbles.forEach(b => { b.position.y = -0.3 + Math.max(0, Math.sin(t*2 + b.userData.ph))*0.22; }); if(P.lavaGlow) P.lavaGlow.material.opacity = 0.2 + Math.sin(t*2.5)*0.1;
     const A = isleById.arena; if(A.base.userData.holeGlow) A.base.userData.holeGlow.material.opacity = 0.25 + Math.sin(t*3)*0.12; } }
   if(!(MI && me) && isleFocus && isleById[isleFocus]){ const I = isleById[isleFocus]; _ipt.set(I.g.position.x, I.g.position.y + 0.8, I.g.position.z); cam.t.lerp(_ipt, 1 - Math.exp(-dt*3)); }
   isleSpin.forEach(g => { if(g.userData.spin) g.userData.spin.rotation.z += dt*1.5; if(g.userData.bob) g.userData.bob.position.y = (g.userData.bobY || 0.95) + Math.sin(t*4)*0.05; if(g.userData.flag) g.userData.flag.rotation.y = Math.sin(t*3)*0.4;
