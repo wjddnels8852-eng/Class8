@@ -318,6 +318,17 @@ body.isle .panel{padding:8px 10px 10px;gap:6px}
 .shopcard b{font-size:13px}.shopcard span{font-size:11.5px;color:#FFE27A}
 .shopcard.poor{opacity:.6}.shopcard.lock{opacity:.4}.shopcard.lock .sil{filter:brightness(.6)}
 .shopcard:not(:disabled):active{transform:scale(.96)}
+.qzhead{font:800 14px var(--font-b);color:#FFE27A}.qzhead b{color:#fff}
+.qztag{display:inline-block;padding:3px 10px;border-radius:999px;font:800 12px var(--font-b);background:#2E3A6A;color:#BFD0FF}.qztag.p4{background:#5A2A4A;color:#FFC2DC}
+.qzq{font:700 15.5px/1.75 var(--font-b);color:var(--fg);word-break:keep-all}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;font-size:.88em;line-height:1.15}.fr>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}.fr>span:last-child{padding:0 3px}
+.qzc{display:flex;flex-direction:column;gap:6px}
+.qzopt{display:flex;align-items:center;gap:8px;min-height:42px;border-radius:12px;border:1.5px solid var(--line);background:var(--panel-2);color:var(--fg);font:700 14.5px var(--font-b);text-align:left;padding:6px 12px;cursor:pointer}
+.qzopt i{font-style:normal;color:#8FCBFF;font-size:16px}
+.qzopt.ok{background:#1F5A44;border-color:#6EE7A8}.qzopt.no{background:#5A2230;border-color:#FF7C93;animation:qzShake .3s}
+@keyframes qzShake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.qzmsg{font:600 12.5px/1.6 var(--font-b);color:var(--fg-2)}.qzmsg .btn{margin-top:6px;min-height:38px}
+.qzbar{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.qzbar .btn{min-height:42px;font-size:13px;padding:0 4px}
 @keyframes geoBob{50%{transform:translateX(-50%) translateY(-4px)}}
 @media (prefers-reduced-motion: reduce){.geobtn{animation:none}}
 #geoCard .tabs3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
@@ -475,6 +486,7 @@ body.isle .panel{padding:8px 10px 10px;gap:6px}
     <button type="button" class="btn" data-go="nino">🌏 엘니뇨</button>
     <button type="button" class="btn" data-go="geo">📐 기하</button>
     <button type="button" class="btn" data-go="isle">☁ 공중섬</button>
+    <button type="button" class="btn" data-go="quiz">🔐 수학 탈출방</button>
     <button type="button" class="btn warm" id="lobbyBack" style="grid-column:1/-1">⬅ 교실로</button>
   </div>
   <div id="dockUI" hidden>
@@ -577,7 +589,7 @@ body.isle .panel{padding:8px 10px 10px;gap:6px}
     </div>
     </div>
     <button class="btn primary" type="submit" id="enterBtn" hidden>교실 입장</button>
-    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 61</p>
+    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 62</p>
   </form>
 </div>
 
@@ -630,6 +642,14 @@ body.isle .panel{padding:8px 10px 10px;gap:6px}
   <button type="button" class="fbtn" data-isk="slap" style="--c1:#FF9AC8;--c2:#C2357A;--rim:#FFD9EA;left:151px;top:33px"><b>✋</b><span>싸대기</span></button>
 </div>
 <div class="studybar" id="studyBar" hidden><span id="sbTime">00:00</span><button type="button" id="sbFocus">💡 집중 화면</button><button type="button" id="sbStand">🚶 일어나기</button></div>
+<div class="ninocard" id="qzCard" hidden>
+  <div id="qzHead" class="qzhead">🔐 탈출</div>
+  <div><span id="qzTag" class="qztag">함수 · 3점</span></div>
+  <div id="qzQ" class="qzq"></div>
+  <div id="qzC" class="qzc"></div>
+  <div id="qzMsg" class="qzmsg"></div>
+  <div class="qzbar"><button type="button" class="btn" id="qzHint">💡 힌트</button><button type="button" class="btn" id="qzDuel">⚔ 친구와 대결</button><button type="button" class="btn warm" id="qzExit">🔒 나가기</button></div>
+</div>
 <div class="ninocard" id="geoCard" hidden>
   <div class="ed-head"><div><h2>📐 기하 탐구실 · 이차곡선</h2><div class="who">고2·고3 기하 미리 보기</div></div><button type="button" class="tool" id="geoExit">로비로 ⬆</button></div>
   <div class="tabs3" id="geoTabs"><button type="button" class="tool" data-g="cone" aria-pressed="true">① 원뿔 자르기</button><button type="button" class="tool" data-g="focus" aria-pressed="false">② 초점과 실</button><button type="button" class="tool" data-g="quiz" aria-pressed="false">③ 확인 문제</button></div>
@@ -1560,7 +1580,7 @@ const POSES = ['wave','hooray','clap','dance','bow'];
 const DATA_VER = 2;
 function myState(){
   return { name:me.name, hair:me.hair, shirt:me.shirt, x:+me.pos.x.toFixed(2), z:+me.pos.z.toFixed(2), ry:+me.ry.toFixed(2), jy:+me.jumpY.toFixed(2),
-    mode:me.mode, seat:me.seat, subject:me.subject, studyStart:me.studyStart, total:Math.floor(me.total), fly:me.flying, date:todayStr, v:DATA_VER, streak:me.streak || 0, steady:!!me.steady, best:Math.floor(me.best || 0), room, geo:!!geoDone, where:roomStudy ? roomStudy.where : '', isl:room === 'isle' ? (isleOn || '') : '',
+    mode:me.mode, seat:me.seat, subject:me.subject, studyStart:me.studyStart, total:Math.floor(me.total), fly:me.flying, date:todayStr, v:DATA_VER, streak:me.streak || 0, steady:!!me.steady, best:Math.floor(me.best || 0), room, geo:!!geoDone, where:roomStudy ? roomStudy.where : '', isl:room === 'isle' ? (isleOn || '') : '', qd:room === 'quiz' ? qzPres : null,
     sea:seaState(),
     sp:spaceState() };
 }
@@ -1605,8 +1625,8 @@ function handlePlayers(){
     av.subject = SUBJECTS.indexOf(s.subject) >= 0 ? s.subject : '수학';
     av.studyStart = num(s.studyStart, 0, now, now);
     av.total = (s.date === todayStr && s.v === DATA_VER) ? num(s.total, 0, 86400, 0) : 0; av.flying = s.fly === true;
-    av.streak = Math.floor(num(s.streak, 0, 999, 0)); av.steady = s.steady === true; av.geo = s.geo === true; av.isl = typeof s.isl === 'string' ? s.isl.slice(0, 5) : ''; av.where = typeof s.where === 'string' ? s.where.slice(0, 24) : ''; av.best = num(s.best, 0, 86400, 0);
-    av.room = (s.room === 'sea' || s.room === 'nino' || s.room === 'space' || s.room === 'geo' || s.room === 'isle' || s.room === 'lobby') ? s.room : 'class';
+    av.streak = Math.floor(num(s.streak, 0, 999, 0)); av.steady = s.steady === true; av.geo = s.geo === true; av.isl = typeof s.isl === 'string' ? s.isl.slice(0, 5) : ''; av.qd = s.qd && typeof s.qd === 'object' ? { to:String(s.qd.to || ''), seed:num(s.qd.seed, 0, 2e9, 0), n:num(s.qd.n, 0, 1e14, 0), acc:s.qd.acc === true, st:num(s.qd.st, 0, 1e14, 0), sc:num(s.qd.sc, 0, 3, 0), done:num(s.qd.done, 0, 1e14, 0) } : null; av.where = typeof s.where === 'string' ? s.where.slice(0, 24) : ''; av.best = num(s.best, 0, 86400, 0);
+    av.room = (s.room === 'sea' || s.room === 'nino' || s.room === 'space' || s.room === 'geo' || s.room === 'isle' || s.room === 'quiz' || s.room === 'lobby') ? s.room : 'class';
     if(av.room === 'isle'){ if(room !== 'isle'){ if(av.group.parent !== scene) scene.add(av.group); av.group.visible = false; } }   // 공중섬 친구는 섬 위에 따로 세워요
     else { const want = av.room === 'lobby' ? lobbyScene : scene; if(av.group.parent !== want) want.add(av.group); av.group.visible = av.room === 'class' || av.room === 'lobby'; }
     seaRemote(uid, s, av); spaceRemote(uid, s, av);
@@ -2193,7 +2213,7 @@ function seasonRows(){
 let meetToastShown = false, boardKey = '';
 const meetNow = () => new Date().getHours() === 23;
 // 교실에서: 체험관에 간 친구가 어디서 뭘 하는지 보여줘요 ("철수님이 🪐 화성에서 공부 중")
-const ROOM_NAME = { lobby:'🚪 체험관', sea:'🌊 심해 탐험실', space:'🚀 우주', nino:'🌏 엘니뇨 탐구실', geo:'📐 기하 탐구실', isle:'☁ 공중섬' };
+const ROOM_NAME = { lobby:'🚪 체험관', sea:'🌊 심해 탐험실', space:'🚀 우주', nino:'🌏 엘니뇨 탐구실', geo:'📐 기하 탐구실', isle:'☁ 공중섬', quiz:'🔐 수학 탈출방' };
 let awayKey = '';
 function updateAway(){
   const box = $('#awayList'), items = [];
@@ -2862,13 +2882,14 @@ const lobbyRight = lwall(LZ*2, LX1, 0, -Math.PI/2, '#46518A'), lobbyBack = lwall
   const rb = new THREE.Mesh(new THREE.PlaneGeometry(2.9, 10.7), mat('#5B3FA8')); rb.rotation.x = -Math.PI/2; rb.position.set(LX0 + 2.6, 0.012, 0); lobbyScene.add(rb);
   const title = new THREE.Mesh(new THREE.PlaneGeometry(5.6, 0.7), signMat('체험관 · 가고 싶은 방의 문으로 들어가요', '#1B1F3B', '#FFE27A', 1120, 140, '800 60px "Noto Sans KR", sans-serif')); title.position.set(0, 2.7, 0.05); lobbyBack.add(title); }
 const DOOR_Z = { sea:-5.25, space:-1.75, nino:1.75, geo:5.25 };   // 로비 문 위치 (z)
-const DOOR_NAME = { sea:'심해 탐험실', space:'우주 발사장', nino:'엘니뇨 탐구실', geo:'기하 탐구실', isle:'공중섬' };
+const DOOR_NAME = { sea:'심해 탐험실', space:'우주 발사장', nino:'엘니뇨 탐구실', geo:'기하 탐구실', isle:'공중섬', quiz:'수학 탈출방' };
 const seaDoor = makeDoor(lobbyWall, 5.25, 'sea', '심해 탐험실', '3시간공부후출입가능', '#B83B4E', '#1F4F7A', '#0A3A66');
 const ninoDoor = makeDoor(lobbyWall, -1.75, 'nino', '엘니뇨 탐구실', '엘니뇨 탐구실 · 누구나', '#2B6CB0', '#2B5E4A', '#2E86DE');
 const geoDoor = makeDoor(lobbyWall, -5.25, 'geo', '기하 탐구실', '📐 기하 탐구실 · 지하 ↓', '#2E8F7F', '#1E3A4A', '#0B1530');
 const isleDoor = makeDoor(lobbyFront, 0, 'isle', '공중섬', '☁ 공중섬 · 내 섬 키우기', '#3D8FE0', '#3A6EA5', '#9FD8FF');
 const exitDoor = makeDoor(lobbyRight, 0, 'class', '교실', '⬅ 교실로 돌아가기', '#2FA36B', '#2B5E4A', '#A9D3FF');
-const lobbyTargets = [seaDoor, ninoDoor, geoDoor, isleDoor, exitDoor, lobbyFloor];
+const quizDoor = makeDoor(lobbyBack, 0, 'quiz', '수학 탈출방', '🔐 수학 탈출방 · 3문제', '#8A3A5A', '#4A3A5A', '#FFC2DC');
+const lobbyTargets = [seaDoor, ninoDoor, geoDoor, isleDoor, quizDoor, exitDoor, lobbyFloor];
 // 교실 왼쪽 벽: 체험관 문 하나
 const hubDoor = makeDoor(leftWall, 0, 'hub', '체험관', '🚪 체험관 · 5개의 방', '#5B3FA8', '#2A2F5A', '#0B0F2A');
 tapTargets.push(hubDoor);
@@ -2911,6 +2932,7 @@ function enterLobby(from){
   const fromClass = from === 'class';
   me.pos.set(fromClass ? LX1 - 2.8 : LX0 + 2.4, 0, fromClass ? 0 : (DOOR_Z[from] || 0)); me.ry = me.targetRy = fromClass ? -Math.PI/2 : Math.PI/2;
   if(from === 'isle'){ me.pos.set((LX0 + LX1)/2, 0, LZ - 2.4); me.ry = me.targetRy = Math.PI; }
+  if(from === 'quiz'){ me.pos.set((LX0 + LX1)/2, 0, -LZ + 2.4); me.ry = me.targetRy = 0; }
   Object.assign(camLim, CLASS_LIM); cam.yaw = Math.PI/2; cam.pitch = 0.5; cam.dist = 7.5; cam.t.set(me.pos.x, 1, me.pos.z);
   lastSent = ''; pushPresence();
   if(fromClass) toast('체험관이에요! 가고 싶은 방의 문으로 걸어가요');
@@ -2935,6 +2957,7 @@ function lobbyTick(dt){
   if(me.pos.x < LX0 + 2.2) Object.keys(DOOR_Z).forEach(k => { if(Math.abs(me.pos.z - DOOR_Z[k]) < 1 && !demoHidden(k)) near = k; });
   if(me.pos.x > LX1 - 2.2 && Math.abs(me.pos.z) < 1) near = 'class';
   if(me.pos.z > LZ - 2.2 && Math.abs(me.pos.x - (LX0 + LX1)/2) < 1 && !demoHidden('isle')) near = 'isle';
+  if(me.pos.z < -LZ + 2.2 && Math.abs(me.pos.x - (LX0 + LX1)/2) < 1) near = 'quiz';
   if(near !== lobbyNear){ lobbyNear = near; roomBtnAct = null; const b = $('#roomBtn'); b.hidden = !near; if(near) b.textContent = near === 'class' ? '⬅ 교실로 돌아가기' : '🚪 ' + DOOR_NAME[near] + ' 들어가기'; }
 }
 let roomBtnAct = null;
@@ -2980,6 +3003,8 @@ function enterRoom(k){
     enterGeo();
   } else if(k === 'isle'){
     enterIsle();
+  } else if(k === 'quiz'){
+    enterQuiz();
   } else if(k === 'space'){
     enterSpace();
   } else {
@@ -2998,7 +3023,7 @@ function exitRoom(){
   const from = room; seaVin = 0;
   camera.clearViewOffset();
   $('#seaUI').hidden = true; $('#dockUI').hidden = true; $('#seaHud').hidden = true; $('#ninoCard').hidden = true; $('#dexSheet').hidden = true; $('#roomBtn').hidden = true; lobbyNear = ''; roomBtnAct = null;
-  leaveSpace(); leaveGeo(); leaveIsle();
+  leaveSpace(); leaveGeo(); leaveIsle(); leaveQuiz();
   if(from !== 'lobby'){ enterLobby(from); return; }   // 방에서 나오면 로비로
   room = 'class'; scene.add(me.group); $('#lobbyUI').hidden = true;
   $('#panel').hidden = false; $('#joy').hidden = false;
@@ -3050,7 +3075,7 @@ function roomStudyTick(dt){ if(roomStudy){ me.total += dt; me.week = (me.week ||
 function roomCount(k){ let n = room === k ? 1 : 0; remotes.forEach(r => { if(r.av.room === k) n++; }); return n; }
 function roomTick(dt){
   roomStudyTick(dt);
-  if(room === 'lobby') lobbyTick(dt); else if(room === 'sea') seaTick(dt); else if(room === 'nino') ninoTick(dt); else if(room === 'space') spaceTick(dt); else if(room === 'geo') geoTick(dt); else if(room === 'isle') isleTick(dt);
+  if(room === 'lobby') lobbyTick(dt); else if(room === 'sea') seaTick(dt); else if(room === 'nino') ninoTick(dt); else if(room === 'space') spaceTick(dt); else if(room === 'geo') geoTick(dt); else if(room === 'isle') isleTick(dt); else if(room === 'quiz') quizTick(dt);
 }
 
 /* ===== 심해 탐험실 ===== */
@@ -5188,6 +5213,163 @@ function isleRefundBlocks(){
   if(back) setTimeout(() => toast('🧱 블록 기능이 없어져서 블록에 쓴 ' + back + 'P를 돌려받았어요'), 600);
 }
 
+/* ===== 🔐 수학 탈출방: 공통수학2 (함수 · 유리함수 · 명제) 3·4점 문제 3개를 풀어야 문이 열려요 ===== */
+// 문제는 모의고사 유형을 참고해 새로 만든 문제예요 (실제 기출 문제를 그대로 옮긴 게 아니에요)
+const Fr = (a, b) => '<span class="fr"><span>' + a + '</span><span>' + b + '</span></span>';
+const QZ = [
+  { u:'유리함수', p:3, q:'함수 y = ' + Fr('2x + 1', 'x − 1') + ' 의 그래프의 점근선이 두 직선 x = a, y = b 일 때, a + b 의 값은?', c:['1', '2', '3', '4', '5'], a:2,
+    h:'분자·분모를 나눠서 y = ' + Fr('k', 'x − p') + ' + q 꼴로 바꿔 봐요.', s:'y = ' + Fr('3', 'x − 1') + ' + 2 이므로 점근선은 x = 1, y = 2 → a + b = 3' },
+  { u:'유리함수', p:3, q:'함수 y = ' + Fr('k', 'x − 2') + ' + 3 의 그래프가 점 (4, 5)를 지날 때, 상수 k 의 값은?', c:['2', '3', '4', '5', '6'], a:2,
+    h:'x = 4, y = 5 를 대입해요.', s:'5 = ' + Fr('k', '2') + ' + 3 → k = 4' },
+  { u:'명제', p:3, q:'두 조건 p: x² − 4x + 3 ≤ 0, q: |x − a| ≤ 2 에 대하여 p 가 q 이기 위한 충분조건이 되도록 하는 정수 a 의 개수는?', c:['1', '2', '3', '4', '5'], a:2,
+    h:'p 의 진리집합 ⊂ q 의 진리집합이 되어야 해요.', s:'P = {x | 1 ≤ x ≤ 3}, Q = {x | a − 2 ≤ x ≤ a + 2}. P ⊂ Q 이려면 a − 2 ≤ 1, a + 2 ≥ 3 → 1 ≤ a ≤ 3 → 3개' },
+  { u:'함수', p:3, q:'두 함수 f(x) = 2x + 1, g(x) = x² − 3 에 대하여 (g ∘ f)(1) 의 값은?', c:['4', '5', '6', '7', '8'], a:2,
+    h:'f(1)을 먼저 구한 뒤 g 에 넣어요.', s:'f(1) = 3, g(3) = 9 − 3 = 6' },
+  { u:'함수', p:3, q:'함수 f(x) = 3x − 5 의 역함수를 f⁻¹ 라 할 때, f⁻¹(4) 의 값은?', c:['1', '2', '3', '4', '5'], a:2,
+    h:'f⁻¹(4) = k 이면 f(k) = 4 예요.', s:'3k − 5 = 4 → k = 3' },
+  { u:'명제', p:3, q:'전체집합 U = {1, 2, 3, …, 10} 에서 두 조건 p: x 는 짝수이다, q: x 는 3의 배수이다. 조건 \'p 그리고 ~q\' 의 진리집합의 원소의 개수는?', c:['2', '3', '4', '5', '6'], a:2,
+    h:'짝수 중에서 3의 배수를 빼요.', s:'{2, 4, 6, 8, 10} 에서 6 을 빼면 {2, 4, 8, 10} → 4개' },
+  { u:'명제', p:3, q:'두 조건 p: −1 ≤ x ≤ 4, q: x ≥ a 에 대하여 p 가 q 이기 위한 충분조건일 때, 실수 a 의 최댓값은?', c:['−2', '−1', '0', '1', '4'], a:1,
+    h:'p 의 범위 전체가 x ≥ a 안에 들어가야 해요.', s:'[−1, 4] ⊂ [a, ∞) → a ≤ −1 → 최댓값 −1' },
+  { u:'유리함수', p:4, q:'함수 f(x) = ' + Fr('ax + b', 'x + c') + ' 의 그래프가 점 (2, 3)에 대하여 대칭이고 원점을 지날 때, f(4) 의 값은? (단, a, b, c 는 상수)', c:['4', '5', '6', '7', '8'], a:2,
+    h:'대칭의 중심 = 두 점근선의 교점 (−c, a) 예요.', s:'−c = 2, a = 3 이고 f(0) = ' + Fr('b', 'c') + ' = 0 → b = 0. f(x) = ' + Fr('3x', 'x − 2') + ' → f(4) = 6' },
+  { u:'유리함수', p:4, q:'정의역이 {x | 3 ≤ x ≤ 5} 인 함수 y = ' + Fr('x + 3', 'x − 2') + ' 의 최댓값을 M, 최솟값을 m 이라 할 때, M + m 의 값은?', c:['7', '8', Fr('26', '3'), '9', Fr('28', '3')], a:2,
+    h:'y = 1 + ' + Fr('5', 'x − 2') + ' 은 x > 2 에서 감소해요.', s:'x = 3 일 때 M = 6, x = 5 일 때 m = ' + Fr('8', '3') + ' → M + m = ' + Fr('26', '3') },
+  { u:'함수', p:4, q:'집합 X = {1, 2, 3} 에서 X 로의 함수 f 중에서 f(1) < f(2) 를 만족시키는 함수 f 의 개수는?', c:['6', '9', '12', '15', '18'], a:1,
+    h:'(f(1), f(2)) 쌍을 먼저 세고, f(3) 은 자유예요.', s:'f(1) < f(2) 인 쌍: (1,2), (1,3), (2,3) → 3가지, f(3) 은 3가지 → 9' },
+  { u:'함수', p:4, q:'실수 전체에서 정의된 함수 f(x) = { x + a (x ≥ 1), 3x − 1 (x < 1) } 이 일대일대응일 때, 상수 a 의 값은?', c:['−1', '0', '1', '2', '3'], a:2,
+    h:'두 식 모두 증가하니까, x = 1 에서 이어져야 치역이 실수 전체가 돼요.', s:'1 + a = 3·1 − 1 = 2 → a = 1' },
+  { u:'명제', p:4, q:'x > 0 일 때, x + ' + Fr('9', 'x + 1') + ' 의 최솟값은?', c:['3', '4', '5', '6', '7'], a:2,
+    h:'(x + 1) + ' + Fr('9', 'x + 1') + ' − 1 로 바꾸고 산술·기하평균을 써요.', s:'(x + 1) + ' + Fr('9', 'x + 1') + ' ≥ 2√9 = 6 → 최솟값 6 − 1 = 5 (x = 2 일 때)' },
+  { u:'유리함수', p:4, q:'함수 f(x) = ' + Fr('2x + 3', 'x − 1') + ' 의 역함수를 f⁻¹ 라 할 때, f⁻¹(5) 의 값은?', c:['2', Fr('7', '3'), Fr('8', '3'), '3', Fr('10', '3')], a:2,
+    h:'f(k) = 5 인 k 를 찾아요.', s:'2k + 3 = 5(k − 1) → k = ' + Fr('8', '3') },
+  { u:'함수', p:4, q:'두 함수 f(x) = x + 2, g(x) = 2x − 1 에 대하여 (f ∘ g)⁻¹(7) 의 값은?', c:['1', '2', '3', '4', '5'], a:2,
+    h:'(f ∘ g)(k) = 7 인 k 를 찾아요.', s:'(f ∘ g)(x) = 2x + 1 = 7 → x = 3' },
+  { u:'유리함수', p:4, q:'함수 y = ' + Fr('3', 'x') + ' 의 그래프를 x축의 방향으로 m 만큼, y축의 방향으로 n 만큼 평행이동하면 함수 y = ' + Fr('2x + 1', 'x − 1') + ' 의 그래프와 일치한다. m + n 의 값은?', c:['1', '2', '3', '4', '5'], a:2,
+    h:'y = ' + Fr('2x + 1', 'x − 1') + ' 을 ' + Fr('3', 'x − m') + ' + n 꼴로 바꿔요.', s:'y = ' + Fr('3', 'x − 1') + ' + 2 → m = 1, n = 2 → 3' },
+  { u:'유리함수', p:4, q:'함수 y = ' + Fr('2', 'x + 1') + ' − 3 의 그래프가 지나지 않는 사분면은?', c:['제1사분면', '제2사분면', '제3사분면', '제4사분면', '모두 지난다'], a:0,
+    h:'점근선 x = −1, y = −3 을 그리고, y절편을 확인해요.', s:'x > 0 이면 y < 2 − 3 = −1 < 0 이라 제1사분면은 지나지 않아요' }
+];
+const QZ_NEED = 3, QZ_TRY = 3;
+let qzScene = null, qz = null, qzLamps = [], qzDoor = null, qzDoorOpen = 0, qzDuel = null, qzPres = null, qzSeenInv = {};
+function qzRng(seed){ let h = seed >>> 0 || 1; return () => { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; return (h >>> 0)/4294967296; }; }
+function qzPick(n, seed){ const r = qzRng(seed), idx = QZ.map((_, i) => i); for(let i=idx.length - 1;i>0;i--){ const j = Math.floor(r()*(i + 1)); [idx[i], idx[j]] = [idx[j], idx[i]]; }
+  const three = idx.filter(i => QZ[i].p === 3), four = idx.filter(i => QZ[i].p === 4); return [three[0], four[0], four[1], three[1], four[2], four[3], three[2], four[4]].slice(0, n); }
+function buildQuiz(){
+  qzScene = new THREE.Scene(); qzScene.background = new THREE.Color('#0E1226'); qzScene.fog = new THREE.Fog('#0E1226', 10, 22);
+  qzScene.add(new THREE.HemisphereLight('#9FB6FF', '#1A1530', 0.55));
+  const bulb = new THREE.PointLight('#FFE7A0', 1.3, 16); bulb.position.set(0, 3.6, 0.5); qzScene.add(bulb);
+  const box = (w, h, d, c, x, y, z) => addM(qzScene, new THREE.BoxGeometry(w, h, d), Lm(c), x, y, z);
+  box(10, 0.1, 9, '#2A2F4A', 0, -0.05, 0); box(10, 4.4, 0.1, '#262B48', 0, 2.2, -4.5); box(0.1, 4.4, 9, '#232845', -5, 2.2, 0); box(0.1, 4.4, 9, '#232845', 5, 2.2, 0); box(10, 0.1, 9, '#1A1E36', 0, 4.4, 0);
+  for(let i=-4;i<=4;i++) box(0.04, 0.01, 9, '#20243C', i, 0.005, 0);
+  // 전구
+  addM(qzScene, new THREE.CylinderGeometry(0.01, 0.01, 0.7, 4), Lm('#555'), 0, 4.05, 0.5); addM(qzScene, new THREE.SphereGeometry(0.16, 14, 10), Gm('#FFE7A0'), 0, 3.62, 0.5);
+  // 무거운 철문 + 자물쇠 램프 3개
+  const dg = new THREE.Group(); dg.position.set(0, 0, -4.42); qzScene.add(dg);
+  addM(dg, new THREE.BoxGeometry(2.4, 3.2, 0.12), Lm('#3A3F58'), 0, 1.6, 0);
+  qzDoor = addM(dg, new THREE.BoxGeometry(2.0, 2.9, 0.1), new THREE.MeshPhongMaterial({ color:'#6B7290', shininess:60 }), 0, 1.45, 0.08);
+  for(let k=0;k<4;k++) addM(qzDoor, new THREE.BoxGeometry(1.8, 0.05, 0.03), Lm('#545A75'), 0, -1.1 + k*0.75, 0.06);
+  addM(qzDoor, new THREE.CylinderGeometry(0.06, 0.06, 0.3, 10), Lm('#C9A84E'), 0.75, 0, 0.1).rotation.x = Math.PI/2;
+  qzLamps = [-0.6, 0, 0.6].map(x => addM(dg, new THREE.SphereGeometry(0.13, 14, 10), new THREE.MeshBasicMaterial({ color:'#E2574C' }), x, 3.35, 0.12));
+  const sign = labelSprite('🔐 3문제를 풀면 열려요', '#FFE27A'); sign.scale.set(3.4, 0.85, 1); sign.position.set(0, 3.95, -4.3); qzScene.add(sign);
+  // 칠판 (왼쪽 벽)
+  const cv = document.createElement('canvas'); cv.width = 512; cv.height = 256; const x = cv.getContext('2d'); x.fillStyle = '#1E4A3A'; x.fillRect(0, 0, 512, 256);
+  x.fillStyle = 'rgba(255,255,255,.88)'; x.font = 'bold 30px sans-serif'; x.fillText('수학 탈출방 · 공통수학2', 24, 52); x.font = '26px sans-serif';
+  ['y = k/(x−p) + q', 'p ⇒ q : P ⊂ Q', '(g∘f)(x) = g(f(x))', 'a + b ≥ 2√ab'].forEach((s, i) => x.fillText(s, 34, 104 + i*40));
+  const bt = new THREE.CanvasTexture(cv); const board = addM(qzScene, new THREE.PlaneGeometry(4, 2), new THREE.MeshBasicMaterial({ map:bt }), -4.94, 2.2, -0.5); board.rotation.y = Math.PI/2;
+  // 책상 + 의자
+  box(1.4, 0.06, 0.8, '#C99A6B', 1.6, 0.75, 0.8); [[-0.6, -0.33], [0.6, -0.33], [-0.6, 0.33], [0.6, 0.33]].forEach(q => box(0.05, 0.75, 0.05, '#5B6170', 1.6 + q[0], 0.37, 0.8 + q[1]));
+  box(0.3, 0.04, 0.22, '#2C6FD1', 1.4, 0.8, 0.75); box(0.25, 0.03, 0.18, '#FFFFFF', 1.75, 0.79, 0.85);
+  // 떠다니는 수식 조각
+  qzScene.userData.floaters = ['f⁻¹', '∴', 'x≠1', '⇒', '∘', 'P⊂Q'].map((s, i) => { const sp = labelSprite(s, ['#5CE1E6', '#FFC93C', '#C9A8FF', '#FF7C93', '#6EE7A8', '#8FCBFF'][i]); sp.scale.set(1.1, 0.28, 1);
+    sp.position.set(rand(-3.5, 3.5), rand(1.2, 3.4), rand(-3, 2)); qzScene.add(sp); return { sp, ph:rand(0, 6), y:sp.position.y }; });
+}
+function enterQuiz(){
+  if(!qzScene) buildQuiz();
+  $('#panel').hidden = true; $('#joy').hidden = true; $('#qzCard').hidden = false;
+  Object.assign(camLim, { pmin:-0.3, pmax:0.9, dmin:4, dmax:12 });
+  cam.yaw = 0; cam.pitch = 0.18; cam.dist = 7.5; cam.t.set(0, 1.7, -1.2);
+  qz = { set:qzPick(8, (Date.now()/1000) | 0), i:0, solved:0, tries:0, lockT:0, opened:false, show:false };
+  qzDoorOpen = 0; qzDoor.position.x = 0; qzLamps.forEach(l => l.material.color.set('#E2574C'));
+  qzRender(); toast('🔐 수학 탈출방! 문제 3개를 맞혀야 문이 열려요');
+}
+function leaveQuiz(){ $('#qzCard').hidden = true; qzDuelEnd(true); }
+function qzCur(){ return QZ[qzDuel && qzDuel.started ? qzDuel.set[qzDuel.i] : qz.set[qz.i % qz.set.length]]; }
+function qzRender(){
+  const card = $('#qzCard'); if(card.hidden || !qz) return; const P = qzCur(), D = qzDuel && qzDuel.started;
+  const opp = D && remotes.get(qzDuel.opp), oq = opp && opp.av.qd;
+  $('#qzHead').innerHTML = D ? '⚔ 먼저 풀기 대결 · 나 <b>' + qzDuel.sc + '/3</b> · ' + (opp ? opp.av.name : '상대') + ' <b>' + (oq && oq.sc || 0) + '/3</b>'
+    : '🔐 탈출 ' + [0, 1, 2].map(k => k < qz.solved ? '🟢' : '🔴').join('') + (qz.opened ? ' · <b>문이 열렸어요!</b>' : ' · ' + qz.solved + '/3');
+  $('#qzTag').textContent = P.u + ' · ' + P.p + '점'; $('#qzTag').className = 'qztag p' + P.p;
+  $('#qzQ').innerHTML = P.q;
+  const box = $('#qzC'); box.textContent = '';
+  P.c.forEach((c, k) => { const b = el('button', 'qzopt'); b.type = 'button'; b.innerHTML = '<i>' + '①②③④⑤'[k] + '</i>' + c; b.addEventListener('click', () => qzAnswer(k, b)); box.appendChild(b); });
+  $('#qzMsg').innerHTML = D ? '틀리면 5초 동안 못 눌러요' : '기회 ' + (QZ_TRY - qz.tries) + '번 · 3번 틀리면 해설을 보고 다음 문제로 넘어가요';
+  $('#qzExit').textContent = qz.opened ? '🚪 나가기' : '🔒 나가기 (3문제)';
+  $('#qzDuel').textContent = D ? '🏳 대결 그만' : '⚔ 친구와 대결';
+}
+function qzAnswer(k, btn){
+  const now = Date.now(); if(now < qz.lockT){ toast('잠깐! ' + Math.ceil((qz.lockT - now)/1000) + '초 뒤에 다시 눌러요'); return; }
+  const P = qzCur(), D = qzDuel && qzDuel.started;
+  if(k === P.a){
+    btn.classList.add('ok');
+    if(D){ qzDuel.sc++; qzDuel.i++; qzSendDuel(); if(qzDuel.sc >= 3){ qzDuel.done = Date.now() + srvOff; qzSendDuel(); qzCheckDuel(); } }
+    if(!qz.opened){ qz.solved++; if(qz.solved <= 3) qzLamps[qz.solved - 1].material.color.set('#6EE7A8'); if(qz.solved >= QZ_NEED){ qz.opened = true; toast('🎉 3문제 탈출 성공! 문이 열렸어요'); } else toast('정답! 🟢 ' + qz.solved + '/3'); }
+    else if(!D) toast('정답! 계속 풀어도 돼요');
+    qz.i++; qz.tries = 0; setTimeout(qzRender, 650);
+  } else {
+    btn.classList.add('no'); btn.disabled = true;
+    if(D){ qz.lockT = now + 5000; toast('땡! 5초 동안 못 눌러요'); return; }
+    qz.tries++;
+    if(qz.tries >= QZ_TRY){ $('#qzMsg').innerHTML = '<b>해설</b> · ' + P.s + ' <br><button type="button" class="btn" id="qzNext">다음 문제 →</button>';
+      $('#qzNext').addEventListener('click', () => { qz.i++; qz.tries = 0; qzRender(); }); $('#qzC').querySelectorAll('button').forEach(b => { b.disabled = true; }); }
+    else $('#qzMsg').innerHTML = '땡! 기회 ' + (QZ_TRY - qz.tries) + '번 남았어요';
+  }
+}
+// ⚔ 먼저 풀기 대결: 같은 3문제를 동시에 풀고, 3개를 먼저 맞힌 사람이 이겨요
+function qzSendDuel(){ qzPres = qzDuel ? { to:qzDuel.opp, seed:qzDuel.seed, n:qzDuel.n, acc:!!qzDuel.acc, st:qzDuel.st || 0, sc:qzDuel.sc || 0, done:qzDuel.done || 0 } : null; lastSent = ''; pushPresence(); }
+function qzDuelSheet(){
+  if(qzDuel){ qzDuelEnd(); qzRender(); return; }
+  const body = showSheet('⚔ 누구랑 대결할까요?'); let n = 0;
+  remotes.forEach((r, uid) => { if(r.av.room !== 'quiz') return; n++; const b = el('button', 'quizopt', '⚔ ' + r.av.name); b.type = 'button';
+    b.addEventListener('click', () => { $('#spSheet').hidden = true; qzDuel = { opp:uid, seed:(Math.random()*1e9) | 0, n:Date.now(), acc:false, sc:0, i:0 }; qzSendDuel(); toast(r.av.name + '님에게 대결 신청을 보냈어요'); qzRender(); }); body.appendChild(b); });
+  if(!n) body.appendChild(el('p', null, '지금 수학 탈출방에 있는 친구가 없어요. 친구가 들어오면 다시 눌러요.'));
+}
+function qzDuelStart(){ qzDuel.set = qzPick(3, qzDuel.seed); qzDuel.i = 0; qzDuel.sc = 0; qzDuel.started = true; qz.lockT = 0; toast('⚔ 대결 시작! 3문제 먼저 맞히면 승리'); qzSendDuel(); qzRender(); }
+function qzDuelEnd(silent){ if(!qzDuel) return; qzDuel = null; qzSendDuel(); if(!silent) toast('대결을 끝냈어요'); }
+function qzCheckDuel(){
+  if(!qzDuel || !qzDuel.started || qzDuel.res) return; const r = remotes.get(qzDuel.opp), oq = r && r.av.qd;
+  const mine = qzDuel.done || 0, theirs = oq && oq.to === myUid && oq.seed === qzDuel.seed ? (oq.done || 0) : 0;
+  if(!mine && !theirs) return; if(mine && theirs) qzDuel.res = mine <= theirs ? 'win' : 'lose'; else if(mine) qzDuel.res = 'win'; else qzDuel.res = 'lose';
+  const nm = r ? r.av.name : '상대';
+  if(qzDuel.res === 'win'){ toast('🏆 대결 승리! ' + nm + '님보다 먼저 3문제를 풀었어요'); if(me) me.say('L을 가져가~'); } else toast('😵 ' + nm + '님이 먼저 풀었어요… 다음엔 이겨요!');
+  setTimeout(() => { qzDuelEnd(true); qzRender(); }, 2500);
+}
+function qzPoll(){   // 친구 대결 신청 / 수락 확인
+  if(room !== 'quiz') return;
+  remotes.forEach((r, uid) => { const q = r.av.qd; if(!q || q.to !== myUid) return;
+    if(q.acc && qzDuel && qzDuel.opp === uid && !qzDuel.acc && q.seed === qzDuel.seed){ qzDuel.acc = true; qzDuel.st = q.st; qzSendDuel(); }
+    if(!q.acc && !qzDuel && !qzSeenInv[q.n]){ qzSeenInv[q.n] = 1;
+      const body = showSheet('⚔ ' + r.av.name + '님의 대결 신청!'); body.appendChild(el('p', null, '같은 3문제를 동시에 풀어요. 먼저 3개 맞히는 사람이 이겨요.'));
+      const ok = el('button', 'btn primary', '수락'), no = el('button', 'btn', '거절'); ok.type = no.type = 'button';
+      ok.addEventListener('click', () => { $('#spSheet').hidden = true; qzDuel = { opp:uid, seed:q.seed, n:Date.now(), acc:true, st:Date.now() + srvOff + 3500, sc:0, i:0 }; qzSendDuel(); toast('3초 뒤에 시작해요!'); });
+      no.addEventListener('click', () => { $('#spSheet').hidden = true; }); body.appendChild(ok); body.appendChild(no); } });
+  if(qzDuel && qzDuel.acc && !qzDuel.started && qzDuel.st && Date.now() + srvOff >= qzDuel.st) qzDuelStart();
+  if(qzDuel && qzDuel.started){ qzCheckDuel(); const oh = $('#qzHead'); if(oh && !qzDuel.res){ const r = remotes.get(qzDuel.opp), s = r && r.av.qd ? r.av.qd.sc || 0 : 0; if(oh.dataset.o !== String(s)){ oh.dataset.o = s; qzRender(); } } }
+}
+function quizTick(dt){
+  const t = performance.now()/1000; cam.t.set(0, 1.7, -1.2); cam.yaw = Math.sin(t*0.15)*0.12;
+  qzView();
+  if(qz && qz.opened && qzDoorOpen < 1){ qzDoorOpen = Math.min(1, qzDoorOpen + dt*0.8); qzDoor.position.x = -qzDoorOpen*1.9; }
+  (qzScene.userData.floaters || []).forEach(f => { f.sp.position.y = f.y + Math.sin(t + f.ph)*0.15; });
+  qzPoll();
+}
+function qzView(){ const w = window.innerWidth, h = window.innerHeight, card = $('#qzCard'), side = w/h >= 1.25;
+  if(side){ const cw = card.offsetWidth + 12; camera.setViewOffset(w, h, -cw/2, 0, w, h); } else { const ch = card.offsetHeight; camera.setViewOffset(w, h, 0, ch/2, w, h); } }
+$('#qzExit').addEventListener('click', () => { if(!qz || !qz.opened){ toast('🔒 아직 문이 잠겨 있어요 · 3문제를 맞혀야 나갈 수 있어요'); return; } exitRoom(); });
+$('#qzDuel').addEventListener('click', qzDuelSheet);
+$('#qzHint').addEventListener('click', () => { if(qz) $('#qzMsg').innerHTML = '💡 <b>힌트</b> · ' + qzCur().h; });
+
 function fpEye(){
   if(!firstPerson || !me) return null;
   if(room === 'class' || room === 'lobby'){ if(me.mode === 'sit' && room === 'class') return _eye.set(me.pos.x, 1.15, me.pos.z); return _eye.set(me.pos.x, 1.45 + me.jumpY + me.flyH + me.bob, me.pos.z); }
@@ -5255,7 +5437,7 @@ function loop(){
   leftWall.visible = camera.position.x > -W/2 + 0.2; rightWall.visible = camera.position.x < W/2 - 0.2; outdoor.visible = rightWall.visible;
   uiT -= dt; if(uiT <= 0){ uiT = 0.25; updateUI(); }
   const fpHid = fpHideList(eye);
-  renderer.render(room === 'sea' ? seaScene : room === 'nino' ? ninoScene : room === 'space' ? (spacePhase === 'space' ? spaceScene : launchScene) : room === 'geo' ? geoScene : room === 'isle' ? isleScene : room === 'lobby' ? lobbyScene : scene, camera);
+  renderer.render(room === 'sea' ? seaScene : room === 'nino' ? ninoScene : room === 'space' ? (spacePhase === 'space' ? spaceScene : launchScene) : room === 'geo' ? geoScene : room === 'isle' ? isleScene : room === 'quiz' ? qzScene : room === 'lobby' ? lobbyScene : scene, camera);
   fpHid.forEach(o => { o.visible = true; });
   requestAnimationFrame(loop);
 }
