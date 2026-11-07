@@ -328,7 +328,7 @@ body.isle .panel{padding:8px 10px 10px;gap:6px}
 .qzopt.ok{background:#1F5A44;border-color:#6EE7A8}.qzopt.no{background:#5A2230;border-color:#FF7C93;animation:qzShake .3s}
 @keyframes qzShake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
 .qzmsg{font:600 12.5px/1.6 var(--font-b);color:var(--fg-2)}.qzmsg .btn{margin-top:6px;min-height:38px}
-.qzbar{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.qzbar .btn{min-height:42px;font-size:13px;padding:0 4px}
+.qzbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.qzbar .btn{min-height:42px;font-size:13px;padding:0 4px}
 @keyframes geoBob{50%{transform:translateX(-50%) translateY(-4px)}}
 @media (prefers-reduced-motion: reduce){.geobtn{animation:none}}
 #geoCard .tabs3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
@@ -589,7 +589,7 @@ body.isle .panel{padding:8px 10px 10px;gap:6px}
     </div>
     </div>
     <button class="btn primary" type="submit" id="enterBtn" hidden>교실 입장</button>
-    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 62</p>
+    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 64</p>
   </form>
 </div>
 
@@ -648,7 +648,7 @@ body.isle .panel{padding:8px 10px 10px;gap:6px}
   <div id="qzQ" class="qzq"></div>
   <div id="qzC" class="qzc"></div>
   <div id="qzMsg" class="qzmsg"></div>
-  <div class="qzbar"><button type="button" class="btn" id="qzHint">💡 힌트</button><button type="button" class="btn" id="qzDuel">⚔ 친구와 대결</button><button type="button" class="btn warm" id="qzExit">🔒 나가기</button></div>
+  <div class="qzbar"><button type="button" class="btn" id="qzDuel">⚔ 친구와 대결</button><button type="button" class="btn warm" id="qzExit">🔒 나가기</button></div>
 </div>
 <div class="ninocard" id="geoCard" hidden>
   <div class="ed-head"><div><h2>📐 기하 탐구실 · 이차곡선</h2><div class="who">고2·고3 기하 미리 보기</div></div><button type="button" class="tool" id="geoExit">로비로 ⬆</button></div>
@@ -1627,7 +1627,8 @@ function handlePlayers(){
     av.total = (s.date === todayStr && s.v === DATA_VER) ? num(s.total, 0, 86400, 0) : 0; av.flying = s.fly === true;
     av.streak = Math.floor(num(s.streak, 0, 999, 0)); av.steady = s.steady === true; av.geo = s.geo === true; av.isl = typeof s.isl === 'string' ? s.isl.slice(0, 5) : ''; av.qd = s.qd && typeof s.qd === 'object' ? { to:String(s.qd.to || ''), seed:num(s.qd.seed, 0, 2e9, 0), n:num(s.qd.n, 0, 1e14, 0), acc:s.qd.acc === true, st:num(s.qd.st, 0, 1e14, 0), sc:num(s.qd.sc, 0, 3, 0), done:num(s.qd.done, 0, 1e14, 0) } : null; av.where = typeof s.where === 'string' ? s.where.slice(0, 24) : ''; av.best = num(s.best, 0, 86400, 0);
     av.room = (s.room === 'sea' || s.room === 'nino' || s.room === 'space' || s.room === 'geo' || s.room === 'isle' || s.room === 'quiz' || s.room === 'lobby') ? s.room : 'class';
-    if(av.room === 'isle'){ if(room !== 'isle'){ if(av.group.parent !== scene) scene.add(av.group); av.group.visible = false; } }   // 공중섬 친구는 섬 위에 따로 세워요
+    if(av.room === 'quiz' && room === 'quiz' && av.group.parent === qzScene){ /* 수학 탈출방 대결 상대는 의자에 그대로 */ }
+    else if(av.room === 'isle'){ if(room !== 'isle'){ if(av.group.parent !== scene) scene.add(av.group); av.group.visible = false; } }   // 공중섬 친구는 섬 위에 따로 세워요
     else { const want = av.room === 'lobby' ? lobbyScene : scene; if(av.group.parent !== want) want.add(av.group); av.group.visible = av.room === 'class' || av.room === 'lobby'; }
     seaRemote(uid, s, av); spaceRemote(uid, s, av);
     const seat = (av.room === 'class' && Number.isInteger(s.seat) && s.seat >= 0 && s.seat < seats.length) ? s.seat : -1;
@@ -4674,7 +4675,7 @@ syncViewBtn();
 $('#btnView').addEventListener('click', () => { firstPerson = !firstPerson; store.set('class8-fp', firstPerson); syncViewBtn(); if(firstPerson) cam.pitch = 0.4; else resetView(); toast(firstPerson ? '1인칭: 내 눈으로 봐요 · 드래그로 둘러보기' : '3인칭: 내 캐릭터를 뒤에서 봐요'); });
 const _eye = new THREE.Vector3();
 function fwd(o, d){ return _eye.set(o.g.position.x + Math.sin(o.h || 0)*d, 0, o.g.position.z + Math.cos(o.h || 0)*d); }
-/* ===== ☁ 공중섬: 공부한 만큼 땅을 넓히고 집을 지어요 (공부 1분 = 1포인트) ===== */
+/* ===== ☁ 공중섬: 공부한 만큼 땅을 넓히고 집을 지어요 (1분 10P · 1시간↑ 20P · 2시간↑ 30P) ===== */
 const ISLE_ROSTER = ['정우진', '구재성', '권해준', '김건훈', '김DO희', '노경민', '박준원', '시혁', '유용준', '이성준', '조현빈', '천승우', '추성민', '황태율', '최건', '빈 섬 1', '빈 섬 2'];   // 순서 바꾸지 말기 (섬 번호)
 const ISLE_R = [0, 2.2, 3.0, 3.8, 4.6, 5.4, 6.2];
 const ISLE_UP = [0, 0, 60, 150, 300, 500, 800];   // 그 레벨로 넓히는 데 드는 포인트
@@ -4941,17 +4942,19 @@ function refreshIsles(){
   isleRefundBlocks();
   updIsleUI();
 }
-function islePoints(){ if(isleBaseSec == null) return null; const d = isleMine && isleData[isleMine]; return Math.floor((isleBaseSec + (me ? me.total || 0 : 0))/60) - num(d && d.spent, 0, 1e7, 0); }
+// 하루 공부시간으로 포인트 계산: 처음 1시간은 1분에 10P, 1~2시간은 1분에 20P, 2시간부터는 1분에 30P (날마다 새로)
+function dayPoints(sec){ const m = Math.floor(Math.max(0, sec)/60); return Math.min(m, 60)*10 + Math.min(Math.max(m - 60, 0), 60)*20 + Math.max(m - 120, 0)*30; }
+function islePoints(){ if(isleBaseSec == null) return null; const d = isleMine && isleData[isleMine]; return isleBaseSec + dayPoints(me ? me.total || 0 : 0) - num(d && d.spent, 0, 1e9, 0); }
 function isleLoadEarned(){
   isleBaseSec = null;
   if(!rtdb || !myUid){ isleBaseSec = 0; updIsleUI(); return; }
-  rtdb.ref('days/' + myUid).once('value').then(s => { const v = s.val() || {}; let sum = 0; Object.keys(v).forEach(k => { if(k !== todayKey) sum += num(v[k] && v[k].t, 0, 86400, 0); }); isleBaseSec = sum; updIsleUI(); })
+  rtdb.ref('days/' + myUid).once('value').then(s => { const v = s.val() || {}; let sum = 0; Object.keys(v).forEach(k => { if(k !== todayKey) sum += dayPoints(num(v[k] && v[k].t, 0, 86400, 0)); }); isleBaseSec = sum; /* 지난 날들도 새 계산법으로 다시 계산 */ updIsleUI(); })
     .catch(e => { isleBaseSec = 0; netErr(e); updIsleUI(); });
 }
 function updIsleUI(){
   if(room !== 'isle') return;
   const p = islePoints(), d = isleMine && isleData[isleMine], lv = d ? clamp(Math.floor(num(d.lv, 1, 6, 1)), 1, 6) : 0;
-  $('#isleInfo').textContent = isleMine ? '🪙 ' + (p == null ? '…' : p + 'P') + ' · 내 섬 Lv' + lv + ' · 공부 1분 = 1P' : '아직 내 섬이 없어요 · 명단에서 내 이름을 골라요';
+  $('#isleInfo').textContent = isleMine ? '🪙 ' + (p == null ? '…' : p + 'P') + ' · 내 섬 Lv' + lv + ' · 1분 10P (1시간↑ 20P, 2시간↑ 30P)' : '아직 내 섬이 없어요 · 명단에서 내 이름을 골라요';
   $('#isleBuild').disabled = $('#isleUp').disabled = $('#isleDel').disabled = !isleMine;
   $('#isleUp').textContent = lv >= 6 ? '⬆ 최대' : '⬆ 넓히기 ' + (ISLE_UP[lv + 1] || '') + 'P';
   $('#isleMineBtn').textContent = isleMine ? (isleOn && isleOn !== isleMine ? '🏝 내 섬으로' : '🏝 내 섬') : '🏝 내 섬 고르기';
@@ -5037,14 +5040,14 @@ function isleTap(x, y){
     const p = islePoints() || 0; if(p < it.cost){ toast('포인트가 모자라요'); isleGhostOff(); isleMode = null; ctxBtn(''); return; }
     isleGhostOff();
     const d = isleData[isleMine] || {}, k = 'i' + Date.now().toString(36) + Math.floor(Math.random()*1e4).toString(36);
-    isleWrite({ ['items/' + k]:{ t:it.t, x:+lx.toFixed(2), z:+lz.toFixed(2), r:+Math.atan2(lx, lz).toFixed(2) }, spent:num(d.spent, 0, 1e7, 0) + it.cost });
+    isleWrite({ ['items/' + k]:{ t:it.t, x:+lx.toFixed(2), z:+lz.toFixed(2), r:+Math.atan2(lx, lz).toFixed(2) }, spent:num(d.spent, 0, 1e9, 0) + it.cost });
     toast(it.e + ' ' + it.name + ' 완성! -' + it.cost + 'P'); isleMode = null; ctxBtn(''); return;
   }
   const targets = isleMode && isleMode.kind === 'del' ? (I ? [I.itemsG] : []) : isles.map(o => o.g);
   for(const h of ray.intersectObjects(targets, true)){
     const id = h.object.userData.isleId; if(!id) continue;
     if(isleMode && isleMode.kind === 'del'){ const k = h.object.userData.ik; if(!k || !I.items[k]) continue; const it = ISLE_ITEM[I.items[k].t], d = isleData[isleMine] || {}, back = Math.floor(it.cost/2);
-      isleWrite({ ['items/' + k]:null, spent:Math.max(0, num(d.spent, 0, 1e7, 0) - back) }); toast(it.e + ' ' + it.name + ' 치웠어요 · +' + back + 'P 돌려받음'); return; }
+      isleWrite({ ['items/' + k]:null, spent:Math.max(0, num(d.spent, 0, 1e9, 0) - back) }); toast(it.e + ' ' + it.name + ' 치웠어요 · +' + back + 'P 돌려받음'); return; }
     if(id === isleOn && !isleFly && !isleFall){ const I0 = isleById[id]; I0.stage.updateMatrixWorld(); I0.stage.worldToLocal(_ipt.copy(h.point)); isleGo = { x:_ipt.x, z:_ipt.z }; return; }
     if(id === 'arena'){ toast('⚔ 전투장 · 점프 발판으로 갈 수 있어요'); return; }
     if(id === 'pit') return;
@@ -5191,8 +5194,8 @@ $('#isleUp').addEventListener('click', () => {
   if(!isleMine) return; const d = isleData[isleMine] || {}, lv = clamp(Math.floor(num(d.lv, 1, 6, 1)), 1, 6);
   if(lv >= 6){ toast('이미 가장 큰 섬이에요!'); return; }
   const cost = ISLE_UP[lv + 1], p = islePoints() || 0;
-  if(p < cost){ toast('땅 넓히기는 ' + cost + 'P가 필요해요 · ' + (cost - p) + 'P 남았어요 (공부 ' + (cost - p) + '분)'); return; }
-  isleWrite({ lv:lv + 1, spent:num(d.spent, 0, 1e7, 0) + cost }); isleAt(isleMine); toast('🏝 땅이 넓어졌어요! 섬 Lv' + (lv + 1));
+  if(p < cost){ toast('땅 넓히기는 ' + cost + 'P가 필요해요 · ' + (cost - p) + 'P 남았어요'); return; }
+  isleWrite({ lv:lv + 1, spent:num(d.spent, 0, 1e9, 0) + cost }); isleAt(isleMine); toast('🏝 땅이 넓어졌어요! 섬 Lv' + (lv + 1));
 });
 $('#isleDel').addEventListener('click', () => { if(!isleMine) return; if(isleOn !== isleMine){ toast('치우기는 내 섬에 있을 때만 할 수 있어요'); return; } isleMode = { kind:'del' }; isleAt(isleMine); ctxBtn('✖ 치우기 끝내기', () => { isleMode = null; ctxBtn(''); }); toast('치울 건물을 눌러요 · 값의 절반을 돌려받아요'); });
 $('#isleExit').addEventListener('click', exitRoom);
@@ -5209,7 +5212,7 @@ let isleRefundDone = false;
 function isleRefundBlocks(){
   if(isleRefundDone || !isleMine) return; const d = isleData[isleMine]; if(!d || !(d.blocks || d.inv || d.mined)) return; isleRefundDone = true;
   let back = 0; Object.values(d.blocks || {}).forEach(tp => { back += BLK_REFUND[tp] || 0; }); Object.keys(d.inv || {}).forEach(tp => { back += (BLK_REFUND[tp] || 0)*num(d.inv[tp], 0, 1e6, 0); });
-  isleWrite({ blocks:null, inv:null, mined:null, spent:Math.max(0, num(d.spent, 0, 1e7, 0) - back) });
+  isleWrite({ blocks:null, inv:null, mined:null, spent:Math.max(0, num(d.spent, 0, 1e9, 0) - back) });
   if(back) setTimeout(() => toast('🧱 블록 기능이 없어져서 블록에 쓴 ' + back + 'P를 돌려받았어요'), 600);
 }
 
@@ -5217,20 +5220,8 @@ function isleRefundBlocks(){
 // 문제는 모의고사 유형을 참고해 새로 만든 문제예요 (실제 기출 문제를 그대로 옮긴 게 아니에요)
 const Fr = (a, b) => '<span class="fr"><span>' + a + '</span><span>' + b + '</span></span>';
 const QZ = [
-  { u:'유리함수', p:3, q:'함수 y = ' + Fr('2x + 1', 'x − 1') + ' 의 그래프의 점근선이 두 직선 x = a, y = b 일 때, a + b 의 값은?', c:['1', '2', '3', '4', '5'], a:2,
-    h:'분자·분모를 나눠서 y = ' + Fr('k', 'x − p') + ' + q 꼴로 바꿔 봐요.', s:'y = ' + Fr('3', 'x − 1') + ' + 2 이므로 점근선은 x = 1, y = 2 → a + b = 3' },
-  { u:'유리함수', p:3, q:'함수 y = ' + Fr('k', 'x − 2') + ' + 3 의 그래프가 점 (4, 5)를 지날 때, 상수 k 의 값은?', c:['2', '3', '4', '5', '6'], a:2,
-    h:'x = 4, y = 5 를 대입해요.', s:'5 = ' + Fr('k', '2') + ' + 3 → k = 4' },
   { u:'명제', p:3, q:'두 조건 p: x² − 4x + 3 ≤ 0, q: |x − a| ≤ 2 에 대하여 p 가 q 이기 위한 충분조건이 되도록 하는 정수 a 의 개수는?', c:['1', '2', '3', '4', '5'], a:2,
     h:'p 의 진리집합 ⊂ q 의 진리집합이 되어야 해요.', s:'P = {x | 1 ≤ x ≤ 3}, Q = {x | a − 2 ≤ x ≤ a + 2}. P ⊂ Q 이려면 a − 2 ≤ 1, a + 2 ≥ 3 → 1 ≤ a ≤ 3 → 3개' },
-  { u:'함수', p:3, q:'두 함수 f(x) = 2x + 1, g(x) = x² − 3 에 대하여 (g ∘ f)(1) 의 값은?', c:['4', '5', '6', '7', '8'], a:2,
-    h:'f(1)을 먼저 구한 뒤 g 에 넣어요.', s:'f(1) = 3, g(3) = 9 − 3 = 6' },
-  { u:'함수', p:3, q:'함수 f(x) = 3x − 5 의 역함수를 f⁻¹ 라 할 때, f⁻¹(4) 의 값은?', c:['1', '2', '3', '4', '5'], a:2,
-    h:'f⁻¹(4) = k 이면 f(k) = 4 예요.', s:'3k − 5 = 4 → k = 3' },
-  { u:'명제', p:3, q:'전체집합 U = {1, 2, 3, …, 10} 에서 두 조건 p: x 는 짝수이다, q: x 는 3의 배수이다. 조건 \'p 그리고 ~q\' 의 진리집합의 원소의 개수는?', c:['2', '3', '4', '5', '6'], a:2,
-    h:'짝수 중에서 3의 배수를 빼요.', s:'{2, 4, 6, 8, 10} 에서 6 을 빼면 {2, 4, 8, 10} → 4개' },
-  { u:'명제', p:3, q:'두 조건 p: −1 ≤ x ≤ 4, q: x ≥ a 에 대하여 p 가 q 이기 위한 충분조건일 때, 실수 a 의 최댓값은?', c:['−2', '−1', '0', '1', '4'], a:1,
-    h:'p 의 범위 전체가 x ≥ a 안에 들어가야 해요.', s:'[−1, 4] ⊂ [a, ∞) → a ≤ −1 → 최댓값 −1' },
   { u:'유리함수', p:4, q:'함수 f(x) = ' + Fr('ax + b', 'x + c') + ' 의 그래프가 점 (2, 3)에 대하여 대칭이고 원점을 지날 때, f(4) 의 값은? (단, a, b, c 는 상수)', c:['4', '5', '6', '7', '8'], a:2,
     h:'대칭의 중심 = 두 점근선의 교점 (−c, a) 예요.', s:'−c = 2, a = 3 이고 f(0) = ' + Fr('b', 'c') + ' = 0 → b = 0. f(x) = ' + Fr('3x', 'x − 2') + ' → f(4) = 6' },
   { u:'유리함수', p:4, q:'정의역이 {x | 3 ≤ x ≤ 5} 인 함수 y = ' + Fr('x + 3', 'x − 2') + ' 의 최댓값을 M, 최솟값을 m 이라 할 때, M + m 의 값은?', c:['7', '8', Fr('26', '3'), '9', Fr('28', '3')], a:2,
@@ -5243,18 +5234,34 @@ const QZ = [
     h:'(x + 1) + ' + Fr('9', 'x + 1') + ' − 1 로 바꾸고 산술·기하평균을 써요.', s:'(x + 1) + ' + Fr('9', 'x + 1') + ' ≥ 2√9 = 6 → 최솟값 6 − 1 = 5 (x = 2 일 때)' },
   { u:'유리함수', p:4, q:'함수 f(x) = ' + Fr('2x + 3', 'x − 1') + ' 의 역함수를 f⁻¹ 라 할 때, f⁻¹(5) 의 값은?', c:['2', Fr('7', '3'), Fr('8', '3'), '3', Fr('10', '3')], a:2,
     h:'f(k) = 5 인 k 를 찾아요.', s:'2k + 3 = 5(k − 1) → k = ' + Fr('8', '3') },
-  { u:'함수', p:4, q:'두 함수 f(x) = x + 2, g(x) = 2x − 1 에 대하여 (f ∘ g)⁻¹(7) 의 값은?', c:['1', '2', '3', '4', '5'], a:2,
-    h:'(f ∘ g)(k) = 7 인 k 를 찾아요.', s:'(f ∘ g)(x) = 2x + 1 = 7 → x = 3' },
   { u:'유리함수', p:4, q:'함수 y = ' + Fr('3', 'x') + ' 의 그래프를 x축의 방향으로 m 만큼, y축의 방향으로 n 만큼 평행이동하면 함수 y = ' + Fr('2x + 1', 'x − 1') + ' 의 그래프와 일치한다. m + n 의 값은?', c:['1', '2', '3', '4', '5'], a:2,
     h:'y = ' + Fr('2x + 1', 'x − 1') + ' 을 ' + Fr('3', 'x − m') + ' + n 꼴로 바꿔요.', s:'y = ' + Fr('3', 'x − 1') + ' + 2 → m = 1, n = 2 → 3' },
   { u:'유리함수', p:4, q:'함수 y = ' + Fr('2', 'x + 1') + ' − 3 의 그래프가 지나지 않는 사분면은?', c:['제1사분면', '제2사분면', '제3사분면', '제4사분면', '모두 지난다'], a:0,
-    h:'점근선 x = −1, y = −3 을 그리고, y절편을 확인해요.', s:'x > 0 이면 y < 2 − 3 = −1 < 0 이라 제1사분면은 지나지 않아요' }
+    h:'점근선 x = −1, y = −3 을 그리고, y절편을 확인해요.', s:'x > 0 이면 y < 2 − 3 = −1 < 0 이라 제1사분면은 지나지 않아요' },
+  { u:'유리함수', p:4, q:'함수 f(x) = ' + Fr('ax + 2', 'x − 3') + ' 의 그래프가 직선 y = x 에 대하여 대칭일 때, f(4) 의 값은? (단, a 는 상수)', c:['10', '12', '14', '16', '18'], a:2,
+    s:'y = x 에 대칭이면 대칭의 중심 (3, a) 가 y = x 위에 있어야 해요 → a = 3. f(4) = ' + Fr('12 + 2', '1') + ' = 14' },
+  { u:'유리함수', p:4, q:'함수 y = ' + Fr('2', 'x − 1') + ' + 1 (x > 1) 의 그래프 위의 점 P 에서 두 점근선에 내린 수선의 발을 각각 A, B 라 하자. 두 점근선의 교점을 C 라 할 때, 사각형 PACB 의 둘레의 길이의 최솟값은?', c:['4', '4√2', '6', '4√3', '8'], a:1,
+    s:'P(t + 1, ' + Fr('2', 't') + ' + 1) 이면 두 변의 길이는 t, ' + Fr('2', 't') + ' → 둘레 2(t + ' + Fr('2', 't') + ') ≥ 2·2√2 = 4√2' },
+  { u:'명제', p:4, q:'두 조건 p: x² − 2x − 8 ≤ 0, q: a ≤ x ≤ a + 3 에 대하여 q 가 p 이기 위한 충분조건이 되도록 하는 모든 정수 a 의 값의 합은?', c:['−3', '−2', '−1', '0', '1'], a:1,
+    s:'P = [−2, 4]. Q ⊂ P 이려면 a ≥ −2, a + 3 ≤ 4 → −2 ≤ a ≤ 1 → −2 + (−1) + 0 + 1 = −2' },
+  { u:'함수', p:4, q:'집합 X = {1, 2, 3, 4} 에서 X 로의 일대일대응 f 중에서 f(1) = 2, f(2) ≠ 3 을 만족시키는 함수 f 의 개수는?', c:['2', '3', '4', '5', '6'], a:2,
+    s:'f(2), f(3), f(4) 는 {1, 3, 4} 를 하나씩 가져요. f(2) 는 1 또는 4 (2가지), 나머지 둘은 2가지 → 4' },
+  { u:'함수', p:4, q:'함수 f(x) = x² − 2x + 2 (x ≥ 1) 의 역함수를 g 라 할 때, 두 함수 y = f(x), y = g(x) 의 그래프의 두 교점 사이의 거리는?', c:['1', '√2', '√3', '2', '√5'], a:1,
+    s:'f 는 증가함수라 교점은 y = x 위에 있어요. x² − 3x + 2 = 0 → x = 1, 2 → (1, 1), (2, 2) → 거리 √2' },
+  { u:'함수', p:4, q:'일차함수 f(x) = ax + b (a > 0) 에 대하여 (f ∘ f)(x) = 4x + 9 일 때, f(1) 의 값은?', c:['3', '4', '5', '6', '7'], a:2,
+    s:'(f ∘ f)(x) = a²x + ab + b → a = 2, 3b = 9 → b = 3 → f(1) = 5' },
+  { u:'유리함수', p:3, q:'함수 y = ' + Fr('ax + 1', 'x − 2') + ' 의 치역이 {y | y ≠ 3} 이고 그래프가 점 (3, b) 를 지날 때, a + b 의 값은?', c:['10', '11', '12', '13', '14'], a:3,
+    s:'수평 점근선 y = a = 3. b = ' + Fr('9 + 1', '1') + ' = 10 → 13' },
+  { u:'명제', p:4, q:'두 양수 a, b 가 a + 2b = 8 을 만족시킬 때, ab 의 최댓값은?', c:['4', '6', '8', '10', '16'], a:2,
+    s:'a + 2b ≥ 2√(2ab) → 8 ≥ 2√(2ab) → ab ≤ 8 (a = 4, b = 2)' },
+  { u:'명제', p:4, q:'두 양수 x, y 에 대하여 (x + ' + Fr('1', 'y') + ')(y + ' + Fr('4', 'x') + ') 의 최솟값은?', c:['5', '7', '8', '9', '10'], a:3,
+    s:'전개하면 xy + ' + Fr('4', 'xy') + ' + 5 ≥ 2√4 + 5 = 9' },
 ];
 const QZ_NEED = 3, QZ_TRY = 3;
-let qzScene = null, qz = null, qzLamps = [], qzDoor = null, qzDoorOpen = 0, qzDuel = null, qzPres = null, qzSeenInv = {};
+let qzChairs = [], qzWin = null, qzScene = null, qz = null, qzLamps = [], qzDoor = null, qzDoorOpen = 0, qzDuel = null, qzPres = null, qzSeenInv = {};
 function qzRng(seed){ let h = seed >>> 0 || 1; return () => { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; return (h >>> 0)/4294967296; }; }
 function qzPick(n, seed){ const r = qzRng(seed), idx = QZ.map((_, i) => i); for(let i=idx.length - 1;i>0;i--){ const j = Math.floor(r()*(i + 1)); [idx[i], idx[j]] = [idx[j], idx[i]]; }
-  const three = idx.filter(i => QZ[i].p === 3), four = idx.filter(i => QZ[i].p === 4); return [three[0], four[0], four[1], three[1], four[2], four[3], three[2], four[4]].slice(0, n); }
+  const three = idx.filter(i => QZ[i].p === 3), four = idx.filter(i => QZ[i].p === 4); return four.slice(0, 2).concat([three[0]], four.slice(2)).slice(0, n); }
 function buildQuiz(){
   qzScene = new THREE.Scene(); qzScene.background = new THREE.Color('#0E1226'); qzScene.fog = new THREE.Fog('#0E1226', 10, 22);
   qzScene.add(new THREE.HemisphereLight('#9FB6FF', '#1A1530', 0.55));
@@ -5277,9 +5284,17 @@ function buildQuiz(){
   x.fillStyle = 'rgba(255,255,255,.88)'; x.font = 'bold 30px sans-serif'; x.fillText('수학 탈출방 · 공통수학2', 24, 52); x.font = '26px sans-serif';
   ['y = k/(x−p) + q', 'p ⇒ q : P ⊂ Q', '(g∘f)(x) = g(f(x))', 'a + b ≥ 2√ab'].forEach((s, i) => x.fillText(s, 34, 104 + i*40));
   const bt = new THREE.CanvasTexture(cv); const board = addM(qzScene, new THREE.PlaneGeometry(4, 2), new THREE.MeshBasicMaterial({ map:bt }), -4.94, 2.2, -0.5); board.rotation.y = Math.PI/2;
-  // 책상 + 의자
-  box(1.4, 0.06, 0.8, '#C99A6B', 1.6, 0.75, 0.8); [[-0.6, -0.33], [0.6, -0.33], [-0.6, 0.33], [0.6, 0.33]].forEach(q => box(0.05, 0.75, 0.05, '#5B6170', 1.6 + q[0], 0.37, 0.8 + q[1]));
-  box(0.3, 0.04, 0.22, '#2C6FD1', 1.4, 0.8, 0.75); box(0.25, 0.03, 0.18, '#FFFFFF', 1.75, 0.79, 0.85);
+  // 책상 하나 + 마주 보는 의자 두 개 (밧줄로 묶여 있어요)
+  box(1.3, 0.06, 1.0, '#C99A6B', 0, 0.75, 0); [[-0.58, -0.43], [0.58, -0.43], [-0.58, 0.43], [0.58, 0.43]].forEach(q => box(0.05, 0.75, 0.05, '#5B6170', q[0], 0.37, q[1]));
+  box(0.32, 0.04, 0.24, '#2C6FD1', -0.25, 0.8, 0.15); box(0.26, 0.03, 0.2, '#FFFFFF', 0.25, 0.79, -0.15); addM(qzScene, new THREE.CylinderGeometry(0.015, 0.015, 0.3, 6), Lm('#FFC93C'), 0.1, 0.8, 0.05).rotation.z = Math.PI/2;
+  qzChairs = [1, -1].map(side => { const g = new THREE.Group(); g.position.set(0, 0, side*1.05); g.rotation.y = side > 0 ? 0 : Math.PI; qzScene.add(g);
+    const seat = '#566190', leg = '#5B6170', b2 = (w, h, d, c, x, y, z) => addM(g, new THREE.BoxGeometry(w, h, d), Lm(c), x, y, z);
+    b2(0.55, 0.06, 0.5, seat, 0, 0.45, 0); b2(0.55, 0.62, 0.06, seat, 0, 0.78, 0.25); [[-0.24, -0.21], [0.24, -0.21], [-0.24, 0.21], [0.24, 0.21]].forEach(q => b2(0.04, 0.45, 0.04, leg, q[0], 0.225, q[1]));
+    const rope = new THREE.Group(); g.add(rope); const rm = new THREE.MeshLambertMaterial({ color:'#C9A26B' });
+    [0.72, 0.92].forEach(y => { const r = new THREE.Mesh(new THREE.TorusGeometry(0.36, 0.035, 6, 20), rm); r.rotation.x = Math.PI/2; r.position.set(0, y, 0.05); r.scale.set(1, 1.15, 1); rope.add(r); });
+    const lr = new THREE.Mesh(new THREE.TorusGeometry(0.26, 0.03, 6, 16), rm); lr.rotation.x = Math.PI/2; lr.position.set(0, 0.38, -0.3); rope.add(lr);
+    const knot = new THREE.Mesh(new THREE.SphereGeometry(0.06, 8, 6), rm); knot.position.set(0, 0.82, 0.42); rope.add(knot);
+    return { g, rope, side }; });
   // 떠다니는 수식 조각
   qzScene.userData.floaters = ['f⁻¹', '∴', 'x≠1', '⇒', '∘', 'P⊂Q'].map((s, i) => { const sp = labelSprite(s, ['#5CE1E6', '#FFC93C', '#C9A8FF', '#FF7C93', '#6EE7A8', '#8FCBFF'][i]); sp.scale.set(1.1, 0.28, 1);
     sp.position.set(rand(-3.5, 3.5), rand(1.2, 3.4), rand(-3, 2)); qzScene.add(sp); return { sp, ph:rand(0, 6), y:sp.position.y }; });
@@ -5288,12 +5303,14 @@ function enterQuiz(){
   if(!qzScene) buildQuiz();
   $('#panel').hidden = true; $('#joy').hidden = true; $('#qzCard').hidden = false;
   Object.assign(camLim, { pmin:-0.3, pmax:0.9, dmin:4, dmax:12 });
-  cam.yaw = 0; cam.pitch = 0.18; cam.dist = 7.5; cam.t.set(0, 1.7, -1.2);
+  cam.yaw = 0.9; cam.pitch = 0.28; cam.dist = 5.2; cam.t.set(0, 0.9, 0);
   qz = { set:qzPick(8, (Date.now()/1000) | 0), i:0, solved:0, tries:0, lockT:0, opened:false, show:false };
+  qzScene.add(me.group); me.group.visible = true; me.pos.set(0, 0, 1.05); me.ry = me.targetRy = Math.PI; me.pose = null; qzWin = null; qzChairs.forEach(c => { c.rope.visible = true; c.rope.position.y = 0; c.g.visible = c.side > 0; });
   qzDoorOpen = 0; qzDoor.position.x = 0; qzLamps.forEach(l => l.material.color.set('#E2574C'));
   qzRender(); toast('🔐 수학 탈출방! 문제 3개를 맞혀야 문이 열려요');
 }
-function leaveQuiz(){ $('#qzCard').hidden = true; qzDuelEnd(true); }
+function leaveQuiz(){ $('#qzCard').hidden = true; qzDuelEnd(true); qzWin = null; qzReleaseOpp(); }
+function qzReleaseOpp(){ remotes.forEach(r => { if(r.av.group.parent === qzScene){ scene.add(r.av.group); r.av.group.visible = false; } }); }
 function qzCur(){ return QZ[qzDuel && qzDuel.started ? qzDuel.set[qzDuel.i] : qz.set[qz.i % qz.set.length]]; }
 function qzRender(){
   const card = $('#qzCard'); if(card.hidden || !qz) return; const P = qzCur(), D = qzDuel && qzDuel.started;
@@ -5342,8 +5359,9 @@ function qzCheckDuel(){
   const mine = qzDuel.done || 0, theirs = oq && oq.to === myUid && oq.seed === qzDuel.seed ? (oq.done || 0) : 0;
   if(!mine && !theirs) return; if(mine && theirs) qzDuel.res = mine <= theirs ? 'win' : 'lose'; else if(mine) qzDuel.res = 'win'; else qzDuel.res = 'lose';
   const nm = r ? r.av.name : '상대';
-  if(qzDuel.res === 'win'){ toast('🏆 대결 승리! ' + nm + '님보다 먼저 3문제를 풀었어요'); if(me) me.say('L을 가져가~'); } else toast('😵 ' + nm + '님이 먼저 풀었어요… 다음엔 이겨요!');
-  setTimeout(() => { qzDuelEnd(true); qzRender(); }, 2500);
+  if(qzDuel.res === 'win') toast('🏆 대결 승리! ' + nm + '님 앞에서 L을 가져가~'); else toast('😵 ' + nm + '님이 먼저 풀었어요… L을 가져가야 해요');
+  qzWin = { meWin:qzDuel.res === 'win', oppAv:r ? r.av : null, t:0, k:-1 };
+  setTimeout(() => { qzDuelEnd(true); qzRender(); }, 9300);
 }
 function qzPoll(){   // 친구 대결 신청 / 수락 확인
   if(room !== 'quiz') return;
@@ -5357,18 +5375,41 @@ function qzPoll(){   // 친구 대결 신청 / 수락 확인
   if(qzDuel && qzDuel.acc && !qzDuel.started && qzDuel.st && Date.now() + srvOff >= qzDuel.st) qzDuelStart();
   if(qzDuel && qzDuel.started){ qzCheckDuel(); const oh = $('#qzHead'); if(oh && !qzDuel.res){ const r = remotes.get(qzDuel.opp), s = r && r.av.qd ? r.av.qd.sc || 0 : 0; if(oh.dataset.o !== String(s)){ oh.dataset.o = s; qzRender(); } } }
 }
+function qzTie(av, chair, t){   // 의자에 묶인 모습: 앉은 다리 + 뒤로 묶인 팔 + 꿈틀꿈틀
+  av.group.position.set(chair.g.position.x, 0, chair.g.position.z); av.group.rotation.y = chair.side > 0 ? Math.PI : 0; av.pose = null;
+  av.legs.forEach(l => { l.rotation.set(-Math.PI/2, 0, 0); }); av.arms.forEach((a, i) => { a.rotation.set(0.55, 0, (i ? -1 : 1)*0.18); });
+  av.body.position.y = 0; av.body.rotation.set(0, Math.sin(t*2.3 + chair.side)*0.08, Math.sin(t*3.1 + chair.side)*0.05);
+}
+function qzDance(av, T){   // L을 가져가 → 크림치즈허니 → L을 가져가 → 크리스크로스
+  const ph = Math.floor(T/2) % 2, s = Math.sin(T*10), L = av.arms[0], R = av.arms[1];
+  if(ph === 0){ R.rotation.set(-0.35, 0, 2.55); L.rotation.set(0, 0, -0.5 - Math.abs(s)*0.5); av.legs[0].rotation.set(-Math.max(0, s)*1.1, 0, 0.12); av.legs[1].rotation.set(-Math.max(0, -s)*1.1, 0, -0.12); av.body.rotation.set(0, s*0.25, 0); av.body.position.y = Math.abs(Math.cos(T*10))*0.08; }
+  else { const c = Math.sin(T*8) > 0 ? 1 : -1; av.legs[0].rotation.set(0, 0, 0.32*c); av.legs[1].rotation.set(0, 0, -0.32*c); L.rotation.set(0, 0, 1.2 + s*0.4); R.rotation.set(0, 0, -1.2 - s*0.4); av.body.rotation.set(0, 0, 0); av.body.position.y = Math.abs(Math.sin(T*8))*0.16; }
+}
 function quizTick(dt){
-  const t = performance.now()/1000; cam.t.set(0, 1.7, -1.2); cam.yaw = Math.sin(t*0.15)*0.12;
+  const t = performance.now()/1000; cam.t.set(0, 0.9, 0);
   qzView();
   if(qz && qz.opened && qzDoorOpen < 1){ qzDoorOpen = Math.min(1, qzDoorOpen + dt*0.8); qzDoor.position.x = -qzDoorOpen*1.9; }
   (qzScene.userData.floaters || []).forEach(f => { f.sp.position.y = f.y + Math.sin(t + f.ph)*0.15; });
   qzPoll();
+  // 나와 (대결 중이면) 상대를 의자에 묶어 두고, 승부가 나면 이긴 사람이 진 사람 앞에서 춤춰요
+  me.update(dt);
+  const opp = qzDuel && qzDuel.started && remotes.get(qzDuel.opp);
+  qzChairs[1].g.visible = !!opp || !!(qzWin && qzWin.oppAv);
+  const oppAv = opp ? opp.av : qzWin && qzWin.oppAv;
+  if(oppAv){ if(oppAv.group.parent !== qzScene) qzScene.add(oppAv.group); oppAv.group.visible = true; }
+  if(qzWin){ qzWin.t += dt; const W = qzWin.meWin ? me : oppAv, Lo = qzWin.meWin ? oppAv : me, lc = qzWin.meWin ? qzChairs[1] : qzChairs[0], wc = qzWin.meWin ? qzChairs[0] : qzChairs[1];
+    if(Lo) qzTie(Lo, lc, t);
+    if(W){ wc.rope.visible = false; const tx = lc.g.position.x + 0.0, tz = lc.g.position.z + (lc.side > 0 ? -1.1 : 1.1) * -1;
+      const fx = lc.g.position.x + 1.25, fz = lc.g.position.z; const u = Math.min(1, qzWin.t/0.8);
+      W.group.position.set(wc.g.position.x + (fx - wc.g.position.x)*u, 0, wc.g.position.z + (fz - wc.g.position.z)*u); W.group.rotation.y = -Math.PI/2; W.pose = null;
+      if(qzWin.t > 0.8){ const T = qzWin.t - 0.8; qzDance(W, T); const k = Math.floor(T/2); if(k !== qzWin.k && k < 4){ qzWin.k = k; W.say(['L을 가져가~', '크림치즈허니~', 'L을 가져가~', '크리스크로스~'][k]); } } }
+    if(qzWin.t > 9.3){ qzWin = null; qzChairs.forEach(c => { c.rope.visible = true; }); qzReleaseOpp(); }
+  } else { qzTie(me, qzChairs[0], t); if(oppAv) qzTie(oppAv, qzChairs[1], t); }
 }
 function qzView(){ const w = window.innerWidth, h = window.innerHeight, card = $('#qzCard'), side = w/h >= 1.25;
   if(side){ const cw = card.offsetWidth + 12; camera.setViewOffset(w, h, -cw/2, 0, w, h); } else { const ch = card.offsetHeight; camera.setViewOffset(w, h, 0, ch/2, w, h); } }
 $('#qzExit').addEventListener('click', () => { if(!qz || !qz.opened){ toast('🔒 아직 문이 잠겨 있어요 · 3문제를 맞혀야 나갈 수 있어요'); return; } exitRoom(); });
 $('#qzDuel').addEventListener('click', qzDuelSheet);
-$('#qzHint').addEventListener('click', () => { if(qz) $('#qzMsg').innerHTML = '💡 <b>힌트</b> · ' + qzCur().h; });
 
 function fpEye(){
   if(!firstPerson || !me) return null;
