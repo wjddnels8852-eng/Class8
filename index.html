@@ -612,7 +612,7 @@ body.isle .panel{padding:8px 10px 10px;gap:6px}
     </div>
     </div>
     <button class="btn primary" type="submit" id="enterBtn" hidden>교실 입장</button>
-    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 75</p>
+    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 76</p>
   </form>
 </div>
 
@@ -659,6 +659,7 @@ body.isle .panel{padding:8px 10px 10px;gap:6px}
 <div id="isleFight" hidden aria-label="기술">
   <button type="button" class="fbtn big" data-isk="punch" style="--c1:#FFB547;--c2:#F06A1F;--rim:#FFE2B0;left:137px;top:137px"><b>👊</b><span>주먹</span></button>
   <button type="button" class="fbtn" id="isleUlt" hidden style="--c1:#C9A8FF;--c2:#5B2BC9;--rim:#EFE6FF;left:0px;top:22px"><b style="font:900 28px var(--font-d);color:#fff;text-shadow:0 2px 0 #3A1A80">L</b><span>궁극기</span></button>
+  <button type="button" class="fbtn" data-isk="water" id="isleWater" hidden style="--c1:#7FD8FF;--c2:#1F6FD0;--rim:#D6F2FF;left:0px;top:22px"><b>🌊</b><span>물대포</span></button>
   <button type="button" class="fbtn" data-isk="blast" style="--c1:#7DF0F2;--c2:#1FA9C9;--rim:#D6FDFF;left:33px;top:151px"><b>💨</b><span>장풍</span></button>
   <button type="button" class="fbtn" data-isk="ice" style="--c1:#BFE6FF;--c2:#4D8BFF;--rim:#EAF6FF;left:49px;top:92px"><b>❄️</b><span>빙결</span></button>
   <button type="button" class="fbtn" data-isk="fire" style="--c1:#FF8A5B;--c2:#D9261C;--rim:#FFD0B8;left:92px;top:49px"><b>🔥</b><span>화염</span></button>
@@ -1603,7 +1604,7 @@ const POSES = ['wave','hooray','clap','dance','bow'];
 const DATA_VER = 2;
 function myState(){
   return { name:me.name, hair:me.hair, shirt:me.shirt, x:+me.pos.x.toFixed(2), z:+me.pos.z.toFixed(2), ry:+me.ry.toFixed(2), jy:+me.jumpY.toFixed(2),
-    mode:me.mode, seat:me.seat, subject:me.subject, studyStart:me.studyStart, total:Math.floor(me.total), fly:me.flying, date:todayStr, v:DATA_VER, streak:me.streak || 0, steady:!!me.steady, best:Math.floor(me.best || 0), room, geo:!!geoDone, where:roomStudy ? roomStudy.where : '', pet:myPetSpec(), isl:room === 'isle' ? (isleOn || '') : '', iy:room === 'isle' ? +((me.isleY || 0) + (me.ride ? me.rideTot || 0 : 0)).toFixed(2) : 0, rd:room === 'isle' && me.ride ? 1 : 0, qd:room === 'quiz' ? qzPres : null,
+    mode:me.mode, seat:me.seat, subject:me.subject, studyStart:me.studyStart, total:Math.floor(me.total), fly:me.flying, date:todayStr, v:DATA_VER, streak:me.streak || 0, steady:!!me.steady, best:Math.floor(me.best || 0), room, geo:!!geoDone, where:roomStudy ? roomStudy.where : '', pet:myPetSpec(), isl:room === 'isle' ? (isleOn || '') : '', iy:room === 'isle' ? +((me.isleY || 0) + (me.ride ? me.rideTot || 0 : 0)).toFixed(2) : 0, rv:me.ride ? +(me.rideVy || 0).toFixed(1) : 0, rd:room === 'isle' && me.ride ? 1 : 0, qd:room === 'quiz' ? qzPres : null,
     sea:seaState(),
     sp:spaceState() };
 }
@@ -1648,7 +1649,7 @@ function handlePlayers(){
     av.subject = SUBJECTS.indexOf(s.subject) >= 0 ? s.subject : '수학';
     av.studyStart = num(s.studyStart, 0, now, now);
     av.total = (s.date === todayStr && s.v === DATA_VER) ? num(s.total, 0, 86400, 0) : 0; av.flying = s.fly === true;
-    av.streak = Math.floor(num(s.streak, 0, 999, 0)); av.steady = s.steady === true; av.geo = s.geo === true; av.pet = s.pet && typeof s.pet === 'object' && (PET_SP[s.pet.sp] || s.pet.sp === 'egg') ? { sp:s.pet.sp, st:clamp(Math.floor(num(s.pet.st, 0, 3, 0)), 0, 3), nm:String(s.pet.nm || '').slice(0, 8) } : null; av.isl = typeof s.isl === 'string' ? s.isl.slice(0, 5) : ''; av.isleY = num(s.iy, -2, 40, 0); av.ride = s.rd === 1; av.qd = s.qd && typeof s.qd === 'object' ? { to:String(s.qd.to || ''), seed:num(s.qd.seed, 0, 2e9, 0), n:num(s.qd.n, 0, 1e14, 0), acc:s.qd.acc === true, st:num(s.qd.st, 0, 1e14, 0), sc:num(s.qd.sc, 0, 3, 0), done:num(s.qd.done, 0, 1e14, 0) } : null; av.where = typeof s.where === 'string' ? s.where.slice(0, 24) : ''; av.best = num(s.best, 0, 86400, 0);
+    av.streak = Math.floor(num(s.streak, 0, 999, 0)); av.steady = s.steady === true; av.geo = s.geo === true; av.pet = s.pet && typeof s.pet === 'object' && (PET_SP[s.pet.sp] || s.pet.sp === 'egg') ? { sp:s.pet.sp, st:clamp(Math.floor(num(s.pet.st, 0, 3, 0)), 0, 3), nm:String(s.pet.nm || '').slice(0, 8) } : null; av.isl = typeof s.isl === 'string' ? s.isl.slice(0, 5) : ''; av.isleY = num(s.iy, -2, 80, 0); av.ride = s.rd === 1; av.rideVy = num(s.rv, -60, 60, 0); av.qd = s.qd && typeof s.qd === 'object' ? { to:String(s.qd.to || ''), seed:num(s.qd.seed, 0, 2e9, 0), n:num(s.qd.n, 0, 1e14, 0), acc:s.qd.acc === true, st:num(s.qd.st, 0, 1e14, 0), sc:num(s.qd.sc, 0, 3, 0), done:num(s.qd.done, 0, 1e14, 0) } : null; av.where = typeof s.where === 'string' ? s.where.slice(0, 24) : ''; av.best = num(s.best, 0, 86400, 0);
     av.room = (s.room === 'sea' || s.room === 'nino' || s.room === 'space' || s.room === 'geo' || s.room === 'isle' || s.room === 'quiz' || s.room === 'lobby') ? s.room : 'class';
     if(av.room === 'quiz' && room === 'quiz' && av.group.parent === qzScene){ /* 수학 탈출방 대결 상대는 의자에 그대로 */ }
     else if(av.room === 'isle'){ if(room !== 'isle'){ if(av.group.parent !== scene) scene.add(av.group); av.group.visible = false; } }   // 공중섬 친구는 섬 위에 따로 세워요
@@ -2596,6 +2597,7 @@ const SKILLS = {
   punch:{ name:'주먹', need:0, cd:700 },
   ult:{ name:'L을 가져가', need:0, cd:12000 },   // 궁극기 (누구나, 지하 맞짱장에서만)
   blast:{ name:'장풍', need:0, cd:2500 },
+  water:{ name:'물대포', need:0, cd:2600 },   // 🐋 고래를 탔을 때만
   ice:{ name:'빙결', need:3600, cd:3000 },         // 오늘 1시간 공부하면
   fire:{ name:'화염방사', need:7200, cd:4000 },    // 오늘 2시간
   slap:{ name:'싸대기', need:14400, cd:3000 }      // 하루 4시간
@@ -2706,6 +2708,7 @@ function onHit(av, kind, dx, dz){
   else if(kind === 'fire') burn(av);
   else if(kind === 'slap') slapHit(av, dx, dz);
   else if(kind === 'punch') punchHit(av, dx, dz);
+  else if(kind === 'water'){ if(!av.remote){ knock(av, dx, dz); av.kvx = dx*22; av.kvz = dz*22; av.vy = 11; av.spinT = 1.8; av.say('푸하악!!'); } }
   else if(kind === 'ult') ultHit(av, dx, dz);
 }
 // 기술 쓰기 (내 폰에서도, 친구 폰에서도 똑같이 실행돼요)
@@ -2721,9 +2724,11 @@ function castSkill(av, k, x, z, dx, dz){
     return;
   }
   av.pose = 'blast'; av.poseT = 0; av.poseDur = k === 'fire' ? 1.0 : 0.6; av.say(SKILLS[k].name + '!');
+  if(k === 'water'){ av.pose = null; waters.push({ owner:av, dx, dz, t:0, hit:new Set() }); return; }
   if(k === 'fire') flames.push({ owner:av, dx, dz, t:0, hit:new Set() });
   else spawnBlast(av, x, z, dx, dz, k);
 }
+const waters = [], waterGeo = new THREE.SphereGeometry(0.16, 8, 6);
 function updateBlasts(dt){
   for(let i = blasts.length - 1; i >= 0; i--){
     const b = blasts[i], step = (b.kind === 'ice' ? 12 : 10)*dt;
@@ -2741,6 +2746,23 @@ function updateBlasts(dt){
       }
       rmFx(b.g); blasts.splice(i, 1);
     }
+  }
+  // 🌊 물대포: 고래 입에서 1초 동안 강한 물줄기 (약 10m) · 맞으면 멀리 날아가요
+  for(let i = waters.length - 1; i >= 0; i--){
+    const f = waters[i], o = f.owner; f.t += dt;
+    if(f.t < 1.0 && o.group.visible){
+      const k = RIDE_K[o.petSt || 0], y0 = o.group.position.y + 0.1, mx = o.pos.x + f.dx*k*0.7, mz = o.pos.z + f.dz*k*0.7;
+      for(let n=0;n<4;n++){
+        const m = new THREE.Mesh(waterGeo, new THREE.MeshBasicMaterial({ color:pick(['#BFF0FF', '#5CC8FF', '#FFFFFF', '#2E9BFF']), transparent:true, opacity:0.9, depthWrite:false }));
+        const sp = rand(-0.08, 0.08), vx = f.dx*Math.cos(sp) + f.dz*Math.sin(sp), vz = f.dz*Math.cos(sp) - f.dx*Math.sin(sp);
+        m.position.set(mx, y0, mz); m.scale.setScalar(0.5 + k*0.15); FX().add(m);
+        puffs.push({ m, t:0, life:0.75, vx:vx*16, vz:vz*16, vy:-Math.min(8, y0*1.3) + rand(-0.4, 0.4), grow:true });
+      }
+      allAvatars.forEach(a => { if(a === o || !a.group.visible || a.group.parent !== FX() || !sameZone(a, o) || f.hit.has(a)) return;
+        const ox = a.pos.x - o.pos.x, oz = a.pos.z - o.pos.z, d = Math.hypot(ox, oz);
+        if(d < 11 && d > 0.01 && (ox*f.dx + oz*f.dz)/d > 0.9 && f.t > d/16){ f.hit.add(a); onHit(a, 'water', f.dx, f.dz);
+          for(let n=0;n<8;n++) puff(a.pos.x + rand(-0.5, 0.5), a.group.position.y + rand(0.3, 1.6), a.pos.z + rand(-0.5, 0.5), pick(['#BFF0FF', '#FFFFFF']), 0.6); } });
+    } else if(f.t >= 1.0) waters.splice(i, 1);
   }
   // 화염방사: 0.9초 동안 앞으로 불길을 뿜어요 (약 4m, 부채꼴)
   for(let i = flames.length - 1; i >= 0; i--){
@@ -2791,6 +2813,7 @@ function doSkill(k){
   if(me.mode === 'sit'){ toast('일어난 다음에 쓸 수 있어요'); return; }
   if(me.frozenT > 0){ toast('얼어서 못 움직여요!'); return; }
   if(room === 'isle' && (!isleOn || isleFly || isleFall)) return;
+  if(k === 'water' && !(me.ride && me.petSp === 'whale')){ toast('🐋 고래를 탔을 때만 쏠 수 있어요'); return; }
   if(k === 'ult' && !ultOk()){ toast('궁극기는 지하 맞짱장에서만 쓸 수 있어요'); return; }
   const now = Date.now(); if(now < (skillCd[k] || 0)){ toast(S.name + ' 모으는 중…'); return; }
   skillCd[k] = now + S.cd;
@@ -5280,7 +5303,7 @@ function enterIsle(){
 }
 function leaveIsle(){
   if(isleRef){ isleRef.off(); isleRef = null; }
-  isleGhostOff(); isleClaimT = 0; isleMode = null; isleFocus = null; isleGo = null; isleOn = null; isleFly = null; isleFall = null; $('#isleUI').hidden = true; $('#isleFight').hidden = true; document.body.classList.remove('isle'); if(me){ me.group.scale.setScalar(1); me.kvx = me.kvz = 0; me.ride = false; me.rideY = me.rideTot = 0; $('#isleRide').textContent = '🐾 펫 타기'; }
+  isleGhostOff(); isleClaimT = 0; isleMode = null; isleFocus = null; isleGo = null; isleOn = null; isleFly = null; isleFall = null; $('#isleUI').hidden = true; $('#isleFight').hidden = true; document.body.classList.remove('isle'); if(me){ me.group.scale.setScalar(1); me.kvx = me.kvz = 0; me.ride = false; me.rideY = me.rideTot = me.rideVy = 0; $('#isleRide').textContent = '🐾 펫 타기'; $('#isleWater').hidden = true; }
   remotes.forEach(r => { const a = r.av; if(a.group.parent && a.group.parent.userData.stage){ scene.add(a.group); a.group.visible = false; } });
   if(room === 'isle' || camera.far === 400){ camera.far = 140; camera.updateProjectionMatrix(); }
 }
@@ -5427,13 +5450,13 @@ function isleRideToggle(){
   if(me.ride){ me.ride = false; $('#isleRide').textContent = '🐾 펫 타기'; const I = isleById[isleOn];
     if(I && Math.hypot(me.pos.x, me.pos.z) > isleRad(I)/ISLE_S - 0.3){ isleFall = { t:0, vx:0, vz:0 }; me.say('으아아 펫아!!'); }
     else { me.isleY = Math.max(0, I ? isleSurf(I, me.pos.x, me.pos.z).h : 0)/ISLE_S; }
-    me.rideY = me.rideTot = 0; lastSent = ''; pushPresence(); return; }
+    me.rideY = me.rideTot = 0; camLim.pmin = -0.25; if(cam.pitch < -0.25) cam.pitch = -0.25; lastSent = ''; pushPresence(); return; }
   const sp = myPetSpec();
   if(!sp || sp.sp === 'egg'){ toast('🥚 알이 부화해야 탈 수 있어요 (공부 30분)'); return; }
   if(!petRideSpec()){ toast('여기서는 펫을 탈 수 없어요 (전투장·지하 제외)'); return; }
-  me.ride = true; me.rideY = 0; $('#isleRide').textContent = '🐾 내리기'; lastSent = ''; pushPresence();
+  me.ride = true; me.rideY = 0; $('#isleRide').textContent = '🐾 내리기'; lastSent = ''; pushPresence(); camLim.pmin = sp.sp === 'dragon' ? -0.9 : -0.25;
   const nm = petData.nm || PET_SP[sp.sp].n[sp.st];
-  toast(PET_FLY[sp.sp] ? PET_SP[sp.sp].e + ' ' + nm + ' 타고 하늘을 날아요! 섬 밖으로 날아가서 다른 섬에도 갈 수 있어요' : '🦊 ' + nm + ' 타고 달려요! 하늘에 얼음 발판을 만들며 다른 섬까지 뛰어가요');
+  toast(sp.sp === 'dragon' ? '🐉 ' + nm + ' 타고 날아요! 화면을 위로 올려보면 올라가고, 아래로 내려다보면 내려가요' : sp.sp === 'whale' ? '🐋 ' + nm + ' 타고 하늘을 헤엄쳐요! 🌊 물대포 버튼으로 친구를 날려버려요' : PET_FLY[sp.sp] ? PET_SP[sp.sp].e + ' ' + nm + ' 타고 하늘을 날아요! 섬 밖으로 날아가서 다른 섬에도 갈 수 있어요' : '🦊 ' + nm + ' 타고 달려요! 하늘에 얼음 발판을 만들며 다른 섬까지 뛰어가요');
 }
 const iceTiles = []; let iceT = 0;
 const rideIceGeo = new THREE.CylinderGeometry(0.75, 0.6, 0.12, 6);
@@ -5443,13 +5466,18 @@ function iceSpawn(x, y, z){
 }
 function iceTick(dt){ iceTiles.forEach(o => { if(o.t > o.life) return; o.t += dt; const u = o.t/o.life; o.m.scale.setScalar(u < 0.12 ? 0.2 + u/0.12*0.8 : 1); o.m.material.opacity = 0.9*(1 - Math.max(0, u - 0.6)/0.4); if(o.t > o.life && o.m.parent) o.m.parent.remove(o.m); }); }
 const _iw = new THREE.Vector3();
-function isleRideMove(I, RD, dt, moving){   // 타고 있을 때: 건물을 뛰어넘고, 섬 밖 하늘로도 나가요
+function isleRideMove(I, RD, dt, moving, spd){   // 타고 있을 때: 건물을 뛰어넘고, 섬 밖 하늘로도 나가요
   const t = performance.now()/1000, R0 = isleRad(I)/ISLE_S, d0 = Math.hypot(me.pos.x, me.pos.z), inside = d0 < R0 - 0.3, slide = RD.sp === 'penguin' && inside, fly = PET_FLY[RD.sp] && !slide;
   me.rideSlide = slide;
   me.rideMv = moving;
   if(inside){ const s = isleSurf(I, me.pos.x, me.pos.z), gnd = s.wall ? Math.max(s.h, 1.3) : Math.max(s.h, 0); me.isleY += (gnd/ISLE_S - me.isleY)*Math.min(1, dt*7); }
-  const tgt = fly ? 2.6 + Math.sin(t*2)*0.15 : slide ? 0 : (moving ? Math.abs(Math.sin(t*7))*0.45 : 0);
-  me.rideY = (me.rideY || 0) + (tgt - (me.rideY || 0))*Math.min(1, dt*(fly ? 2.5 : 12));
+  if(RD.sp === 'dragon'){   // 🐉 화면을 위로 올려보면 상승, 내려다보면 하강 (버튼 없이 시점으로 조종)
+    const f = Math.max(-1, Math.min(1, (0.4 - cam.pitch)*2.2)); me.rideVy = moving ? (spd || 0)*f*0.85 : 0;
+    me.rideY = Math.max(0.4, Math.min(45, (me.rideY || 0) + me.rideVy*dt));
+    if(!moving) me.rideY += Math.sin(t*2)*0.003;
+  } else {
+    const tgt = fly ? (RD.sp === 'whale' ? 2.8 + Math.sin(t*(moving ? 2.6 : 1.4))*(moving ? 0.6 : 0.2) : 2.6 + Math.sin(t*2)*0.15) : slide ? 0 : (moving ? Math.abs(Math.sin(t*7))*0.45 : 0);
+    me.rideY = (me.rideY || 0) + (tgt - (me.rideY || 0))*Math.min(1, dt*(fly ? 2.5 : 12)); me.rideVy = 0; }
   me.rideTot = me.rideY + rideLift(RD.st, RD.sp); me.swim = false;
   // 효과
   iceT += dt; const fx = -Math.sin(me.ry || 0), fz = -Math.cos(me.ry || 0), y0 = (me.isleY || 0) + me.rideTot;
@@ -5462,7 +5490,7 @@ function isleRideMove(I, RD, dt, moving){   // 타고 있을 때: 건물을 뛰�
     isles.forEach(J => { if(J === I || J.pit || J.arena) return; J.stage.updateMatrixWorld(); J.stage.worldToLocal(_iw.copy(_iv)); const dj = Math.hypot(_iw.x, _iw.z); if(dj < isleRad(J)/ISLE_S - 0.6 && (!best || dj < best.d)) best = { J, x:_iw.x, z:_iw.z, d:dj }; });
     if(best){ const ry = me.ry, ty = me.targetRy, keepY = me.rideY; islePlaceMe(best.J.id, { x:best.x, z:best.z }); me.ry = ry; me.targetRy = ty; me.group.rotation.y = ry; me.rideY = keepY; me.ride = true; lastSent = ''; pushPresence();
       toast('🛬 ' + (best.J.id === 't' ? '영선쌤 섬' : best.J.id === isleMine ? '내 섬' : isleName(best.J.id) + '의 섬') + ' 도착!'); return; }
-    const MAXD = R0 + 30; if(d0 > MAXD){ me.pos.x *= MAXD/d0; me.pos.z *= MAXD/d0; } }
+    const MAXD = R0 + (RD.sp === 'dragon' ? 44 : 30); if(d0 > MAXD){ me.pos.x *= MAXD/d0; me.pos.z *= MAXD/d0; } }
 }
 let farmT = 0;
 function farmTick(dt){ farmT += dt; const t = performance.now()/1000;
@@ -5496,12 +5524,12 @@ function isleTick(dt){
       mx = fx*(-iy) + rx*ix; mz = fz*(-iy) + rz*ix; const ml = Math.hypot(mx, mz) || 1; mx /= ml; mz /= ml; sp = 3.2*mag; }
     else if(isleGo && !(me.frozenT > 0)){ const dx = isleGo.x - me.pos.x, dz = isleGo.z - me.pos.z, dl = Math.hypot(dx, dz); if(dl > 0.12){ mx = dx/dl; mz = dz/dl; sp = 3; } else isleGo = null; }
     const RD = me.ride ? petRideSpec() : null; if(me.ride && !RD) isleRideToggle();
-    if(RD && sp) sp *= 1.7 + RD.st*0.3 + (RD.sp === 'penguin' && me.rideSlide ? 1.0 : 0);
+    if(RD && sp) sp *= RD.sp === 'dragon' ? 4.2 + RD.st*0.8 : 1.7 + RD.st*0.3 + (RD.sp === 'penguin' && me.rideSlide ? 1.0 : 0);
     const ox = me.pos.x, oz = me.pos.z, feet = (me.isleY || 0)*ISLE_S;
     if(sp){ me.pos.x += mx*sp*dt; me.pos.z += mz*sp*dt; me.targetRy = Math.atan2(mx, mz); me.mode = 'walk'; me.manual = true; }
     else if(me.mode === 'walk'){ me.mode = 'idle'; me.manual = false; }
     if(me.kvx || me.kvz){ me.pos.x += me.kvx*dt; me.pos.z += me.kvz*dt; const f = Math.exp(-2.2*dt); me.kvx *= f; me.kvz *= f; if(Math.hypot(me.kvx, me.kvz) < 0.2) me.kvx = me.kvz = 0; }
-    if(RD) isleRideMove(I, RD, dt, !!sp);
+    if(RD) isleRideMove(I, RD, dt, !!sp, sp);
     else if(!I.pit){ const blocked = (x, z) => { const s = isleSurf(I, x, z); return s.wall || s.h - feet > 0.4; };   // 0.4칸까지는 올라가고, 더 높거나 벽이면 막혀요
       if(blocked(me.pos.x, me.pos.z)){ if(!blocked(me.pos.x, oz)) me.pos.z = oz; else if(!blocked(ox, me.pos.z)) me.pos.x = ox; else { me.pos.x = ox; me.pos.z = oz; } isleGo = null; }
       const g2 = isleSurf(I, me.pos.x, me.pos.z).h; if(g2 >= feet) { me.isleY = g2/ISLE_S; isleVy = 0; } else { isleVy -= 18*dt; me.isleY = Math.max(g2, feet + isleVy*dt)/ISLE_S; if(me.isleY*ISLE_S <= g2) isleVy = 0; }
@@ -5528,6 +5556,7 @@ function isleTick(dt){
   { const F = $('#isleFight'), show = !!(isleMine && isleOn && !isleFly && !isleFall); if(F.hidden === show) F.hidden = !show;
     if(show){ const now = Date.now(); F.querySelectorAll('.fbtn').forEach(b => { const k = b.dataset.isk || (b.id === 'isleUlt' ? 'ult' : ''); if(!k) return; const r = Math.max(0, ((skillCd[k] || 0) - now)/SKILLS[k].cd); b.style.setProperty('--cd', r.toFixed(3)); });
       const uo = ultOk(); if($('#isleUlt').hidden === uo) $('#isleUlt').hidden = !uo;
+      const wo = !!(me.ride && me.petSp === 'whale'); if($('#isleWater').hidden === wo) $('#isleWater').hidden = !wo;
       const port = window.innerWidth < window.innerHeight, ph = $('#panel').hidden ? 0 : $('#panel').getBoundingClientRect().height; F.style.setProperty('--fb', (port ? ph + 6 : 8) + 'px'); } }
   isles.forEach(I => { const U = I.base && I.base.userData; if(!U) return; if(U.padArrow) U.padArrow.position.y = 0.45 + Math.sin(t*3)*0.08; if(U.orb) U.orb.rotation.y += dt*0.12; if(U.fall) U.fall.offset.y += dt*0.9; });
   isles.forEach(I => { if(!I.fixed) I.g.position.y = I.pos.y + Math.sin(t*0.5 + I.ph)*0.25; });
@@ -5948,7 +5977,8 @@ function petRidePose(av, p, body, parts, t){   // 펫을 타고 있을 때: 펫�
   const st = av.petSt || 0, K = RIDE_K[st], fly = PET_FLY[av.petSp] && !(av === me && me.rideSlide), fast = av.mode === 'walk' || av === me && me.rideMv;
   if(parts.legs) parts.legs.forEach(g => { g.rotation.x = fly ? 0.9 : fast ? Math.sin(t*13 + g.userData.ph)*0.9 : 0; });
   p.scale.setScalar(K/(PET_BS[st] || 1)); p.position.set(0, 0.35 - 0.3*K, (av.petSp === 'penguin' ? 0.05 : 0.12)*K);
-  p.rotation.set(av.petSp === 'penguin' ? 1.35 : fly && fast ? -0.12 : 0, 0, 0); body.position.y = 0;
+  const vyr = Math.max(-1, Math.min(1, (av.rideVy || 0)/12));
+  p.rotation.set(av.petSp === 'penguin' && !fly ? 1.35 : av.petSp === 'penguin' ? 1.1 : av.petSp === 'dragon' ? -vyr*0.55 + (fast ? 0.1 : 0) : av.petSp === 'whale' ? Math.sin(t*(fast ? 4 : 2))*(fast ? 0.14 : 0.06) : fly && fast ? -0.12 : 0, 0, av.petSp === 'whale' && fast ? Math.sin(t*2)*0.08 : 0); body.position.y = 0;
   parts.wings.forEach((w, i) => { const sp2 = fly ? (fast ? 14 : 7) : 9; if(w.userData.s) w.rotation.z = w.userData.s*(0.3 + Math.sin(t*sp2)*0.7); else w.rotation.z = (i ? -1 : 1)*(0.5 + Math.sin(t*sp2)*0.45); });
   parts.tails.forEach((tl, i) => { tl.rotation.x = Math.sin(t*(fast ? 9 : 4) + i*0.4)*0.3; if(parts.tails.length > 1) tl.rotation.z = Math.sin(t*3 + i)*0.18; });
   if(parts.stars) parts.stars.rotation.y += 0.02;
