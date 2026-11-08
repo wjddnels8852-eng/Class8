@@ -612,7 +612,7 @@ body.isle .panel{padding:8px 10px 10px;gap:6px}
     </div>
     </div>
     <button class="btn primary" type="submit" id="enterBtn" hidden>교실 입장</button>
-    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 76</p>
+    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 77</p>
   </form>
 </div>
 
@@ -2966,7 +2966,7 @@ function applyDemo(){
 $('#btnDemo').addEventListener('click', () => { demoMode = !demoMode; store.set(DEMO_FORCE ? 'class8-demo2' : 'class8-demo', demoMode); applyDemo(); lobbyNear = ''; toast(demoMode ? '🎓 시연 모드: 엘니뇨·우주·수학 탈출방만 보여요' : '시연 모드 끔: 모든 방이 다시 보여요'); });
 function checkDemoOwner(){   // 시연 모드 버튼은 정우진 섬 주인(나)한테만 보여요
   if(!rtdb || !myUid){ return; }
-  rtdb.ref('isles/s0/owner').once('value').then(s => { $('#btnDemo').hidden = s.val() !== myUid; }).catch(() => {});
+  rtdb.ref('isles/s0/owner').once('value').then(s => { amOwner = s.val() === myUid; $('#btnDemo').hidden = !amOwner; }).catch(() => {});
 }
 let lobbyGo = null;
 function enterLobby(from){
@@ -5923,7 +5923,8 @@ function makeEgg(){ const g = new THREE.Group(), body = new THREE.Group(); g.add
   g.userData.body = body; g.userData.parts = { egg:true }; return g; }
 function petStage(sec){ return sec >= PET_EVO[3] ? 3 : sec >= PET_EVO[2] ? 2 : sec >= PET_EVO[1] ? 1 : 0; }
 function mySecTotal(){ return petBaseSec == null ? null : petBaseSec + (me ? me.total || 0 : 0); }
-function myPetSpec(){ if(!petData) return null; if(petData.sp === 'egg') return { sp:'egg', st:0, nm:'' }; const s = mySecTotal(); return { sp:petData.sp, st:petStage(s || 0), nm:(petData.nm || '').slice(0, 8) }; }
+let petTry = null, amOwner = false;   // 🧪 펫 체험 (만든 사람만, 새로고침하면 원래 펫으로)
+function myPetSpec(){ if(petTry) return { sp:petTry.sp, st:petTry.st, nm:(petData && petData.sp === petTry.sp && petData.nm || '').slice(0, 8) }; if(!petData) return null; if(petData.sp === 'egg') return { sp:'egg', st:0, nm:'' }; const s = mySecTotal(); return { sp:petData.sp, st:petStage(s || 0), nm:(petData.nm || '').slice(0, 8) }; }
 function petSave(){ store.set('class8-pet', petData); if(rtdb && isleMine && petData) rtdb.ref('isles/' + isleMine + '/pet').set(petData).catch(() => {}); lastSent = ''; pushPresence(); }
 function petInit(){   // 로그인하면 내 펫 불러오기 (섬에 저장된 게 있으면 그걸로)
   petData = store.get('class8-pet', null) || { sp:'egg', at:Date.now() };
@@ -5989,9 +5990,25 @@ function petRidePose(av, p, body, parts, t){   // 펫을 타고 있을 때: 펫�
 function petTickAll(dt){
   if(demoMode){ if(me) petApply(me, null); remotes.forEach(r => petApply(r.av, null)); return; }   // 시연 모드: 펫 숨김 (공부 시간으로 크는 건 그대로)
   if(me){ const spec = myPetSpec(); petApply(me, spec);
-    if(spec && spec.sp !== 'egg' && petLastStage >= 0 && spec.st > petLastStage){ toast('✨ ' + (petData.nm || PET_SP[spec.sp].n[spec.st - 1]) + '이(가) ' + PET_SP[spec.sp].n[spec.st] + '(으)로 진화했어요!'); lastSent = ''; pushPresence(); }
+    if(spec && spec.sp !== 'egg' && !petTry && petLastStage >= 0 && spec.st > petLastStage){ toast('✨ ' + (petData.nm || PET_SP[spec.sp].n[spec.st - 1]) + '이(가) ' + PET_SP[spec.sp].n[spec.st] + '(으)로 진화했어요!'); lastSent = ''; pushPresence(); }
     if(spec) petLastStage = spec.sp === 'egg' ? -1 : spec.st; petTick(me, dt); }
   remotes.forEach(r => { petApply(r.av, r.av.pet || null); petTick(r.av, dt); });
+}
+function petTrySec(body){
+  if(!amOwner) return;
+  body.appendChild(el('div', 'pet-sec', '🧪 펫 체험 (나만 보여요 · 저장 안 돼요)'));
+  const cur = myPetSpec() || {}, row = el('div', 'pet-evo');
+  ['dragon', 'whale', 'fox', 'penguin'].forEach(sp => { const d = el('div', cur.sp === sp ? 'on' : ''); d.style.cursor = 'pointer'; d.appendChild(petPic(sp, petTry && petTry.sp === sp ? petTry.st : 3, false, PET_SP[sp].e, 'q')); d.appendChild(el('span', null, PET_SP[sp].n[3]));
+    d.addEventListener('click', () => petTrySet(sp, cur.sp === sp ? cur.st : 3)); row.appendChild(d); }); body.appendChild(row);
+  if(cur.sp && cur.sp !== 'egg'){ const r2 = el('div', 'pet-btns'); r2.style.gridTemplateColumns = 'repeat(4,minmax(0,1fr))';
+    PET_SP[cur.sp].n.forEach((n, i) => { const b = el('button', 'btn' + (cur.st === i ? ' primary' : ''), (i + 1) + '단계'); b.type = 'button'; b.addEventListener('click', () => petTrySet(cur.sp, i)); r2.appendChild(b); }); body.appendChild(r2); }
+  if(petTry){ const b = el('button', 'btn', '↩ 원래 내 펫으로'); b.type = 'button'; b.addEventListener('click', () => petTrySet(null)); body.appendChild(b); }
+}
+function petTrySet(sp, st){
+  const wasRide = me && me.ride; if(wasRide) isleRideToggle();
+  petTry = sp ? { sp, st } : null; if(me) petApply(me, null); lastSent = ''; pushPresence();
+  if(wasRide && petRideSpec()) isleRideToggle();
+  petSheet(); toast(sp ? '🧪 ' + PET_SP[sp].e + ' ' + PET_SP[sp].n[st] + ' 체험 중 · 공중섬에서 타 보세요' : '↩ 원래 펫으로 돌아왔어요');
 }
 const petPics = {};
 function petPortrait(sp, st, dark){   // 펫을 3D로 찍은 사진 (진화 미리보기는 실루엣)
@@ -6032,7 +6049,7 @@ function petSheet(intro){
       toast('🐣 ' + PET_SP[sp].e + ' ' + PET_SP[sp].n[petStage(s)] + '이(가) 태어났어요! 이름을 지어줘요'); if(me){ for(let k=0;k<12;k++) puff(me.pos.x + rand(-0.6, 0.6), 1.5 + rand(0, 0.8), me.pos.z + rand(-0.6, 0.6), pick(['#FFE7A0', '#FF7C93', '#5CE1E6']), 0.6); }
       setTimeout(petNameSheet, 900); }); body.appendChild(b); }
     else { const b = el('button', 'btn', '📚 공부하러 가기'); b.type = 'button'; b.addEventListener('click', () => { $('#spSheet').hidden = true; }); body.appendChild(b); }
-    return; }
+    petTrySec(body); return; }
   const S = PET_SP[spec.sp], nm = spec.nm || S.n[spec.st], col = S.c[spec.st];
   hero.style.background = 'linear-gradient(160deg,' + (spec.st >= 3 && spec.sp !== 'fox' ? '#7A5CFF' : col) + ',' + (spec.st >= 3 ? '#1B1250' : '#1A2040') + ')';
   hero.appendChild(petPic(spec.sp, spec.st, false, S.e)); hero.appendChild(el('div', 'nm', nm)); hero.appendChild(el('div', 'tag', S.e + ' ' + S.n[spec.st] + ' · ' + (spec.st + 1) + '단계' + (spec.st >= 3 ? ' · 전설' : ''))); body.appendChild(hero);
@@ -6047,6 +6064,7 @@ function petSheet(intro){
   const b = el('button', 'btn', '✏️ 이름 짓기'); b.type = 'button'; b.addEventListener('click', petNameSheet); bt.appendChild(b);
   const b2 = el('button', 'btn primary', room === 'isle' ? (me && me.ride ? '🐾 내리기' : '🐾 타기') : '닫기'); b2.type = 'button'; b2.addEventListener('click', () => { $('#spSheet').hidden = true; if(room === 'isle' && !isleFly && !isleFall) isleRideToggle(); }); bt.appendChild(b2);
   body.appendChild(bt);
+  petTrySec(body);
 }
 function petNameSheet(){
   const body = showSheet('✏️ 펫 이름 짓기'); const inp = el('input'); inp.maxLength = 8; inp.value = (petData && petData.nm) || ''; inp.placeholder = '최대 8글자';
