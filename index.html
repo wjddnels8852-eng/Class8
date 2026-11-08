@@ -383,6 +383,26 @@ body.isle .panel{padding:8px 10px 10px;gap:6px}
 .zerog{position:fixed;z-index:6;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 104px);width:min(380px,calc(100% - 32px));background:var(--panel);border:1.5px solid var(--accent);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:8px}
 .zerog b{font-family:var(--font-d);font-weight:400;font-size:20px;color:var(--accent)}
 .zerog p{margin:0;font-size:14px;line-height:1.6}
+.pet-hero{position:relative;border-radius:22px;padding:14px 12px 16px;text-align:center;color:#fff;overflow:hidden;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.14)}
+.pet-hero:before{content:"";position:absolute;left:50%;top:44%;width:220px;height:220px;margin:-110px 0 0 -110px;border-radius:50%;background:rgba(255,255,255,.13)}
+.pet-hero img,.pet-hero .emo{position:relative;width:190px;height:190px;object-fit:contain;filter:drop-shadow(0 10px 14px rgba(0,0,0,.35));display:block;margin:0 auto}
+.pet-hero .emo{font-size:110px;line-height:190px}
+.pet-hero .nm{position:relative;font:800 24px var(--font-b);margin-top:2px;text-shadow:0 2px 8px rgba(0,0,0,.3)}
+.pet-hero .tag{position:relative;display:inline-block;margin-top:6px;padding:4px 12px;border-radius:99px;background:rgba(0,0,0,.25);font-size:12.5px;font-weight:800}
+.pet-sec{font-size:12px;font-weight:800;color:var(--muted);margin:6px 2px 0}
+.pet-bar{height:14px;border-radius:99px;background:var(--panel-2);overflow:hidden;border:1.5px solid var(--line)}
+.pet-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#5CE1E6,#FFE27A,#FF7C93)}
+.pet-bartxt{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);font-weight:700;margin-top:3px}
+.pet-evo{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;width:100%;max-width:440px;margin:0 auto}
+.pet-evo div{border-radius:14px;background:var(--panel-2);border:1.5px solid var(--line);padding:4px 2px 6px;text-align:center;font-size:10.5px;font-weight:800;color:var(--muted)}
+.pet-evo div.on{border-color:#FFE27A;color:var(--fg);box-shadow:0 0 0 2px rgba(255,226,122,.25)}
+.pet-evo img{width:100%;aspect-ratio:1;object-fit:contain;display:block}
+.pet-evo .q{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:26px}
+.pet-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.pet-stats div{background:var(--panel-2);border-radius:14px;padding:9px 4px;text-align:center;font-size:11px;color:var(--muted);font-weight:700;border:1.5px solid var(--line)}
+.pet-stats b{display:block;font-size:16px;color:var(--fg);margin-bottom:1px}
+.pet-skill{background:var(--panel-2);border-radius:14px;padding:10px 12px;font-size:13px;line-height:1.55;border:1.5px solid var(--line)}
+.pet-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .quizopt{min-height:46px;border-radius:12px;border:1.5px solid var(--line);background:var(--panel-2);color:var(--fg);font:700 14px var(--font-b);text-align:left;padding:8px 12px;cursor:pointer}
 .quizopt.ok{border-color:#6EE7A8;background:rgba(110,231,168,.15)}.quizopt.no{border-color:#FF7C93;background:rgba(255,124,147,.12)}.dexrow small{display:block;font-size:12px;color:var(--muted);margin-top:2px;line-height:1.5}
 /* ===== 버튼 리디자인: 아이콘 + 입체감 + 누르는 느낌 ===== */
@@ -592,7 +612,7 @@ body.isle .panel{padding:8px 10px 10px;gap:6px}
     </div>
     </div>
     <button class="btn primary" type="submit" id="enterBtn" hidden>교실 입장</button>
-    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 73</p>
+    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 75</p>
   </form>
 </div>
 
@@ -5145,7 +5165,7 @@ const isleName = id => { const I = isleById[id], d = isleData[id] || {}; if(!I) 
 function isleTake(id, name){
   if(/^빈 섬/.test(name) && me) name = me.name;
   const fresh = { pv:3, owner:myUid, nm:(me && me.name || '').slice(0, 8), lv:1, spent:0, at:Date.now(), items:{ i0:{ t:'tree', x:0.6, z:-0.4, r:0 } } };
-  const done = () => { toast('🎉 ' + name + '의 섬이 생겼어요! 공부한 만큼 포인트로 꾸며요'); isleAt(id); };
+  const done = () => { toast('🎉 ' + name + '의 섬이 생겼어요! 공부한 만큼 포인트로 꾸며요'); isleAt(id); setTimeout(() => { const sp = myPetSpec(); if(room === 'isle' && (!sp || sp.sp === 'egg') && !demoMode) petSheet(true); }, 1400); };
   if(isleLocal){ isleData[id] = fresh; refreshIsles(); done(); return; }
   rtdb.ref('isles/' + id).transaction(cur => cur ? undefined : fresh).then(r => { if(r.committed) done(); else toast('앗, 다른 친구가 먼저 골랐어요'); }).catch(netErr);
 }
@@ -5255,7 +5275,7 @@ function enterIsle(){
   if(!isleLocal){ isleRef = rtdb.ref('isles'); isleRef.on('value', s => { isleData = s.val() || {}; refreshIsles(); if(!isleMine && isleClaimT === 0){ isleClaimT = 1; setTimeout(() => { if(room === 'isle' && !isleMine) isleClaim(); }, 600); } }, netErr); }
   else { refreshIsles(); setTimeout(() => { if(room === 'isle' && !isleMine) isleClaim(); }, 600); }
   isleLoadEarned(); updIsleUI(); setTimeout(() => { if(room === 'isle' && isleMine && !isleFocus){ isleAt(isleMine); cam.pitch = 0.45; } }, 800);
-  setTimeout(() => { if(room === 'isle' && isleMine && $('#spSheet').hidden) isleIdeaAsk(false); }, 2500);
+  setTimeout(() => { if(room !== 'isle' || !isleMine || !$('#spSheet').hidden) return; const sp = myPetSpec(); if((!sp || sp.sp === 'egg') && !demoMode && (mySecTotal() || 0) >= PET_HATCH) petSheet(true); else isleIdeaAsk(false); }, 2500);
   toast('☁ 공중섬에 왔어요! 공부한 만큼 땅을 넓히고 건물을 지어요');
 }
 function leaveIsle(){
@@ -5424,17 +5444,19 @@ function iceSpawn(x, y, z){
 function iceTick(dt){ iceTiles.forEach(o => { if(o.t > o.life) return; o.t += dt; const u = o.t/o.life; o.m.scale.setScalar(u < 0.12 ? 0.2 + u/0.12*0.8 : 1); o.m.material.opacity = 0.9*(1 - Math.max(0, u - 0.6)/0.4); if(o.t > o.life && o.m.parent) o.m.parent.remove(o.m); }); }
 const _iw = new THREE.Vector3();
 function isleRideMove(I, RD, dt, moving){   // 타고 있을 때: 건물을 뛰어넘고, 섬 밖 하늘로도 나가요
-  const t = performance.now()/1000, fly = PET_FLY[RD.sp], R0 = isleRad(I)/ISLE_S, d0 = Math.hypot(me.pos.x, me.pos.z), inside = d0 < R0 - 0.3;
+  const t = performance.now()/1000, R0 = isleRad(I)/ISLE_S, d0 = Math.hypot(me.pos.x, me.pos.z), inside = d0 < R0 - 0.3, slide = RD.sp === 'penguin' && inside, fly = PET_FLY[RD.sp] && !slide;
+  me.rideSlide = slide;
   me.rideMv = moving;
   if(inside){ const s = isleSurf(I, me.pos.x, me.pos.z), gnd = s.wall ? Math.max(s.h, 1.3) : Math.max(s.h, 0); me.isleY += (gnd/ISLE_S - me.isleY)*Math.min(1, dt*7); }
-  const tgt = fly ? 2.6 + Math.sin(t*2)*0.15 : (moving ? Math.abs(Math.sin(t*7))*0.45 : 0);
+  const tgt = fly ? 2.6 + Math.sin(t*2)*0.15 : slide ? 0 : (moving ? Math.abs(Math.sin(t*7))*0.45 : 0);
   me.rideY = (me.rideY || 0) + (tgt - (me.rideY || 0))*Math.min(1, dt*(fly ? 2.5 : 12));
-  me.rideTot = me.rideY + rideLift(RD.st); me.swim = false;
+  me.rideTot = me.rideY + rideLift(RD.st, RD.sp); me.swim = false;
   // 효과
   iceT += dt; const fx = -Math.sin(me.ry || 0), fz = -Math.cos(me.ry || 0), y0 = (me.isleY || 0) + me.rideTot;
   if(moving && iceT > (fly ? 0.07 : 0.1)){ iceT = 0;
-    if(!fly){ if(!inside || me.isleY > 0.6) iceSpawn(me.pos.x, (me.isleY || 0) + 0.02, me.pos.z); puff(me.pos.x + fx*0.6, (me.isleY || 0) + 0.2, me.pos.z + fz*0.6, '#BFF0FF', 0.5); }
-    else puff(me.pos.x + fx*RIDE_K[RD.st]*0.5, y0 - 0.2, me.pos.z + fz*RIDE_K[RD.st]*0.5, RD.sp === 'dragon' ? (RD.st >= 2 ? '#FF8A2A' : '#BFF59A') : RD.sp === 'whale' ? (RD.st >= 3 ? '#CFC2FF' : '#BFF0FF') : (RD.st >= 3 ? '#7AF0C8' : '#FFFFFF'), 0.7); }
+    if(slide){ iceSpawn(me.pos.x, (me.isleY || 0) + 0.01, me.pos.z); puff(me.pos.x + fx*0.8 + rand(-0.3, 0.3), (me.isleY || 0) + 0.25, me.pos.z + fz*0.8 + rand(-0.3, 0.3), '#FFFFFF', 0.6); }
+    else if(!fly){ if(!inside || me.isleY > 0.6) iceSpawn(me.pos.x, (me.isleY || 0) + 0.02, me.pos.z); puff(me.pos.x + fx*0.6, (me.isleY || 0) + 0.2, me.pos.z + fz*0.6, '#BFF0FF', 0.5); }
+    else puff(me.pos.x + fx*RIDE_K[RD.st]*0.5, y0 - 0.2, me.pos.z + fz*RIDE_K[RD.st]*0.5, RD.sp === 'dragon' ? (RD.st >= 2 ? '#FF8A2A' : '#BFF59A') : RD.sp === 'whale' ? (RD.st >= 3 ? '#CFC2FF' : '#BFF0FF') : ['#7AF0C8', '#B48CFF', '#5CB0FF', '#FFB5E8'][Math.floor(t*6) % 4], RD.sp === 'penguin' ? 1.1 : 0.7); }
   // 다른 섬 위로 날아가면 그 섬으로 옮겨가요
   if(d0 > R0 - 0.5){ I.stage.updateMatrixWorld(); I.stage.localToWorld(_iv.set(me.pos.x, 0, me.pos.z)); let best = null;
     isles.forEach(J => { if(J === I || J.pit || J.arena) return; J.stage.updateMatrixWorld(); J.stage.worldToLocal(_iw.copy(_iv)); const dj = Math.hypot(_iw.x, _iw.z); if(dj < isleRad(J)/ISLE_S - 0.6 && (!best || dj < best.d)) best = { J, x:_iw.x, z:_iw.z, d:dj }; });
@@ -5474,7 +5496,7 @@ function isleTick(dt){
       mx = fx*(-iy) + rx*ix; mz = fz*(-iy) + rz*ix; const ml = Math.hypot(mx, mz) || 1; mx /= ml; mz /= ml; sp = 3.2*mag; }
     else if(isleGo && !(me.frozenT > 0)){ const dx = isleGo.x - me.pos.x, dz = isleGo.z - me.pos.z, dl = Math.hypot(dx, dz); if(dl > 0.12){ mx = dx/dl; mz = dz/dl; sp = 3; } else isleGo = null; }
     const RD = me.ride ? petRideSpec() : null; if(me.ride && !RD) isleRideToggle();
-    if(RD && sp) sp *= 1.7 + RD.st*0.3;
+    if(RD && sp) sp *= 1.7 + RD.st*0.3 + (RD.sp === 'penguin' && me.rideSlide ? 1.0 : 0);
     const ox = me.pos.x, oz = me.pos.z, feet = (me.isleY || 0)*ISLE_S;
     if(sp){ me.pos.x += mx*sp*dt; me.pos.z += mz*sp*dt; me.targetRy = Math.atan2(mx, mz); me.mode = 'walk'; me.manual = true; }
     else if(me.mode === 'walk'){ me.mode = 'idle'; me.manual = false; }
@@ -5766,9 +5788,11 @@ const PET_SP = {
   fox:{ n:['아기여우', '꼬마여우', '은빛여우', '구미호'], c:['#FFB070', '#FF8A3D', '#E8EEF6', '#FFE7A0'], e:'🦊' },
   penguin:{ n:['아기펭귄', '꼬마펭귄', '얼음펭귄', '오로라펭귄'], c:['#9AA3B5', '#3A3F58', '#2A3F6A', '#1B2A55'], e:'🐧' }
 };
-const PET_BS = [0.7, 0.95, 1.25, 1.55], RIDE_K = [1.5, 1.9, 2.4, 3.0];   // 단계마다 점점 커져요 · 탈 때 크기
-const rideLift = st => 0.6*RIDE_K[st] - 0.35;
+const PET_BS = [0.6, 1.0, 1.6, 2.3], RIDE_K = [1.6, 2.2, 3.0, 3.8];   // 단계마다 점점 커져요 · 탈 때 크기
+const PET_FOOT = { dragon:0.44, fox:0.44, penguin:0.41, whale:0 };   // 몸 가운데에서 발바닥까지
+const rideLift = (st, sp) => (PET_FOOT[sp] ? 0.3 + PET_FOOT[sp] : 0.62)*RIDE_K[st] - 0.35;
 const PET_FLY = { dragon:1, whale:1, penguin:1 };
+const PET_SKILL = { dragon:'🔥 타면 하늘을 날아요. 불꽃드래곤부터 불꽃 꼬리를 남겨요', whale:'🫧 타면 하늘을 헤엄치듯 날아요. 물방울을 뿌려요', fox:'❄ 공중에 얼음 발판을 만들며 달려요. 건물도 훌쩍 뛰어넘어요', penguin:'🛷 섬 위에서는 배로 쭉 미끄러지며 제일 빨라요. 섬 밖으로 나가면 오로라를 뿌리며 날아요' };
 const PET_HATCH = 1800, PET_EVO = [0, 5*3600, 10*3600, 15*3600];   // 부화 30분, 진화 5·10·15시간
 let petData = null, petBaseSec = null, petLastStage = -1;
 const galaxyTex = (() => { let tx = null; return () => { if(tx) return tx; const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d'), g = x.createLinearGradient(0, 0, 128, 128);
@@ -5776,7 +5800,7 @@ const galaxyTex = (() => { let tx = null; return () => { if(tx) return tx; const
   for(let i=0;i<140;i++){ x.fillStyle = ['#FFFFFF', '#BFD9FF', '#FFE7A0', '#FFB5E8'][i % 4]; x.globalAlpha = Math.random()*0.9 + 0.1; x.fillRect(Math.random()*128, Math.random()*128, i % 9 ? 1.2 : 2.5, i % 9 ? 1.2 : 2.5); }
   tx = new THREE.CanvasTexture(c); return tx; }; })();
 function makePet(sp, st){   // 종류·단계별 귀여운 펫 모양 (머리 = +z)
-  const g = new THREE.Group(), body = new THREE.Group(); g.add(body); const S = PET_SP[sp] || PET_SP.dragon, col = S.c[st] || S.c[0];
+  const g = new THREE.Group(); g.rotation.order = 'YXZ'; const body = new THREE.Group(); g.add(body); const S = PET_SP[sp] || PET_SP.dragon, col = S.c[st] || S.c[0];
   const M = (c, o) => new THREE.MeshLambertMaterial(Object.assign({ color:c }, o || {}));
   const legend = st >= 3, bm = legend && (sp === 'whale' || sp === 'dragon') ? new THREE.MeshLambertMaterial({ map:galaxyTex(), emissive:'#2A1A6A' }) : M(col);
   const eye = (x, y, z, r) => { addM(body, new THREE.SphereGeometry(r, 10, 8), Gm('#14162A'), x, y, z); addM(body, new THREE.SphereGeometry(r*0.35, 6, 4), Gm('#FFFFFF'), x + r*0.3, y + r*0.35, z + r*0.6); };
@@ -5827,7 +5851,24 @@ function makePet(sp, st){   // 종류·단계별 귀여운 펫 모양 (머리 = 
   g.userData.parts = parts; g.userData.body = body; return g;
 }
 function petCool(sp, st, body, parts, M){   // 진화할수록 멋져지는 장식
-  const glow = c => new THREE.MeshBasicMaterial({ color:c });
+  const glow = c => new THREE.MeshBasicMaterial({ color:c }), S = PET_SP[sp], col = S.c[st] || S.c[0];
+  // 🦵 다리: 걸어다녀요
+  parts.legs = []; const leg = (x, z, len, r, c, paw, ph) => { const g = new THREE.Group(); g.position.set(x, -0.1, z); body.add(g);
+    addM(g, new THREE.CylinderGeometry(r, r*0.85, len, 8), M(c), 0, -len/2, 0); addM(g, new THREE.SphereGeometry(r*1.25, 10, 8), M(paw), 0, -len, r*0.35).scale.set(1, 0.6, 1.3); g.userData.ph = ph; parts.legs.push(g); return g; };
+  const bodyC = st >= 3 && (sp === 'dragon') ? '#5A3CC8' : col;
+  if(sp === 'dragon'){ [[0.17, 0.15, 0], [-0.17, 0.15, Math.PI], [0.17, -0.15, Math.PI], [-0.17, -0.15, 0]].forEach(([x, z, ph]) => { const g = leg(x, z, 0.26, 0.075, bodyC, '#FFF6D6', ph);
+      for(let k=-1;k<=1;k++) addM(g, new THREE.ConeGeometry(0.02, 0.06, 4), M('#FFFFFF'), k*0.04, -0.27, 0.1).rotation.x = Math.PI/2; });
+    for(let i=0;i<4;i++) addM(body, new THREE.SphereGeometry(0.15 - i*0.015, 10, 6), M(st >= 3 ? '#C9B8FF' : '#FFE7A0'), 0, -0.08 - i*0.02, 0.2 - i*0.13).scale.set(1.2, 0.5, 0.7);   // 배 비늘
+    [-1, 1].forEach(s => addM(body, new THREE.SphereGeometry(0.018, 6, 4), Gm('#3A2A1A'), s*0.05, 0.25, 0.55));   // 콧구멍
+    [-1, 1].forEach(s => addM(body, new THREE.SphereGeometry(0.04, 8, 6), M('#FF9AB0', { transparent:true, opacity:0.7 }), s*0.16, 0.24, 0.42).scale.set(1, 0.6, 0.4)); }
+  else if(sp === 'fox'){ const paw = st >= 2 ? '#FFFFFF' : '#3A2A20';
+    [[0.12, 0.17, 0], [-0.12, 0.17, Math.PI], [0.12, -0.15, Math.PI], [-0.12, -0.15, 0]].forEach(([x, z, ph]) => leg(x, z, 0.28, 0.045, col, paw, ph));
+    [-1, 1].forEach(s => { addM(body, new THREE.ConeGeometry(0.045, 0.12, 4), M('#FFD6E0'), s*0.13, 0.49, 0.2).rotation.z = -s*0.25;
+      addM(body, new THREE.SphereGeometry(0.035, 8, 6), M('#FF9AB0', { transparent:true, opacity:0.7 }), s*0.13, 0.24, 0.36).scale.set(1, 0.6, 0.4); }); }
+  else if(sp === 'penguin'){ [[0.1, 0], [-0.1, Math.PI]].forEach(([x, ph]) => { const g = new THREE.Group(); g.position.set(x, -0.34, 0.06); body.add(g); addM(g, new THREE.SphereGeometry(0.075, 10, 6), M('#FFB020'), 0, -0.03, 0.04).scale.set(1, 0.4, 1.5); g.userData.ph = ph; parts.legs.push(g); });
+    [-1, 1].forEach(s => addM(body, new THREE.SphereGeometry(0.035, 8, 6), M('#FF9AB0', { transparent:true, opacity:0.7 }), s*0.13, 0.33, 0.17).scale.set(1, 0.6, 0.4)); parts.waddle = true; }
+  else if(sp === 'whale'){ [-1, 1].forEach(s => addM(body, new THREE.SphereGeometry(0.04, 8, 6), M('#FF9AB0', { transparent:true, opacity:0.6 }), s*0.27, -0.04, 0.38).scale.set(0.6, 0.6, 0.4));
+    addM(body, new THREE.TorusGeometry(0.12, 0.012, 4, 14, Math.PI), Gm('#14162A'), 0, -0.08, 0.5).rotation.z = Math.PI; }
   if(sp === 'dragon'){
     if(st >= 1) for(let i=0;i<4;i++) addM(body, new THREE.ConeGeometry(0.045 + st*0.012, 0.12 + st*0.04, 5), M(st >= 3 ? '#E2D6FF' : st >= 2 ? '#FFD34D' : '#FFF6D6'), 0, 0.3 - i*0.03, 0.08 - i*0.13).rotation.x = -0.5;
     if(st >= 2){ addM(body, new THREE.OctahedronGeometry(0.06, 0), glow(st >= 3 ? '#B9A6FF' : '#FFE27A'), 0, 0.02, 0.36); [-1, 1].forEach(s => addM(body, new THREE.ConeGeometry(0.035, 0.28, 6), M('#2A1A3A'), s*0.2, 0.52, 0.12).rotation.set(-0.7, 0, -s*0.4)); }
@@ -5872,12 +5913,30 @@ function petTick(av, dt){
   const p = av.petObj; if(!p) return; av.petT = (av.petT || 0) + dt; const t = av.petT, parts = p.userData.parts, body = p.userData.body;
   const par = av.group.parent, inClass = par === scene, inIsle = par && par.userData && par.userData.stage;
   const sit = av.mode === 'sit' && inClass;
-  let sc = inIsle ? 1.0 : (inClass ? 0.42 : 0.55)*[1, 0.95, 0.85, 0.75][av.petSt || 0];
+  let sc = (inClass ? 0.42 : 0.55)*[1, 0.75, 0.5, 0.36][av.petSt || 0];
   if(parts.ring) parts.ring.rotation.z += dt*0.8; if(parts.orbs) parts.orbs.rotation.y += dt*2.2; if(parts.cape) parts.cape.rotation.x = 0.25 + Math.sin(t*5)*0.15; if(parts.crown) parts.crown.rotation.y = Math.sin(t*1.5)*0.2;
   if(av.ride && inIsle && !parts.egg){ petRidePose(av, p, body, parts, t); return; }
-  if(sit){ p.position.set(0.28, 0.78, 0.62); body.position.y = Math.abs(Math.sin(t*2))*0.03; p.rotation.y = Math.PI + 0.4; sc *= 0.9; }   // 책상 위에 올라가 있어요
-  else { p.position.set(inIsle ? 0.95 : 0.55, (inIsle ? 1.5 : 1.25) + Math.sin(t*2)*0.08, -0.25); body.position.y = 0; p.rotation.y = Math.sin(t*0.7)*0.3; }
-  p.scale.setScalar(sc);
+  const fs = inIsle ? 1 : [1, 0.85, 0.65, 0.5][av.petSt || 0], bs = (parts.egg ? 1 : PET_BS[av.petSt || 0])*fs, foot = PET_FOOT[av.petSp] || 0;
+  const follow = !parts.egg && !sit && (inClass || inIsle || par === lobbyScene);
+  let walk = false;
+  if(follow){   // 🐾 주인 옆을 따라 걸어다녀요
+    if(p.parent !== par){ par.add(p); av.petP = null; }
+    const ry = av.group.rotation.y, ox = 0.85 + bs*0.25, oz = -0.55 - bs*0.2, tx = av.pos.x + ox*Math.cos(ry) + oz*Math.sin(ry), tz = av.pos.z - ox*Math.sin(ry) + oz*Math.cos(ry);
+    if(!av.petP || Math.hypot(av.petP.x - tx, av.petP.z - tz) > 9){ av.petP = { x:tx, z:tz, ry }; }
+    const P = av.petP, dx = tx - P.x, dz = tz - P.z, dl = Math.hypot(dx, dz);
+    if(dl > 0.15){ const v = Math.min(dl, (1.6 + dl*2.4)*dt); P.x += dx/dl*v; P.z += dz/dl*v; walk = v/dt > 0.6; const h = Math.atan2(dx, dz); let dd = h - P.ry; dd = Math.atan2(Math.sin(dd), Math.cos(dd)); P.ry += dd*Math.min(1, dt*8); }
+    else { let dd = ry - P.ry; dd = Math.atan2(Math.sin(dd), Math.cos(dd)); P.ry += dd*Math.min(1, dt*3); }
+    const gy = inIsle ? (av === me ? me.isleY || 0 : av.isleY || 0) : 0;
+    p.position.set(P.x, gy + (foot ? foot*bs : 0.55 + bs*0.25 + Math.sin(t*1.6)*0.1), P.z); p.rotation.set(0, P.ry, 0);
+    body.position.y = walk && foot ? Math.abs(Math.sin(t*11))*0.035 : 0;
+    if(parts.waddle){ body.rotation.z = walk ? Math.sin(t*11)*0.12 : 0;
+      if(dl > 1.4){ p.rotation.set(1.3, P.ry, 0); p.position.y = gy + 0.32*bs; body.rotation.z = 0; walk = false; if(Math.random() < dt*10) puff(P.x, gy + 0.15, P.z, '#FFFFFF', 0.5); } }
+  } else {
+    if(p.parent !== av.group){ av.group.add(p); av.petP = null; }
+    if(sit){ sc *= [1, 0.8, 0.6, 0.48][av.petSt || 0]; p.position.set(0.28, 0.78 + foot*PET_BS[av.petSt || 0]*sc, 0.62); body.position.y = Math.abs(Math.sin(t*2))*0.03; p.rotation.set(0, Math.PI + 0.4, 0); }   // 책상 위에 올라가 있어요
+    else { p.position.set(0.55, 1.25 + Math.sin(t*2)*0.08, -0.25); body.position.y = 0; p.rotation.set(0, Math.sin(t*0.7)*0.3, 0); } }
+  p.scale.setScalar(follow ? fs : sc);
+  if(parts.legs) parts.legs.forEach(g => { g.rotation.x = walk ? Math.sin(t*11 + g.userData.ph)*0.7 : 0; });
   if(parts.egg){ body.rotation.z = Math.sin(t*6)*0.12*(Math.sin(t*0.9) > 0.6 ? 1 : 0.2); return; }
   parts.wings.forEach((w, i) => { if(w.userData.s) w.rotation.z = w.userData.s*(0.3 + Math.sin(t*9)*0.5); else w.rotation.z = (i ? -1 : 1)*(0.4 + Math.sin(t*6)*0.3); });
   parts.tails.forEach((tl, i) => { tl.rotation.x = Math.sin(t*4 + i*0.4)*0.25; if(parts.tails.length > 1) tl.rotation.z = Math.sin(t*3 + i)*0.15; });
@@ -5885,7 +5944,9 @@ function petTick(av, dt){
   if(parts.stars){ parts.stars.rotation.y += dt*0.8; }
 }
 function petRidePose(av, p, body, parts, t){   // 펫을 타고 있을 때: 펫이 커지고 그 위에 걸터앉아요
-  const st = av.petSt || 0, K = RIDE_K[st], fly = PET_FLY[av.petSp], fast = av.mode === 'walk' || av === me && me.rideMv;
+  if(p.parent !== av.group){ av.group.add(p); av.petP = null; }
+  const st = av.petSt || 0, K = RIDE_K[st], fly = PET_FLY[av.petSp] && !(av === me && me.rideSlide), fast = av.mode === 'walk' || av === me && me.rideMv;
+  if(parts.legs) parts.legs.forEach(g => { g.rotation.x = fly ? 0.9 : fast ? Math.sin(t*13 + g.userData.ph)*0.9 : 0; });
   p.scale.setScalar(K/(PET_BS[st] || 1)); p.position.set(0, 0.35 - 0.3*K, (av.petSp === 'penguin' ? 0.05 : 0.12)*K);
   p.rotation.set(av.petSp === 'penguin' ? 1.35 : fly && fast ? -0.12 : 0, 0, 0); body.position.y = 0;
   parts.wings.forEach((w, i) => { const sp2 = fly ? (fast ? 14 : 7) : 9; if(w.userData.s) w.rotation.z = w.userData.s*(0.3 + Math.sin(t*sp2)*0.7); else w.rotation.z = (i ? -1 : 1)*(0.5 + Math.sin(t*sp2)*0.45); });
@@ -5902,21 +5963,60 @@ function petTickAll(dt){
     if(spec) petLastStage = spec.sp === 'egg' ? -1 : spec.st; petTick(me, dt); }
   remotes.forEach(r => { petApply(r.av, r.av.pet || null); petTick(r.av, dt); });
 }
-function petSheet(){
-  const spec = myPetSpec(), s = mySecTotal() || 0, body = showSheet('🐾 내 펫');
+const petPics = {};
+function petPortrait(sp, st, dark){   // 펫을 3D로 찍은 사진 (진화 미리보기는 실루엣)
+  const key = sp + st + (dark ? 'd' : ''); if(petPics[key] !== undefined) return petPics[key];
+  try {
+    const S = 256, sc = new THREE.Scene(), obj = sp === 'egg' ? makeEgg() : makePet(sp, st); sc.add(obj);
+    if(obj.userData.parts && obj.userData.parts.legs) obj.userData.parts.legs.forEach(l => { l.rotation.x = 0; });
+    sc.add(new THREE.HemisphereLight('#FFFFFF', '#5A5A7A', 0.95)); const dl = new THREE.DirectionalLight('#FFF4E0', 0.8); dl.position.set(2, 3, 4); sc.add(dl);
+    obj.rotation.y = -0.5; obj.updateMatrixWorld(true);
+    const box = new THREE.Box3().setFromObject(obj), size = box.getSize(new THREE.Vector3()), cen = box.getCenter(new THREE.Vector3()), m = Math.max(size.x, size.y, size.z) || 1;
+    const cam2 = new THREE.PerspectiveCamera(28, 1, 0.01, 100); cam2.position.set(cen.x, cen.y + m*0.35, cen.z + m*2.35); cam2.lookAt(cen);
+    if(dark) sc.overrideMaterial = new THREE.MeshBasicMaterial({ color:'#3A4070' });
+    const rt = new THREE.WebGLRenderTarget(S, S), oc = renderer.getClearColor(new THREE.Color()), oa = renderer.getClearAlpha();
+    renderer.setRenderTarget(rt); renderer.setClearColor(0x000000, 0); renderer.clear(); renderer.render(sc, cam2);
+    const px = new Uint8Array(S*S*4); renderer.readRenderTargetPixels(rt, 0, 0, S, S, px);
+    renderer.setRenderTarget(null); renderer.setClearColor(oc, oa); rt.dispose();
+    const c = document.createElement('canvas'); c.width = c.height = S; const x = c.getContext('2d'), im = x.createImageData(S, S);
+    for(let y=0;y<S;y++) for(let i=0;i<S*4;i++) im.data[y*S*4 + i] = px[(S - 1 - y)*S*4 + i];
+    let any = false; for(let i=3;i<px.length;i+=16) if(px[i] > 0){ any = true; break; }
+    x.putImageData(im, 0, 0); petPics[key] = any ? c.toDataURL() : ''; } catch(e) { petPics[key] = ''; }
+  return petPics[key];
+}
+function petPic(sp, st, dark, emo, cls){ const src = petPortrait(sp, st, dark); if(src){ const i = el('img'); i.src = src; i.alt = ''; return i; } return el('div', cls || 'emo', emo); }
+const fmtH = sec => sec >= 3600 ? (Math.floor(sec/360)/10) + '시간' : Math.ceil(sec/60) + '분';
+function petSheet(intro){
+  const spec = myPetSpec(), s = mySecTotal() || 0, body = showSheet(intro ? '🥚 펫 알을 받았어요!' : '🐾 내 펫');
+  const hero = el('div', 'pet-hero'), bar = (u, l, r) => { const w = el('div', 'pet-bar'), i = el('i'); i.style.width = Math.round(Math.min(1, u)*100) + '%'; w.appendChild(i); body.appendChild(w); const tx = el('div', 'pet-bartxt'); tx.appendChild(el('span', null, l)); tx.appendChild(el('span', null, r)); body.appendChild(tx); };
   if(!spec || spec.sp === 'egg'){
-    const left = Math.max(0, PET_HATCH - s); body.appendChild(el('p', null, '🥚 알을 품고 있어요. 공부 30분이면 부화해요! (아기드래곤 · 아기고래 · 아기여우 · 아기펭귄 중 하나)'));
-    body.appendChild(el('p', null, left > 0 ? '부화까지 공부 ' + Math.ceil(left/60) + '분 남았어요' : '✨ 부화할 준비가 됐어요!'));
-    if(left <= 0){ const b = el('button', 'btn primary', '🐣 부화시키기'); b.type = 'button'; b.addEventListener('click', () => {
+    const left = Math.max(0, PET_HATCH - s);
+    hero.style.background = 'linear-gradient(160deg,#FFB36B,#B565E8 55%,#3A2A8A)'; hero.appendChild(petPic('egg', 0, false, '🥚'));
+    hero.appendChild(el('div', 'nm', left > 0 ? '알을 품는 중…' : '알이 흔들려요!')); hero.appendChild(el('div', 'tag', left > 0 ? '공부 30분이면 부화해요' : '✨ 지금 부화할 수 있어요')); body.appendChild(hero);
+    body.appendChild(el('div', 'pet-sec', '부화까지')); bar(s/PET_HATCH, '누적 공부 ' + fmtH(Math.min(s, PET_HATCH)), left > 0 ? fmtH(left) + ' 남음' : '준비 완료!');
+    body.appendChild(el('div', 'pet-sec', '무엇이 나올까요?')); const ev = el('div', 'pet-evo');
+    ['dragon', 'whale', 'fox', 'penguin'].forEach(sp => { const d = el('div'); d.appendChild(petPic(sp, 0, true, '?', 'q')); d.appendChild(el('span', null, '???')); ev.appendChild(d); }); body.appendChild(ev);
+    body.appendChild(el('div', 'pet-skill', '🐉 드래곤 · 🐋 고래 · 🦊 여우 · 🐧 펭귄 중 하나가 랜덤으로 태어나요. 공부할수록 4단계까지 진화하고, 공중섬에서 타고 다닐 수 있어요!'));
+    if(left <= 0){ const b = el('button', 'btn primary', '🐣 부화시키기'); b.type = 'button'; b.style.minHeight = '54px'; b.style.fontSize = '17px'; b.addEventListener('click', () => {
       const sp = ['dragon', 'whale', 'fox', 'penguin'][Math.floor(Math.random()*4)]; petData = { sp, nm:'', at:Date.now() }; petSave(); $('#spSheet').hidden = true;
       toast('🐣 ' + PET_SP[sp].e + ' ' + PET_SP[sp].n[petStage(s)] + '이(가) 태어났어요! 이름을 지어줘요'); if(me){ for(let k=0;k<12;k++) puff(me.pos.x + rand(-0.6, 0.6), 1.5 + rand(0, 0.8), me.pos.z + rand(-0.6, 0.6), pick(['#FFE7A0', '#FF7C93', '#5CE1E6']), 0.6); }
       setTimeout(petNameSheet, 900); }); body.appendChild(b); }
+    else { const b = el('button', 'btn', '📚 공부하러 가기'); b.type = 'button'; b.addEventListener('click', () => { $('#spSheet').hidden = true; }); body.appendChild(b); }
     return; }
-  const S = PET_SP[spec.sp], nm = spec.nm || S.n[spec.st];
-  body.appendChild(el('p', null, S.e + ' ' + nm + ' · ' + S.n[spec.st] + ' (' + (spec.st + 1) + '단계)'));
-  const next = PET_EVO[spec.st + 1]; body.appendChild(el('p', null, next ? '다음 진화(' + S.n[spec.st + 1] + ')까지 누적 공부 ' + Math.ceil((next - s)/3600*10)/10 + '시간' : '🌟 최고 단계예요!'));
-  body.appendChild(el('p', null, '진화: ' + S.n.join(' → ') + ' (누적 5 · 10 · 15시간)'));
-  const b = el('button', 'btn primary', '✏️ 이름 짓기'); b.type = 'button'; b.addEventListener('click', petNameSheet); body.appendChild(b);
+  const S = PET_SP[spec.sp], nm = spec.nm || S.n[spec.st], col = S.c[spec.st];
+  hero.style.background = 'linear-gradient(160deg,' + (spec.st >= 3 && spec.sp !== 'fox' ? '#7A5CFF' : col) + ',' + (spec.st >= 3 ? '#1B1250' : '#1A2040') + ')';
+  hero.appendChild(petPic(spec.sp, spec.st, false, S.e)); hero.appendChild(el('div', 'nm', nm)); hero.appendChild(el('div', 'tag', S.e + ' ' + S.n[spec.st] + ' · ' + (spec.st + 1) + '단계' + (spec.st >= 3 ? ' · 전설' : ''))); body.appendChild(hero);
+  const next = PET_EVO[spec.st + 1], cur = PET_EVO[spec.st];
+  body.appendChild(el('div', 'pet-sec', next ? '다음 진화: ' + S.n[spec.st + 1] : '진화 완료'));
+  if(next) bar((s - cur)/(next - cur), '누적 ' + fmtH(s), fmtH(next - s) + ' 남음'); else bar(1, '누적 ' + fmtH(s), '🌟 최고 단계!');
+  const st2 = el('div', 'pet-stats'); [['크기', '×' + PET_BS[spec.st]], ['탈 때 크기', '×' + RIDE_K[spec.st]], ['탈 때 속도', '×' + (1.7 + spec.st*0.3).toFixed(1)]].forEach(([k, v]) => { const d = el('div'); d.appendChild(el('b', null, v)); d.appendChild(document.createTextNode(k)); st2.appendChild(d); }); body.appendChild(st2);
+  body.appendChild(el('div', 'pet-sec', '진화 단계')); const ev = el('div', 'pet-evo');
+  S.n.forEach((n, i) => { const d = el('div', i === spec.st ? 'on' : ''); d.appendChild(petPic(spec.sp, i, i > spec.st, i > spec.st ? '?' : S.e, 'q')); d.appendChild(el('span', null, i > spec.st ? (PET_EVO[i]/3600) + '시간' : n)); ev.appendChild(d); }); body.appendChild(ev);
+  body.appendChild(el('div', 'pet-skill', '<능력> ' + PET_SKILL[spec.sp] + (room === 'isle' ? '' : ' · 공중섬에서 🐾 펫 타기')));
+  const bt = el('div', 'pet-btns');
+  const b = el('button', 'btn', '✏️ 이름 짓기'); b.type = 'button'; b.addEventListener('click', petNameSheet); bt.appendChild(b);
+  const b2 = el('button', 'btn primary', room === 'isle' ? (me && me.ride ? '🐾 내리기' : '🐾 타기') : '닫기'); b2.type = 'button'; b2.addEventListener('click', () => { $('#spSheet').hidden = true; if(room === 'isle' && !isleFly && !isleFall) isleRideToggle(); }); bt.appendChild(b2);
+  body.appendChild(bt);
 }
 function petNameSheet(){
   const body = showSheet('✏️ 펫 이름 짓기'); const inp = el('input'); inp.maxLength = 8; inp.value = (petData && petData.nm) || ''; inp.placeholder = '최대 8글자';
