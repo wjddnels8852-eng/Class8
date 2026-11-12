@@ -275,6 +275,11 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
 #engUI .erow2{display:grid;grid-template-columns:1.4fr 1fr;gap:8px}#engUI .btn.gold{background:linear-gradient(135deg,#FFD24A,#FF9A3C);color:#3A1A00;border-color:#FFB03C;font-weight:900}
 #engUI .efigs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}#engUI .efigs div{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center}
 #engUI .efigs div.on{border-color:var(--rc);box-shadow:0 0 12px -4px var(--rc)}#engUI .efigs i{width:34px;height:34px;border-radius:50%;display:block}#engUI .efigs b{font-size:12.5px}#engUI .efigs span{font-size:11px;color:var(--rc)}
+#arUI{position:fixed;inset:0;pointer-events:none;z-index:9}#arUI[hidden]{display:none}
+#arUI .arTop{position:absolute;left:50%;bottom:calc(74px + env(safe-area-inset-bottom));transform:translateX(-50%);background:rgba(10,14,30,.6);color:#fff;border-radius:999px;padding:7px 14px;font:800 13px var(--font-b);white-space:nowrap;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+#arUI .arBar{position:absolute;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;gap:8px;pointer-events:auto}
+#arUI .btn{white-space:nowrap;padding:0 16px;min-height:44px}
+body.ar .hint,body.ar #studyBar{display:none!important}
 #ytWrap{position:fixed;left:0;top:0;width:1280px;height:560px;transform-origin:0 0;z-index:6;background:#000}
 #ytWrap iframe{width:100%;height:100%;border:0;display:block;background:#000}
 #ytBack{position:fixed;top:calc(12px + env(safe-area-inset-top));right:14px;z-index:46}
@@ -290,7 +295,13 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
 #fx4dB span{background:rgba(0,0,0,.6);border:1px solid rgba(255,214,120,.5);color:#FFE7B0;border-radius:999px;padding:5px 12px;font:800 13px var(--font-b);white-space:nowrap;animation:fx4p .25s ease-out}
 @keyframes fx4p{from{transform:scale(1.4);opacity:0}to{transform:none;opacity:1}}
 #cinUI .btn{min-height:50px;padding:0 18px;font-size:15px;white-space:nowrap;box-shadow:0 6px 18px rgba(0,0,0,.35)}
-body.demo #isleRide{display:none!important}
+#isleRide,#btnPet{display:none!important}
+body #isleUI{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+body #isleUI #isleInfo{flex:1 0 100%;font-size:12px!important}
+body #isleUI .btn{flex:0 0 auto;min-height:36px;padding:0 12px;font-size:12.5px;border-radius:999px}
+#isleFight.mini .fbtn:not(#isleFT){display:none!important}
+#isleFight:not(.mini) #isleFT{left:0!important;top:0!important;width:40px!important;height:40px!important}
+#isleFight:not(.mini) #isleFT b{font-size:16px!important}#isleFight:not(.mini) #isleFT span{display:none}
 #lobbyUI{display:flex;gap:6px;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:2px 0}
 #lobbyUI::-webkit-scrollbar{display:none}
 #lobbyUI .btn{min-height:38px;padding:0 12px;font-size:13px;white-space:nowrap;flex:none;border-radius:999px}
@@ -508,6 +519,7 @@ body.isle .panel{padding:8px 10px 10px;gap:6px}
     <div class="chip"><span class="dot"></span><span><b id="count">7</b>명 접속</span></div>
     <button type="button" class="chip rankbtn" id="btnView"><span id="viewTxt">👁 3인칭</span></button>
     <button type="button" class="chip rankbtn" id="btnPet"><span>🐾 내 펫</span></button>
+    <button type="button" class="chip rankbtn" id="btnAR"><span>📱 AR</span></button>
     <button type="button" class="chip rankbtn" id="btnLook"><span>👕 꾸미기</span></button>
     <button type="button" class="chip rankbtn" id="btnDemo" hidden><span id="demoTxt">🎓 시연 모드 OFF</span></button>
     <button type="button" class="chip rankbtn" id="btnFull"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span id="fullTxt">전체화면</span></button>
@@ -675,7 +687,7 @@ body.isle .panel{padding:8px 10px 10px;gap:6px}
     </div>
     </div>
     <button class="btn primary" type="submit" id="enterBtn" hidden>교실 입장</button>
-    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 94</p>
+    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 96</p>
   </form>
 </div>
 
@@ -719,7 +731,8 @@ body.isle .panel{padding:8px 10px 10px;gap:6px}
 </div>
 
 <button type="button" class="geobtn" id="roomBtn" hidden>🚪 들어가기</button>
-<div id="isleFight" hidden aria-label="기술">
+<div id="isleFight" class="mini" hidden aria-label="기술">
+  <button type="button" class="fbtn" id="isleFT" style="--c1:#8A93C8;--c2:#3A4370;--rim:#C9D0F0;left:160px;top:160px;width:64px;height:64px"><b>⚔️</b><span>기술</span></button>
   <button type="button" class="fbtn big" data-isk="punch" style="--c1:#FFB547;--c2:#F06A1F;--rim:#FFE2B0;left:137px;top:137px"><b>👊</b><span>주먹</span></button>
   <button type="button" class="fbtn" id="isleUlt" hidden style="--c1:#C9A8FF;--c2:#5B2BC9;--rim:#EFE6FF;left:0px;top:22px"><b style="font:900 28px var(--font-d);color:#fff;text-shadow:0 2px 0 #3A1A80">L</b><span>궁극기</span></button>
   <button type="button" class="fbtn" data-isk="water" id="isleWater" hidden style="--c1:#7FD8FF;--c2:#1F6FD0;--rim:#D6F2FF;left:0px;top:22px"><b id="pskE">🌊</b><span id="pskN">물대포</span></button>
@@ -872,7 +885,7 @@ body.isle .panel{padding:8px 10px 10px;gap:6px}
 
 <div class="toast" id="toast" hidden></div>
 
-<div id="movOv" hidden></div><div id="engUI" hidden><div class="etop"><b>🔤 영어 탐구실</b><button type="button" class="btn" id="engHomeBtn">🏠</button><button type="button" class="btn warm" id="engExit">⬅ 나가기</button></div><div id="engStat"></div><div id="engBody"></div></div><canvas id="fx4d"></canvas><div id="fx4dB"></div><button type="button" class="btn warm" id="ytBack" hidden>⬅ 극장으로</button><div id="ytPick" hidden><div class="yp"><b>📺 유튜브 영화 상영</b><p>무료로 공개된 블렌더 단편 영화예요. 다른 영상은 유튜브 링크를 붙여 넣어요. (퍼가기를 막아 둔 영상은 안 나올 수 있어요)</p><div id="ypList"></div><div class="row"><input id="ypIn" placeholder="유튜브 링크 붙여넣기" autocomplete="off"><button type="button" class="btn primary" id="ypGo">상영</button></div><button type="button" class="btn" id="ypX">닫기</button></div></div>
+<div id="movOv" hidden></div><div id="arUI" hidden><div class="arTop">📱 AR · 폰을 움직여 교실을 둘러봐요</div><div class="arBar"><button type="button" class="btn" id="arCenter">⟲ 가운데로</button><button type="button" class="btn warm" id="arOff">✕ AR 끄기</button></div></div><div id="engUI" hidden><div class="etop"><b>🔤 영어 탐구실</b><button type="button" class="btn" id="engHomeBtn">🏠</button><button type="button" class="btn warm" id="engExit">⬅ 나가기</button></div><div id="engStat"></div><div id="engBody"></div></div><canvas id="fx4d"></canvas><div id="fx4dB"></div><button type="button" class="btn warm" id="ytBack" hidden>⬅ 극장으로</button><div id="ytPick" hidden><div class="yp"><b>📺 유튜브 영화 상영</b><p>무료로 공개된 블렌더 단편 영화예요. 다른 영상은 유튜브 링크를 붙여 넣어요. (퍼가기를 막아 둔 영상은 안 나올 수 있어요)</p><div id="ypList"></div><div class="row"><input id="ypIn" placeholder="유튜브 링크 붙여넣기" autocomplete="off"><button type="button" class="btn primary" id="ypGo">상영</button></div><button type="button" class="btn" id="ypX">닫기</button></div></div>
   <div id="cinUI" hidden><button type="button" class="btn primary" id="cinWatch" hidden>🎬 영화보기</button><button type="button" class="btn" id="cinBig" hidden>⛶ 크게 보기</button><button type="button" class="btn" id="cin4D" hidden>🌀 4DX</button><button type="button" class="btn" id="cinSX" hidden>🖼 ScreenX</button><button type="button" class="btn" id="cinYT" hidden>📺 유튜브</button><button type="button" class="btn" id="cinStand" hidden>⬆ 일어나기</button><button type="button" class="btn warm" id="cinExit">⬅ 나가기</button></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -3165,6 +3178,7 @@ function hubTick(dt){   // 체험관 문 창문에 방 아이콘이 번갈아 �
 }
 // 🎓 시연 모드: 체험관에 엘니뇨·우주만 보여요 (내 화면에서만, 다시 끄면 돌아와요)
 const DEMO_HIDE = ['sea', 'geo'];
+const PETS_OFF = true;   // 🐾 펫 기능 삭제 (true = 어디서도 안 나와요)
 const DEMO_FORCE = true;   // ⚠ 시연 준비: 모두에게 엘니뇨·우주정거장·수학 탈출방만 보여요 (false로 바꾸면 심해·기하·공중섬이 다시 돌아와요. 섬·포인트·펫 데이터는 그대로 남아 있어요)
 let demoMode = DEMO_FORCE ? store.get('class8-demo2', true) !== false : (/[?&]demo=1/.test(location.search) || store.get('class8-demo', false) === true);
 function demoHidden(k){ return demoMode && DEMO_HIDE.indexOf(k) >= 0; }
@@ -3175,7 +3189,7 @@ function applyDemo(){
   if(doorFx.geoGlow) doorFx.geoGlow.visible = !demoMode;
   document.querySelectorAll('#lobbyUI [data-go]').forEach(b => { b.hidden = demoHidden(b.dataset.go); });
   $('#demoTxt').textContent = demoMode ? '🎓 시연 모드 ON' : '🎓 시연 모드 OFF'; $('#btnDemo').classList.toggle('on', demoMode);
-  $('#btnPet').hidden = demoMode; document.body.classList.toggle('demo', demoMode); try { isles.forEach(I => { if(I.wild) I.g.visible = !demoMode; }); } catch(e){}
+  $('#btnPet').hidden = demoMode || PETS_OFF; document.body.classList.toggle('demo', demoMode); try { isles.forEach(I => { if(I.wild) I.g.visible = !demoMode && !PETS_OFF; }); } catch(e){}
   if(demoHidden(room)) exitRoom();
 }
 $('#btnDemo').addEventListener('click', () => { demoMode = !demoMode; store.set(DEMO_FORCE ? 'class8-demo2' : 'class8-demo', demoMode); applyDemo(); lobbyNear = ''; toast(demoMode ? '🎓 시연 모드: 심해·기하·펫을 숨겨요' : '시연 모드 끔: 모든 방이 다시 보여요'); });
@@ -3185,7 +3199,7 @@ function checkDemoOwner(){   // 시연 모드 버튼은 정우진 섬 주인(나
 }
 let lobbyGo = null;
 function enterLobby(from){
-  if(!me) return;
+  if(!me) return; if(arOn) arStop();
   if(me.mode === 'sit') me.standUp();
   if(me.flying) setFly(false);
   me.path = []; me.goSeat = null; me.manual = false; me.mode = 'idle'; me.kvx = me.kvz = 0; me.jumpY = 0;
@@ -3254,6 +3268,7 @@ $('#lockStudy').addEventListener('click', () => { $('#lockSheet').hidden = true;
 
 function enterRoom(k){
   if(!me || room === k || demoHidden(k)) return;
+  if(arOn) arStop();
   lastRoomDoor = k;
   if(me.mode === 'sit') me.standUp();
   if(me.flying) setFly(false);
@@ -6951,6 +6966,42 @@ function crownMesh(){ const g = new THREE.Group(), gold = new THREE.MeshLambertM
   const gem = new THREE.Mesh(new THREE.SphereGeometry(0.035, 8, 6), new THREE.MeshLambertMaterial({ color:'#E8304A', emissive:'#A0102A' })); gem.position.set(0, 0, 0.18); g.add(gem); return g; }
 function setCrown(av, on){ if(!av || !av.head) return 0; if(on && !av.crownM){ av.crownM = crownMesh(); av.crownM.position.set(0, 0.36, 0); av.head.add(av.crownM); } if(av.crownM) av.crownM.visible = !!on; return 0; }
 engLoad(); if(FIG_ON) buildShelf();
+/* ===== 📱 AR 모드: 카메라 화면 위에 우리 3D 교실을 미니어처로 띄워요 (자이로 센서로 공간에 고정) ===== */
+let arOn = false, arVid = null, arTex = null, arStream = null, arBg = null, arSv = null, arQS = null, arHasOri = false, arOri = null;
+const _arQ = new THREE.Quaternion(), _arQ0 = new THREE.Quaternion(), _arQ1 = new THREE.Quaternion(-Math.sqrt(0.5), 0, 0, Math.sqrt(0.5)), _arE = new THREE.Euler(), _arZ = new THREE.Vector3(0, 0, 1), _arRel = new THREE.Quaternion();
+function arOriQ(q, o){ const d = Math.PI/180, sc = ((screen.orientation && screen.orientation.angle) || window.orientation || 0)*d;
+  _arE.set((o.beta || 0)*d, (o.alpha || 0)*d, -(o.gamma || 0)*d, 'YXZ'); q.setFromEuler(_arE); q.multiply(_arQ1); q.multiply(_arQ0.setFromAxisAngle(_arZ, -sc)); return q; }
+function arOriEv(e){ if(e.alpha == null && e.beta == null) return; arOri = { alpha:e.alpha, beta:e.beta, gamma:e.gamma }; if(!arHasOri){ arHasOri = true; arQS = null; } }
+async function arStart(){
+  if(arOn) return; if(room !== 'class'){ toast('AR은 교실에서만 켤 수 있어요'); return; }
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ toast('이 브라우저는 카메라를 쓸 수 없어요'); return; }
+  try { if(window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function'){ await DeviceOrientationEvent.requestPermission().catch(() => 'denied'); } } catch(e){}
+  try { arStream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:{ ideal:'environment' }, width:{ ideal:1280 }, height:{ ideal:720 } }, audio:false }); }
+  catch(e){ toast('📷 카메라를 허용해야 AR을 볼 수 있어요'); return; }
+  arVid = arVid || Object.assign(document.createElement('video'), { muted:true, playsInline:true, autoplay:true }); arVid.setAttribute('playsinline', ''); arVid.srcObject = arStream; try { await arVid.play(); } catch(e){}
+  arTex = new THREE.VideoTexture(arVid); arTex.minFilter = THREE.LinearFilter; arTex.magFilter = THREE.LinearFilter;
+  arBg = scene.background; scene.background = arTex; arSv = { yaw:cam.yaw, pitch:cam.pitch, dist:cam.dist, lim:Object.assign({}, camLim) };
+  Object.assign(camLim, { pmin:0.15, pmax:1.35, dmin:9, dmax:64 }); cam.yaw = 0.2; cam.pitch = 0.62; cam.dist = window.innerWidth < window.innerHeight ? 38 : 30;
+  arOn = true; arHasOri = false; arQS = null; window.addEventListener('deviceorientation', arOriEv);
+  document.body.classList.add('ar'); $('#arUI').hidden = false; $('#panel').hidden = true; $('#joy').hidden = true;
+  toast('📱 AR 켜짐! 폰을 천천히 움직여 보세요 · 두 손가락으로 크기 조절');
+}
+function arStop(){
+  if(!arOn) return; arOn = false; window.removeEventListener('deviceorientation', arOriEv);
+  if(arStream) arStream.getTracks().forEach(t => t.stop()); arStream = null; if(arVid) arVid.srcObject = null; if(arTex){ arTex.dispose(); arTex = null; }
+  scene.background = arBg || new THREE.Color('#0F1426'); if(arSv){ cam.yaw = arSv.yaw; cam.pitch = arSv.pitch; cam.dist = arSv.dist; Object.assign(camLim, arSv.lim); }
+  document.body.classList.remove('ar'); $('#arUI').hidden = true; if(room === 'class'){ $('#panel').hidden = false; $('#joy').hidden = false; }
+}
+function arCam(){   // 교실 가운데를 보는 카메라 + 폰이 돌아간 만큼 시선도 같이 돌려요
+  if(!arOn) return; if(room !== 'class'){ arStop(); return; }
+  if(arTex && arVid.videoWidth){ const A = camera.aspect, V = arVid.videoWidth/arVid.videoHeight; if(V > A){ arTex.repeat.set(A/V, 1); arTex.offset.set((1 - A/V)/2, 0); } else { arTex.repeat.set(1, V/A); arTex.offset.set(0, (1 - V/A)/2); } }
+  const cp = Math.cos(cam.pitch); camera.position.set(Math.sin(cam.yaw)*cp*cam.dist, 0.5 + Math.sin(cam.pitch)*cam.dist, Math.cos(cam.yaw)*cp*cam.dist); camera.lookAt(0, 0.5, 0);
+  if(arHasOri && arOri){ arOriQ(_arQ, arOri); if(!arQS) arQS = _arQ.clone(); _arRel.copy(arQS).invert().multiply(_arQ); camera.quaternion.multiply(_arRel); }
+  outdoor.visible = false;
+}
+$('#btnAR').addEventListener('click', () => { if(arOn) arStop(); else arStart(); });
+$('#arCenter').addEventListener('click', () => { arQS = null; cam.yaw = 0.2; cam.pitch = 0.62; cam.dist = window.innerWidth < window.innerHeight ? 38 : 30; toast('가운데로 맞췄어요'); });
+$('#arOff').addEventListener('click', arStop);
 function wildIsle(I, nm){   // 펫을 타야만 갈 수 있는 섬 (버섯섬·세계수)
   I.stage = new THREE.Group(); I.stage.scale.setScalar(ISLE_S); I.stage.userData.stage = true; I.g.add(I.stage); I.g.add(I.itemsG);
   I.g.traverse(o => { if(o.isMesh) o.userData.isleId = I.id; });
@@ -7060,7 +7111,7 @@ const isleName = id => { const I = isleById[id], d = isleData[id] || {}; if(!I) 
 function isleTake(id, name){
   if(/^빈 섬/.test(name) && me) name = me.name;
   const fresh = { pv:3, owner:myUid, nm:(me && me.name || '').slice(0, 8), lv:1, spent:0, at:Date.now(), items:{ i0:{ t:'tree', x:0.6, z:-0.4, r:0 } } };
-  const done = () => { toast('🎉 ' + name + '의 섬이 생겼어요! 공부한 만큼 포인트로 꾸며요'); isleAt(id); setTimeout(() => { const sp = myPetSpec(); if(room === 'isle' && (!sp || sp.sp === 'egg') && !demoMode) petSheet(true); }, 1400); };
+  const done = () => { toast('🎉 ' + name + '의 섬이 생겼어요! 공부한 만큼 포인트로 꾸며요'); isleAt(id); setTimeout(() => { const sp = myPetSpec(); if(room === 'isle' && (!sp || sp.sp === 'egg') && !demoMode && !PETS_OFF) petSheet(true); }, 1400); };
   if(isleLocal){ isleData[id] = fresh; refreshIsles(); done(); return; }
   rtdb.ref('isles/' + id).transaction(cur => cur ? undefined : fresh).then(r => { if(r.committed) done(); else toast('앗, 다른 친구가 먼저 골랐어요'); }).catch(netErr);
 }
@@ -7166,13 +7217,13 @@ function enterIsle(){
   camera.far = 400; camera.updateProjectionMatrix();
   Object.assign(camLim, { pmin:-0.25, pmax:1.35, dmin:2.5, dmax:95 });
   cam.yaw = 0; cam.pitch = 0.42; cam.dist = 72; cam.t.set(0, 0, 0); isleFocus = null; isleMode = null;
-  isles.forEach(I => { if(I.wild) I.g.visible = !demoMode; });   // 시연 모드: 펫 타고 가는 섬은 숨겨요
+  isles.forEach(I => { if(I.wild) I.g.visible = !demoMode && !PETS_OFF; });   // 시연 모드: 펫 타고 가는 섬은 숨겨요
   $('#panel').hidden = false; $('#joy').hidden = false; $('#isleUI').hidden = false; document.body.classList.add('isle');
   isleLocal = !rtdb;
   if(!isleLocal){ isleRef = rtdb.ref('isles'); isleRef.on('value', s => { isleData = s.val() || {}; refreshIsles(); if(!isleMine && isleClaimT === 0){ isleClaimT = 1; setTimeout(() => { if(room === 'isle' && !isleMine) isleClaim(); }, 600); } }, netErr); }
   else { refreshIsles(); setTimeout(() => { if(room === 'isle' && !isleMine) isleClaim(); }, 600); }
   isleLoadEarned(); updIsleUI(); setTimeout(() => { if(room === 'isle' && isleMine && !isleFocus){ isleAt(isleMine); cam.pitch = 0.45; } }, 800);
-  setTimeout(() => { if(room !== 'isle' || !isleMine || !$('#spSheet').hidden) return; const sp = myPetSpec(); if((!sp || sp.sp === 'egg') && !demoMode && (mySecTotal() || 0) >= PET_HATCH) petSheet(true); else isleIdeaAsk(false); }, 2500);
+  setTimeout(() => { if(room !== 'isle' || !isleMine || !$('#spSheet').hidden) return; const sp = myPetSpec(); if((!sp || sp.sp === 'egg') && !demoMode && !PETS_OFF && (mySecTotal() || 0) >= PET_HATCH) petSheet(true); else isleIdeaAsk(false); }, 2500);
   toast('☁ 공중섬에 왔어요! 공부한 만큼 땅을 넓히고 건물을 지어요');
 }
 function leaveIsle(){
@@ -7320,7 +7371,7 @@ function farmSync(I, k){
   gp.traverse(m => { m.userData.isleId = I.id; m.userData.ik = k; }); o.g.add(gp); o.crop = gp;
 }
 // ───────── 🐾 펫 타기 (공중섬) ─────────
-function petRideSpec(){ const sp = myPetSpec(); if(!sp || sp.sp === 'egg' || demoMode) return null; const I = isleById[isleOn]; if(!I || I.pit || I.arena) return null; return sp; }
+function petRideSpec(){ const sp = myPetSpec(); if(!sp || sp.sp === 'egg' || demoMode || PETS_OFF) return null; const I = isleById[isleOn]; if(!I || I.pit || I.arena) return null; return sp; }
 function isleRideToggle(){
   if(me.ride){ me.ride = false; $('#isleRide').textContent = '🐾 펫 타기'; const I = isleById[isleOn];
     if(I && Math.hypot(me.pos.x, me.pos.z) > isleRad(I)/ISLE_S - 0.3){ isleFall = { t:0, vx:0, vz:0 }; me.say('으아아 펫아!!'); }
@@ -7458,6 +7509,7 @@ function isleTick(dt){
     updIsleUI(); }
 }
 $('#isleMineBtn').addEventListener('click', () => { if(!isleMine){ isleClaim(); return; } if(isleOn && isleOn !== isleMine) isleJump(isleMine); else { cam.dist = clamp(isleRad(isleById[isleMine])*1.1 + 2.5, 4, 14); cam.pitch = 0.42; } });
+$('#isleFT').addEventListener('click', () => { const F = $('#isleFight'); F.classList.toggle('mini'); $('#isleFT').querySelector('b').textContent = F.classList.contains('mini') ? '⚔️' : '✕'; });
 $('#isleRide').addEventListener('click', () => { if(!me || isleFly || isleFall) return; isleRideToggle(); });
 $('#isleAll').addEventListener('click', () => { isleGhostOff(); isleMode = null; ctxBtn(''); cam.dist = 72; cam.pitch = 0.42; toast('🗺 멀리서 다 같이 구경해요'); });
 $('#isleBuild').addEventListener('click', () => { if(isleMine && isleOn !== isleMine){ toast('짓기는 내 섬에 있을 때만 할 수 있어요 · 🏝 내 섬을 눌러요'); return; } isleBuildSheet(); });
@@ -7893,7 +7945,7 @@ function petRidePose(av, p, body, parts, t){   // 펫을 타고 있을 때: 펫�
   av.body.rotation.x = fast ? 0.15 : 0; av.body.position.y = 0;
 }
 function petTickAll(dt){
-  if(demoMode){ if(me) petApply(me, null); remotes.forEach(r => petApply(r.av, null)); return; }   // 시연 모드: 펫 숨김 (공부 시간으로 크는 건 그대로)
+  if(demoMode || PETS_OFF){ if(me) petApply(me, null); remotes.forEach(r => petApply(r.av, null)); return; }   // 시연 모드: 펫 숨김 (공부 시간으로 크는 건 그대로)
   if(me){ const spec = myPetSpec(); petApply(me, spec);
     if(spec && spec.sp !== 'egg' && petLastStage >= 0 && spec.st > petLastStage){ toast('✨ ' + (petData.nm || PET_SP[spec.sp].n[spec.st - 1]) + '이(가) ' + PET_SP[spec.sp].n[spec.st] + '(으)로 진화했어요!'); lastSent = ''; pushPresence(); }
     if(spec) petLastStage = spec.sp === 'egg' ? -1 : spec.st; petTick(me, dt); }
@@ -8048,9 +8100,10 @@ function loop(){
   camera.lookAt(cam.t);
   }
   if(room === 'cinema'){ cin4Cam(); ytPos(); }
+  if(arOn) arCam();
   // 카메라 쪽 벽은 숨겨서 가리지 않게
   frontWall.visible = camera.position.z < D/2 - 0.2; backWall.visible = camera.position.z > -D/2 + 0.2;
-  leftWall.visible = camera.position.x > -W/2 + 0.2; rightWall.visible = camera.position.x < W/2 - 0.2; outdoor.visible = rightWall.visible;
+  leftWall.visible = camera.position.x > -W/2 + 0.2; rightWall.visible = camera.position.x < W/2 - 0.2; outdoor.visible = rightWall.visible && !arOn;
   uiT -= dt; if(uiT <= 0){ uiT = 0.25; updateUI(); }
   const fpHid = fpHideList(eye);
   renderer.render(room === 'sea' ? seaScene : room === 'nino' ? ninoScene : room === 'space' ? (spacePhase === 'space' ? spaceScene : launchScene) : room === 'geo' ? geoScene : room === 'isle' ? isleScene : room === 'eng' ? engScene : room === 'cinema' ? cinScene : room === 'quiz' ? qzScene : room === 'lobby' ? lobbyScene : scene, camera);
