@@ -281,6 +281,10 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
 #arUI .btn{white-space:nowrap;padding:0 16px;min-height:44px}
 body.ar .hint,body.ar #studyBar{display:none!important}
 #ytWrap{position:fixed;left:0;top:0;width:1280px;height:560px;transform-origin:0 0;z-index:6;background:#000}
+#ytWrap ~ .ytsx,.ytsx{position:fixed;left:0;top:0;width:480px;height:320px;transform-origin:0 0;z-index:6;overflow:hidden;pointer-events:none;background:#101018}
+.ytsx img{position:absolute;inset:-12%;width:124%;height:124%;object-fit:cover;filter:blur(10px) brightness(.8) saturate(1.2);transform:scaleX(-1);transition:opacity 1.5s}
+.ytsx img+img{opacity:0}
+.ytsx i{position:absolute;inset:0}.ytsx.l i{background:linear-gradient(90deg,rgba(0,0,0,.92),rgba(0,0,0,.1) 75%,rgba(0,0,0,0)),linear-gradient(180deg,rgba(0,0,0,.6),transparent 20%,transparent 80%,rgba(0,0,0,.6))}.ytsx.r i{background:linear-gradient(270deg,rgba(0,0,0,.92),rgba(0,0,0,.1) 75%,rgba(0,0,0,0)),linear-gradient(180deg,rgba(0,0,0,.6),transparent 20%,transparent 80%,rgba(0,0,0,.6))}
 #ytWrap iframe{width:100%;height:100%;border:0;display:block;background:#000}
 #ytBack{position:fixed;top:calc(12px + env(safe-area-inset-top));right:14px;z-index:46}
 #ytBack[hidden],#ytPick[hidden]{display:none}
@@ -420,6 +424,7 @@ body.isle .panel{padding:8px 10px 10px;gap:6px}
 #spaceUI{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 #isleUI{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
 #isleUI.bm .im{display:none}
+body.demo [data-skill],body.demo [data-fly],body.demo #isleFight{display:none!important}
 #btnDemo.on{background:linear-gradient(180deg,#FFD66B,#FFB020);color:#0F1426;border-color:#FFE27A}
 #isleUI[hidden]{display:none}
 #isleUI .btn{min-height:42px;padding:0 4px;font-size:13.5px;white-space:nowrap}
@@ -687,7 +692,7 @@ body.isle .panel{padding:8px 10px 10px;gap:6px}
     </div>
     </div>
     <button class="btn primary" type="submit" id="enterBtn" hidden>교실 입장</button>
-    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 96</p>
+    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 98</p>
   </form>
 </div>
 
@@ -2713,7 +2718,7 @@ window.addEventListener('pointerdown', () => { if(wakeWanted && !wakeLock) wantW
 }
 $('#rankClose').addEventListener('click', () => { $('#rankSheet').hidden = true; });
 function setFly(on){
-  if(!me) return;
+  if(!me) return; if(on && demoMode) return;
   if(on && me.mode === 'sit') me.standUp();
   me.flying = on; me.path = []; me.goSeat = null; if(me.mode === 'walk' && !me.manual) me.mode = 'idle';
   if(on) toast('조이스틱으로 하늘을 날아요. 책상 위로도 지나갈 수 있어요');
@@ -3014,6 +3019,7 @@ function updateBlasts(dt){
 }
 const skillCd = {};
 function doSkill(k){
+  if(demoMode) return;   // 🎓 시연 모드에선 기술 없음
   if(!me) return;
   const S = SKILLS[k];
   if(!skillOk(me, k)){ toast('하루에 ' + (S.need/3600) + '시간 공부하면 ' + S.name + '을(를) 계속 쓸 수 있어요 · 오늘 ' + fmtTime(me.total)); return; }
@@ -3177,7 +3183,7 @@ function hubTick(dt){   // 체험관 문 창문에 방 아이콘이 번갈아 �
   x.fillStyle = cols[i]; x.fillRect(0, 0, 128, 128); x.font = '72px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(['🌊', '🚀', '🌏', '📐', '☁️', '🔐', '🎬', '🔤'][i], 64, 70); hubTex.needsUpdate = true;
 }
 // 🎓 시연 모드: 체험관에 엘니뇨·우주만 보여요 (내 화면에서만, 다시 끄면 돌아와요)
-const DEMO_HIDE = ['sea', 'geo'];
+const DEMO_HIDE = ['sea', 'geo', 'isle'];
 const PETS_OFF = true;   // 🐾 펫 기능 삭제 (true = 어디서도 안 나와요)
 const DEMO_FORCE = true;   // ⚠ 시연 준비: 모두에게 엘니뇨·우주정거장·수학 탈출방만 보여요 (false로 바꾸면 심해·기하·공중섬이 다시 돌아와요. 섬·포인트·펫 데이터는 그대로 남아 있어요)
 let demoMode = DEMO_FORCE ? store.get('class8-demo2', true) !== false : (/[?&]demo=1/.test(location.search) || store.get('class8-demo', false) === true);
@@ -3190,9 +3196,10 @@ function applyDemo(){
   document.querySelectorAll('#lobbyUI [data-go]').forEach(b => { b.hidden = demoHidden(b.dataset.go); });
   $('#demoTxt').textContent = demoMode ? '🎓 시연 모드 ON' : '🎓 시연 모드 OFF'; $('#btnDemo').classList.toggle('on', demoMode);
   $('#btnPet').hidden = demoMode || PETS_OFF; document.body.classList.toggle('demo', demoMode); try { isles.forEach(I => { if(I.wild) I.g.visible = !demoMode && !PETS_OFF; }); } catch(e){}
+  if(demoMode && me && me.flying) setFly(false);
   if(demoHidden(room)) exitRoom();
 }
-$('#btnDemo').addEventListener('click', () => { demoMode = !demoMode; store.set(DEMO_FORCE ? 'class8-demo2' : 'class8-demo', demoMode); applyDemo(); lobbyNear = ''; toast(demoMode ? '🎓 시연 모드: 심해·기하·펫을 숨겨요' : '시연 모드 끔: 모든 방이 다시 보여요'); });
+$('#btnDemo').addEventListener('click', () => { demoMode = !demoMode; store.set(DEMO_FORCE ? 'class8-demo2' : 'class8-demo', demoMode); applyDemo(); lobbyNear = ''; toast(demoMode ? '🎓 시연 모드: 심해·기하·공중섬·기술을 숨겨요' : '시연 모드 끔: 모든 방이 다시 보여요'); });
 function checkDemoOwner(){   // 시연 모드 버튼은 정우진 섬 주인(나)한테만 보여요
   if(!rtdb || !myUid){ return; }
   rtdb.ref('isles/s0/owner').once('value').then(s => { amOwner = s.val() === myUid; $('#btnDemo').hidden = !amOwner; }).catch(() => {});
@@ -6196,8 +6203,10 @@ const MOVIE2 = (() => {
 })();
 
 /* ===== 🎬 영화관: 로비에서 장르 문 → 복도 → 상영관, 아무 자리나 앉아서 영화보기 ===== */
-const CIN_G = [{ n:'액션', e:'💥', c:'#E2574C' }, { n:'코미디', e:'😂', c:'#FFC93C' }, { n:'SF', e:'🚀', c:'#5CB0FF' }, { n:'공포', e:'👻', c:'#9A7CFF' }, { n:'애니메이션', e:'🎨', c:'#FF7C93' }];
-const CIN_MOVIE = { 0:MOVIE, 4:MOVIE, 1:MOVIE2, 3:MOVIE2 };   // 액션·애니메이션관: 「최후의 소시지」 / 코미디·공포관: 「8반 괴담 : 제출하셨나요」
+const CIN_G = [{ n:'스파이더맨', e:'🕷', c:'#E2574C' }, { n:'치이카와', e:'🐹', c:'#FF9AC0' }, { n:'오디세이', e:'⚓', c:'#5CB0FF' }, { n:'체인소 맨', e:'🪚', c:'#FF8A3C' }, { n:'유튜브', e:'📺', c:'#FF5A5A' }];
+// 🎞 상영관마다 공식 예고편 (유튜브 영상 주소의 v= 뒤 11글자)
+const CIN_TR = ['dosbhD_1LIo', '-DjykB2XImc', 'zz2ZH13NOi8', 'fRqegBxEvEc', null];
+const CIN_MOVIE = {};   // 직접 만든 영화는 상영 종료 (예고편으로 바뀜)   // 액션·애니메이션관: 「최후의 소시지」 / 코미디·공포관: 「8반 괴담 : 제출하셨나요」
 const CM = () => CIN_MOVIE[cinG] || MOVIE;
 const CX = 60, CIN_ROWS = 6, CIN_COLS = 8, cinRowZ = i => -9.6 - i*2.0, cinRowH = i => 1.5 - (i + 1)*0.25, cinSeatX = j => CX + (j - 3.5)*1.1;
 let cinScene = null, cinG = -1, cinSeat = -1, cinWatch = null, cinGo = null, cinNear = '', cinSeats = null, cinScreen = null, cinCur = [], cinBeam = null, cinHemi = null, cinScrT = 0, cinScrK = '', cinWalls = [];
@@ -6292,7 +6301,7 @@ function enterCinema(){
   me.pos.set(0, 0, 5.4); me.ry = me.targetRy = Math.PI; me.group.position.y = 0;
   $('#panel').hidden = true; $('#joy').hidden = false; $('#cinUI').hidden = false; cinUIUpd();
   Object.assign(camLim, { pmin:-0.3, pmax:1.2, dmin:2.5, dmax:12 }); cam.yaw = 0; cam.pitch = 0.32; cam.dist = 6.5; cam.t.set(me.pos.x, 1.2, me.pos.z);
-  toast('🎬 8반 시네마에 왔어요! 보고 싶은 장르의 문으로 들어가요');
+  toast('🎬 8반 시네마에 왔어요! 보고 싶은 영화의 문으로 들어가요');
 }
 function leaveCinema(){ $('#cinUI').hidden = true; cin4Reset(true); ytStop(); $('#ytPick').hidden = true; if(typeof MOVIE !== 'undefined'){ MOVIE.stopAudio(); MOVIE2.stopAudio(); movBig(false); } if(room !== 'cinema' && !cinScene) return; cinWatch = null; cinSeat = -1; cinG = -1; if(me) me.group.visible = true; if(cinHemi) cinHemi.intensity = 0.75;
   remotes.forEach(r => { if(cinScene && r.av.group.parent === cinScene){ scene.add(r.av.group); r.av.group.visible = false; } }); }
@@ -6303,8 +6312,8 @@ function cinToLobby(){ cinFade(() => { cinStand(true); cinG = -1; me.pos.set(-6 
 function cinSit(k){ const S = cinSeats[k]; if(!S) return; let taken = false; remotes.forEach(r => { if(r.av.room === 'cinema' && r.av.cg === cinG && r.av.cs === k) taken = true; }); if(taken){ toast('이미 친구가 앉아 있어요'); return; }
   cinSeat = k; cinGo = null; me.pos.set(S.x, 0, S.z); me.ry = me.targetRy = Math.PI; me.group.rotation.y = Math.PI; ctxBtn(''); cinNear = ''; lastSent = ''; pushPresence(); cinUIUpd(); toast('💺 ' + (S.i + 1) + '열 ' + (S.j + 1) + '번 자리 · 🎬 영화보기를 눌러요'); }
 function cinStand(quiet){ if(cinSeat < 0) return; const S = cinSeats[cinSeat]; cinSeat = -1; if(cinWatch){ CM().stopAudio(); movBig(false); } ytStop(); cinWatch = null; me.group.visible = true; if(S){ me.pos.set(S.x, 0, S.z - 0.95); } camLim.dmin = 2.5; if(cam.dist < 3) cam.dist = 4.5; lastSent = ''; pushPresence(); cinUIUpd(); }
-function cinUIUpd(){ $('#cinYT').hidden = cinSeat < 0; $('#cin4D').hidden = $('#cinSX').hidden = cinSeat < 0 || !CIN_MOVIE[cinG] || !!cinYT; $('#cin4D').textContent = '🌀 4DX ' + (cin4.on ? '켜짐' : '꺼짐'); $('#cinSX').textContent = '🖼 ScreenX ' + (cin4.sx ? '켜짐' : '꺼짐'); $('#cin4D').classList.toggle('primary', cin4.on); $('#cinSX').classList.toggle('primary', cin4.sx); $('#cinWatch').hidden = cinSeat < 0; $('#cinBig').hidden = !(cinWatch && (CIN_MOVIE[cinG] || cinYT)); $('#cinWatch').textContent = cinWatch ? '⏹ 그만 보기' : '🎬 영화보기'; $('#cinStand').hidden = cinSeat < 0; $('#cinExit').textContent = cinG < 0 ? '⬅ 체험관으로' : '⬅ 로비로'; }
-$('#cinWatch').addEventListener('click', () => { if(cinSeat < 0) return; if(cinWatch){ cinWatch = null; ytStop(); CM().stopAudio(); movBig(false); me.group.visible = true; cam.dist = 3.2; camLim.dmin = 2.5; } else { cinWatch = { t:0 }; camLim.dmin = 0.02; if(CIN_MOVIE[cinG]) cinIntro(); if(CIN_MOVIE[cinG]) CM().startAudio(-5.2); } cinScrK = ''; cinUIUpd(); });
+function cinUIUpd(){ $('#cinYT').hidden = cinSeat < 0; $('#cin4D').hidden = cinSeat < 0 || !CIN_MOVIE[cinG] || !!cinYT; $('#cinSX').hidden = cinSeat < 0; $('#cin4D').textContent = '🌀 4DX ' + (cin4.on ? '켜짐' : '꺼짐'); $('#cinSX').textContent = '🖼 ScreenX ' + (cin4.sx ? '켜짐' : '꺼짐'); $('#cin4D').classList.toggle('primary', cin4.on); $('#cinSX').classList.toggle('primary', cin4.sx); $('#cinWatch').hidden = cinSeat < 0; $('#cinBig').hidden = !(cinWatch && (CIN_MOVIE[cinG] || cinYT)); $('#cinWatch').textContent = cinWatch ? '⏹ 그만 보기' : '🎬 영화보기'; $('#cinStand').hidden = cinSeat < 0; $('#cinExit').textContent = cinG < 0 ? '⬅ 체험관으로' : '⬅ 로비로'; }
+$('#cinWatch').addEventListener('click', () => { if(cinSeat < 0) return; if(cinWatch){ cinWatch = null; ytStop(); CM().stopAudio(); movBig(false); me.group.visible = true; cam.dist = 3.2; camLim.dmin = 2.5; } else { if(CIN_TR[cinG]){ ytStart(CIN_TR[cinG]); return; } if(cinG === 4){ ytPick(); return; } cinWatch = { t:0 }; camLim.dmin = 0.02; } cinScrK = ''; cinUIUpd(); });
 function movBig(on){ const ov = $('#movOv'); if(on){ MOVIE.cv.remove(); MOVIE2.cv.remove(); ov.appendChild(CM().cv); ov.hidden = false; } else { ov.hidden = true; } }
 $('#movOv').addEventListener('click', () => movBig(false));
 $('#cinBig').addEventListener('click', () => { if(cinYT){ cinYT.big = true; return; } if(cinWatch && CIN_MOVIE[cinG]) movBig(true); });
@@ -6324,7 +6333,7 @@ function cinDrawScreen(t){
     if(end && !cinWatch.ended){ cinWatch.ended = true; toast('🎬 ' + (CM() === MOVIE2 ? '「8반 괴담」' : '「최후의 소시지」') + ' 끝! 다시 보려면 그만 보기 → 영화보기'); } return; }
   const key = ph + cinG + (ph === 'title' ? Math.floor(t*4) : ph[0] === 'c' ? Math.floor(cinWatch.t*12) : ''); if(key === cinScrK) return; cinScrK = key;
   const x = cinScreen.image.getContext('2d'), w = 1024, h = 448;
-  if(ph === 'idle' || ph === 'dim'){ x.fillStyle = ph === 'idle' ? '#E9E6DC' : '#2A2830'; x.fillRect(0, 0, w, h); x.fillStyle = ph === 'idle' ? '#9A948A' : '#5A5660'; x.font = '700 40px "Noto Sans KR", sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(ph === 'idle' ? (CIN_MOVIE[cinG] ? '🎬 오늘의 상영작 ' + (CM() === MOVIE2 ? '「8반 괴담 : 제출하셨나요」' : '「최후의 소시지」') + ' · 4DX · ScreenX' : G.e + ' ' + G.n + '관 · 자리에 앉아서 영화보기를 눌러요') : '곧 상영을 시작합니다…', w/2, h/2); }
+  if(ph === 'idle' || ph === 'dim'){ x.fillStyle = ph === 'idle' ? '#E9E6DC' : '#2A2830'; x.fillRect(0, 0, w, h); x.fillStyle = ph === 'idle' ? '#9A948A' : '#5A5660'; x.font = '700 40px "Noto Sans KR", sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(ph === 'idle' ? (CIN_TR[cinG] ? '🎬 ' + G.n + ' 공식 예고편 · ScreenX · 앉아서 영화보기' : G.e + ' ' + G.n + '관 · 앉아서 📺 유튜브를 눌러요') : '곧 상영을 시작합니다…', w/2, h/2); }
   else if(ph[0] === 'c'){ cinIntroDraw(x, w, h, (cinWatch.t - 2.2)/3); }
   else { const gr = x.createLinearGradient(0, 0, w, h); gr.addColorStop(0, '#0E0A14'); gr.addColorStop(1, G.c); x.fillStyle = gr; x.fillRect(0, 0, w, h);
     for(let k=0;k<60;k++){ x.fillStyle = 'rgba(255,255,255,' + (0.2 + ((k*37 + Math.floor(t*4)*13) % 10)/14) + ')'; x.fillRect((k*97 + t*40) % w, (k*53) % h, 3, 3); }
@@ -6466,7 +6475,7 @@ function cin4Tick(dt){
     if(cinDust.visible){ const P = cinDust.geometry.attributes.position.array, sd = cinDust.userData.seeds; for(let i=0;i<sd.length;i++){ const [u0, an, rr, ph] = sd[i], u = (u0 + t*0.004 + Math.sin(t*0.3 + ph)*0.01) % 1, r = (0.25 + u*3.6)*rr;
       P[i*3] = CX + Math.cos(an + t*0.05)*r; P[i*3 + 1] = lerpN(7.6, 4.9, u) + Math.sin(an + t*0.07)*r*0.55; P[i*3 + 2] = lerpN(-6.6, -29.4, u); } cinDust.geometry.attributes.position.needsUpdate = true; } }
   // ScreenX: 양옆 벽까지 보이게 시야를 넓혀요
-  { const f0 = window.innerWidth < window.innerHeight ? 62 : 56, fT = movie && cin4.sx && $('#movOv').hidden ? f0 + 26 : f0; if(Math.abs(camera.fov - fT) > 0.05){ camera.fov += (fT - camera.fov)*(1 - Math.exp(-dt*2)); camera.updateProjectionMatrix(); } }
+  { const f0 = window.innerWidth < window.innerHeight ? 62 : 56, fT = (movie && cin4.sx && $('#movOv').hidden) || (cinYT && cinYT.el && !cinYT.big && cin4.sx) ? f0 + 26 : f0; if(Math.abs(camera.fov - fT) > 0.05){ camera.fov += (fT - camera.fov)*(1 - Math.exp(-dt*2)); camera.updateProjectionMatrix(); } }
   // ScreenX 켜짐
   if(cinSX) cinSX.forEach(P => { const tg = movie && cin4.sx ? 0.92 : 0; P.m.opacity += (tg - P.m.opacity)*(1 - Math.exp(-dt*2.5)); P.p.visible = P.m.opacity > 0.01; });
   if(!movie || !cin4.on){ if(cin4.dirty || cin4.bk) cin4Reset(); return; }
@@ -6491,18 +6500,22 @@ function cin4Tick(dt){
 }
 function lerpN(a, b, u){ return a + (b - a)*u; }
 $('#cin4D').addEventListener('click', () => { cin4.on = !cin4.on; if(!cin4.on) cin4Reset(); cinUIUpd(); toast(cin4.on ? '🌀 4DX 켜짐 · 의자가 움직이고 바람·눈·섬광이 나와요' : '4DX 꺼짐'); });
-$('#cinSX').addEventListener('click', () => { cin4.sx = !cin4.sx; cinUIUpd(); toast(cin4.sx ? '🖼 ScreenX 켜짐 · 양쪽 벽까지 화면이 이어져요' : 'ScreenX 꺼짐'); });
+$('#cinSX').addEventListener('click', () => { cin4.sx = !cin4.sx; cinUIUpd(); cinScrK = ''; toast(cin4.sx ? '🖼 ScreenX 켜짐 · 양쪽 벽까지 화면이 이어져요' : 'ScreenX 꺼짐'); });
 /* ===== 📺 유튜브 영화 상영 (스크린에 딱 맞게 겹쳐 보여요) ===== */
-const YT_LIST = [{ id:'WhWc3b3KhnY', t:'🌸 Spring · 판타지 단편 (약 8분)' }, { id:'_cMxraX_5RE', t:'🍄 Sprite Fright · 병맛 호러 코미디 (약 10분)' }];
+const YT_LIST = [{ id:'dosbhD_1LIo', t:'🕷 스파이더맨: 브랜드 뉴 데이 · 메인 예고편' }, { id:'-DjykB2XImc', t:'🐹 극장판 치이카와: 인어 섬의 비밀 · 메인 예고편' }, { id:'zz2ZH13NOi8', t:'⚓ 오디세이 · 파이널 예고편' }, { id:'fRqegBxEvEc', t:'🪚 극장판 체인소 맨: 레제편 · 메인 예고편' }, { id:'WhWc3b3KhnY', t:'🌸 Spring · 판타지 단편 (약 8분)' }, { id:'_cMxraX_5RE', t:'🍄 Sprite Fright · 병맛 호러 코미디 (약 10분)' }];
 let cinYT = null; const _yv = new THREE.Vector3(), _yz = new THREE.Vector3();
 function ytId(s){ s = (s || '').trim(); const m = s.match(/(?:youtu\.be\/|[?&]v=|embed\/|shorts\/|live\/)([A-Za-z0-9_-]{11})/); return m ? m[1] : /^[A-Za-z0-9_-]{11}$/.test(s) ? s : null; }
 function ytPick(){ $('#ypList').innerHTML = ''; YT_LIST.forEach(v => { const b = document.createElement('button'); b.type = 'button'; b.className = 'btn'; b.textContent = v.t; b.onclick = () => ytStart(v.id); $('#ypList').appendChild(b); }); $('#ypIn').value = ''; $('#ytPick').hidden = false; }
 function ytStart(id){ $('#ytPick').hidden = true; if(cinSeat < 0){ toast('먼저 자리에 앉아요'); return; } if(cinWatch){ CM().stopAudio(); movBig(false); } ytStop(); cin4Reset();
   cinYT = { id, el:null, big:false }; cinWatch = { t:0, yt:true }; camLim.dmin = 0.02; cinScrK = ''; cinIntro(); cinUIUpd(); toast('📺 곧 상영해요 · 소리는 화면 속 재생 버튼을 눌러도 돼요'); }
-function ytStop(){ if(cinYT && cinYT.el) cinYT.el.remove(); cinYT = null; $('#ytBack').hidden = true; }
+function ytStop(){ if(cinYT && cinYT.el) cinYT.el.remove(); if(cinYT && cinYT.sx){ cinYT.sx.forEach(p => p.el.remove()); clearInterval(cinYT.sxT); } cinYT = null; $('#ytBack').hidden = true; }
 function ytMake(){ const w = document.createElement('div'); w.id = 'ytWrap';
   w.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + cinYT.id + '?autoplay=1&playsinline=1&rel=0&modestbranding=1" title="유튜브 상영" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>';
-  document.body.appendChild(w); cinYT.el = w; }
+  document.body.appendChild(w); cinYT.el = w;
+  // ScreenX: 양쪽 벽에 예고편 장면(유튜브 자동 썸네일)을 흐리게 이어 붙여요
+  const fr = ['hq1', 'hq2', 'hq3', 'hqdefault'].map(f => 'https://i.ytimg.com/vi/' + cinYT.id + '/' + f + '.jpg');
+  cinYT.sx = [-1, 1].map(sd => { const p = document.createElement('div'); p.className = 'ytsx ' + (sd < 0 ? 'l' : 'r'); p.innerHTML = '<img alt=""><img alt=""><i></i>'; document.body.appendChild(p); const im = p.querySelectorAll('img'); im[0].src = fr[sd < 0 ? 0 : 1]; im[1].src = fr[sd < 0 ? 2 : 3]; return { el:p, sd, im, k:0 }; });
+  cinYT.sxT = setInterval(() => { if(!cinYT || !cinYT.sx) return; cinYT.sx.forEach(P => { P.k = 1 - P.k; P.im[0].style.opacity = P.k ? 0 : 1; P.im[1].style.opacity = P.k ? 1 : 0; const hid = P.im[P.k ? 0 : 1]; setTimeout(() => { hid.src = fr[Math.floor(Math.random()*fr.length)]; }, 1600); }); }, 4200); }
 // 4×4 원근 변환: 사각형(0,0)-(w,h)을 화면 위 네 점에 맞춰요
 function adj3(m){ return [m[4]*m[8] - m[5]*m[7], m[2]*m[7] - m[1]*m[8], m[1]*m[5] - m[2]*m[4], m[5]*m[6] - m[3]*m[8], m[0]*m[8] - m[2]*m[6], m[2]*m[3] - m[0]*m[5], m[3]*m[7] - m[4]*m[6], m[1]*m[6] - m[0]*m[7], m[0]*m[4] - m[1]*m[3]]; }
 function mul3(a, b){ const c = []; for(let i=0;i<3;i++) for(let j=0;j<3;j++){ let s = 0; for(let k=0;k<3;k++) s += a[3*i + k]*b[3*k + j]; c[3*i + j] = s; } return c; }
@@ -6514,7 +6527,10 @@ function ytPos(){
   $('#ytBack').hidden = true; st.width = '1280px'; st.height = '560px'; st.zIndex = 6;
   camera.updateMatrixWorld(); const W2 = window.innerWidth, H2 = window.innerHeight, d = [];
   for(const [x, y] of [[-8.8, 3.85], [8.8, 3.85], [-8.8, -3.85], [8.8, -3.85]]){ _yv.set(CX + x, 5.0 + y, -29.78); _yz.copy(_yv).applyMatrix4(camera.matrixWorldInverse); if(_yz.z > -0.05){ st.display = 'none'; return; } _yv.project(camera); d.push((_yv.x + 1)/2*W2, (1 - _yv.y)/2*H2); }
-  st.display = ''; const t = quad3(1280, 560, d); st.transform = 'matrix3d(' + [t[0], t[3], 0, t[6], t[1], t[4], 0, t[7], 0, 0, 1, 0, t[2], t[5], 0, t[8]].map(v => +v.toFixed(8)).join(',') + ')'; }
+  st.display = ''; const t = quad3(1280, 560, d); st.transform = 'matrix3d(' + [t[0], t[3], 0, t[6], t[1], t[4], 0, t[7], 0, 0, 1, 0, t[2], t[5], 0, t[8]].map(v => +v.toFixed(8)).join(',') + ')';
+  if(cinYT.sx) cinYT.sx.forEach(P => { const ps = P.el.style; if(!cin4.sx || cinYT.big){ ps.display = 'none'; return; } const x = CX + P.sd*9.84, zA = P.sd < 0 ? -19.05 : -29.55, zB = P.sd < 0 ? -29.55 : -19.05, q = [];
+    for(const [z, y] of [[zA, 8.4], [zB, 8.4], [zA, 1.4], [zB, 1.4]]){ _yv.set(x, y, z); _yz.copy(_yv).applyMatrix4(camera.matrixWorldInverse); if(_yz.z > -0.05){ ps.display = 'none'; return; } _yv.project(camera); q.push((_yv.x + 1)/2*W2, (1 - _yv.y)/2*H2); }
+    ps.display = ''; const m = quad3(480, 320, q); ps.transform = 'matrix3d(' + [m[0], m[3], 0, m[6], m[1], m[4], 0, m[7], 0, 0, 1, 0, m[2], m[5], 0, m[8]].map(v => +v.toFixed(8)).join(',') + ')'; }); }
 $('#cinYT').addEventListener('click', ytPick);
 $('#ypX').addEventListener('click', () => { $('#ytPick').hidden = true; });
 $('#ypGo').addEventListener('click', () => { const id = ytId($('#ypIn').value); if(!id){ toast('유튜브 링크를 확인해 주세요'); return; } ytStart(id); });
