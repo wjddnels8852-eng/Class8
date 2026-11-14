@@ -692,7 +692,7 @@ body.demo [data-skill],body.demo [data-fly],body.demo #isleFight{display:none!im
     </div>
     </div>
     <button class="btn primary" type="submit" id="enterBtn" hidden>교실 입장</button>
-    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 98</p>
+    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 99</p>
   </form>
 </div>
 
@@ -6745,7 +6745,140 @@ unique|형|독특한, 유일한|Everyone is unique.|모든 사람은 고유하�
 /* ===== 🔤 영어 탐구실: 매일 단어 10개 + 간격 반복 복습 + 퀴즈 ===== */
 const ENG_W = ENG_RAW.trim().split('\n').map(l => { const [w, p, m, e, k] = l.split('|'); return { w, p, m, e, k }; });
 const FIG_ON = false;   // 🎁 단어 뽑기 · 피규어 · 진열장 (false = 꺼짐, true로 바꾸면 다시 켜져요)
-const ENG_BOX = [0, 1, 2, 4, 7, 15];   // 외운 단계별 다음 복습까지 날짜 (라이트너 상자)
+const ENG_BOX = [0, 1, 2, 4, 7, 15];
+// 📌 학원 단어시험 오답 노트 (다시 채점해서 틀린 단어 + 단어장 별표 단어). 틀리면 그날 바로 다시, 맞히면 1→2→4→7→15일 뒤
+const MY_RAW = `
+fertile|형|비옥한, 기름진|10/30 DAY39
+grateful|형|감사하는, 고마워하는|10/30 DAY39
+wage|명|임금, 급료|10/30 DAY39
+cherish|동|소중히 여기다, 아끼다|11/2 DAY40
+loan|명|대출, 융자; 빌려주다|11/2 DAY40
+patient|명·형|환자; 참을성 있는|11/9 DAY45
+fatal|형|치명적인|11/9 DAY45
+crack|명·동|갈라진 금; 금이 가다|11/9 DAY45
+variable|형·명|변하기 쉬운; 변수|11/9 DAY45
+invert|동|뒤집다, 거꾸로 하다|11/9 DAY45
+startle|동|깜짝 놀라게 하다|11/9 DAY45
+stain|명·동|얼룩; 얼룩지게 하다|11/11 DAY47
+weep|동|울다, 눈물을 흘리다|11/11 DAY47
+summit|명|정상, 꼭대기; 정상 회담|11/11 DAY47
+applause|명|박수(갈채)|11/11 DAY47
+superstition|명|미신|11/11 DAY47
+formulate|동|만들어 내다, 공식화하다|11/11 DAY47
+dormitory|명|기숙사|11/11 DAY47
+neutral|형|중립의|11/11 DAY47
+vow|명·동|맹세; 맹세하다|11/11 DAY47
+compulsive|형|강박적인, 억제하기 힘든|11/11 DAY47
+alter|동|바꾸다, 변경하다|11/11 DAY47
+retreat|동·명|후퇴하다; 후퇴|11/11 DAY47
+shallow|형|얕은; 피상적인|11/11 DAY47
+incentive|명|장려책, 동기|11/11 DAY47
+banner|명|현수막, 배너|11/11 DAY47
+durability|명|내구성|11/11 DAY47
+heritage|명|유산|11/11 DAY47
+absurd|형|터무니없는, 불합리한|11/11 DAY47
+malnutrition|명|영양실조|11/11 DAY47
+troop|명|군대, 무리|11/11 DAY47
+dispatch|동|보내다, 파견하다|11/12 DAY48
+remedy|명|치료(법); 해결책|11/12 DAY48
+imprint|동·명|새기다, 각인시키다; 자국|11/12 DAY48
+attend|동|참석하다; 주의를 기울이다|11/12 DAY48
+draft|명|초안, 원고|11/12 DAY48
+utmost|형|최고의, 최대한의|11/12 DAY48
+violate|동|위반하다, 침해하다|11/12 DAY48
+trim|동|다듬다, 손질하다|11/12 DAY48
+subtract|동|빼다, 덜다|11/12 DAY48
+equity|명|공평, 형평|11/12 DAY48
+confine|동|제한하다, 가두다|11/12 DAY48
+rigid|형|엄격한; 뻣뻣한|11/12 DAY48
+archaeology|명|고고학|11/12 DAY48
+intact|형|손상되지 않은, 온전한|11/12 DAY48
+panel|명|토론자단, 패널|⭐ Word Master DAY30
+flourish|동|번창하다, 번성하다|⭐ Word Master DAY30
+discharge|명·동|배출, 방출; 내보내다, 해고하다|⭐ Word Master DAY30
+undertake|동|착수하다, (일을) 떠맡다|⭐ Word Master DAY30
+pledge|명·동|약속, 맹세; 약속하다|⭐ Word Master DAY30
+mock|동·형|조롱하다; 가짜의|⭐ Word Master DAY30
+disclose|동|드러내다, 폭로하다|⭐ Word Master DAY30
+awkward|형|어색한, 서투른|⭐ Word Master DAY30
+grind|동|갈다, 빻다|⭐ Word Master DAY30
+script|명|대본; 손으로 쓰기|11/13 DAY49
+sole|형|유일한|11/13 DAY49
+temperate|형|(기후가) 온화한; 절제하는|11/13 DAY49
+illuminate|동|비추다, 밝히다|11/5 보문고1 day1-2
+take shape|동|형태를 갖추다, 구체화되다|11/5 보문고1 day1-2
+specimen|명|표본, 견본|11/5 보문고1 day1-2
+determined|형|단호한, 결심한|11/5 보문고1 day1-2
+in progress|형|진행 중인|11/5 보문고1 day1-2
+instrumental|형|중요한 역할을 하는|11/5 보문고1 day1-2
+particle|명|입자, 미립자|11/5 보문고1 day1-2
+distribute|동|분배하다, 나누어 주다|11/5 보문고1 day1-2
+settle on|동|~으로 결정하다|11/5 보문고1 day1-2
+bulky|형|부피가 큰|11/5 보문고1 day1-2
+reflect on|동|되돌아보다, 곰곰이 생각하다|11/5 보문고1 day1-2
+magnification|명|확대, 배율|11/5 보문고1 day1-2
+proceed|동|진행하다, 나아가다|11/5 보문고1 day1-2
+waterproof|형|방수의|11/5 보문고1 day1-2
+medical condition|명|질환, 건강 상태|11/5 보문고1 day1-2
+Antarctica|명|남극 대륙|11/5 보카파워 14-15
+platform|명|승강장; 연단; 플랫폼|11/5 보카파워 14-15
+demonstration|명|시연, 시범; 시위|11/5 보카파워 14-15
+profile|명|옆모습, 윤곽; 개요|11/5 보카파워 14-15
+devise|동|고안하다|11/5 보카파워 14-15
+skyscraper|명|고층 건물|11/5 보카파워 14-15
+swift|형|신속한, 빠른|11/5 보카파워 14-15
+underlying|형|근본적인, 밑에 있는|11/5 보카파워 14-15
+dome|명|돔, 둥근 지붕|11/5 보카파워 14-15
+monitor|동|감시하다, 관찰하다|11/5 보카파워 14-15
+landscape|명|풍경, 경치|11/5 보카파워 14-15
+hoist|동|끌어올리다, 들어 올리다|11/5 보카파워 14-15
+patent|명|특허(권)|11/5 보카파워 14-15
+claw|명|발톱, 집게발|11/5 보카파워 14-15
+mechanic|명|정비공|11/5 보카파워 14-15
+brake|명·동|브레이크; 제동을 걸다|11/5 보카파워 14-15
+persist|동|지속되다; 고집하다|11/13 보문고1 day1-8
+originate|동|비롯되다, 유래하다|11/13 보문고1 day1-8
+permit|동·명|허락하다; 허가증|11/13 보문고1 day1-8
+contemporary|형|현대의; 동시대의|11/13 보문고1 day1-8
+transition|명|전환, 이행|11/13 보문고1 day1-8
+overdue|형|기한이 지난, 연체된|11/13 보문고1 day1-8
+assert|동|주장하다|11/13 보문고1 day1-8
+highly|부|매우, 대단히|11/13 보문고1 day1-8
+infrastructure|명|사회 기반 시설|11/13 보문고1 day1-8
+ethical|형|윤리적인|11/13 보문고1 day1-8
+be comprised of|동|~으로 구성되다|11/13 보문고1 day1-8
+organic|형|유기농의; 유기체의|11/13 보문고1 day1-8
+aggregation|명|집합, 총계|11/13 보문고1 day1-8
+fare|명|(교통) 요금|11/13 보문고1 day1-8
+accountability|명|책임, 책무|11/13 보문고1 day1-8
+physiologist|명|생리학자|11/13 보문고1 day1-8
+household|명|가정, 가구|11/13 보문고1 day1-8
+make the most of|동|~을 최대한 활용하다|11/13 보문고1 day1-8
+minority|명|소수 (집단)|11/13 보문고1 day1-8
+renewal|명|갱신, 재개|11/13 보문고1 day1-8
+reach out|동|손을 뻗다; 연락하다, 도움을 주다|11/13 보문고1 day1-8
+knot|명|매듭|11/13 보카파워 16-17
+signify|동|의미하다; 중요하다|11/13 보카파워 16-17
+harsh|형|가혹한, 혹독한|11/13 보카파워 16-17
+fishery|명|어업; 어장|11/13 보카파워 16-17
+officer|명|장교; 관리, 경찰관|11/13 보카파워 16-17
+bulk|명|대부분; 큰 규모, 부피|11/13 보카파워 16-17
+cruise|명·동|유람선 여행; 순항하다|11/13 보카파워 16-17
+journal|명|일기; 학술지|11/13 보카파워 16-17
+dump|동·명|버리다; 쓰레기 더미|11/13 보카파워 16-17
+apprentice|명|견습생, 수습생|11/13 보카파워 16-17
+servant|명|하인, 종|11/13 보카파워 16-17
+hourglass|명|모래시계|11/13 보카파워 16-17
+historian|명|역사가|11/13 보카파워 16-17
+extract|동|추출하다, 뽑아내다|11/13 보카파워 16-17
+incubation|명|부화; 잠복기|11/13 보카파워 16-17
+bare|형|벌거벗은, 맨-; 텅 빈|11/13 보카파워 16-17
+`;
+const MY_W = MY_RAW.trim().split('\n').map(l => { const [w, p, m, src] = l.split('|'); return { w, p, m, e:'', k:'📝 ' + src, my:1 }; });
+function myBox(w){ engSt.my = engSt.my || {}; return engSt.my[w.w]; }
+function myDue(){ const t = dayNum(); return MY_W.filter(w => { const b = myBox(w); return !b || b.due <= t; }).sort((a, c) => ((myBox(a) || { b:-1 }).b - (myBox(c) || { b:-1 }).b) || (Math.random() - 0.5)); }
+function myDone(){ return MY_W.filter(w => { const b = myBox(w); return b && b.b >= 3; }).length; }
+function myMark(w, ok){ const t = dayNum(), b = myBox(w) || { b:0, due:t }; b.b = ok ? Math.min(5, b.b + 1) : 0; b.due = t + (ok ? ENG_BOX[b.b] : 0); engSt.my[w.w] = b; engSave(); }   // 외운 단계별 다음 복습까지 날짜 (라이트너 상자)
 let engScene = null, engBoard = null, engBoardT = '', engLetters = [], engSt = null, engMode = '', engQ = null, engT = 0;
 const dayNum = (d) => Math.floor(((d || new Date()) - new Date(2026, 10, 1))/864e5);
 function engLoad(){ engSt = store.get('class8-eng', null) || {}; engSt.box = engSt.box || {}; engSt.days = engSt.days || {}; engSt.learned = engSt.learned || {}; engSt.figs = engSt.figs || {}; if(engSt.tk == null) engSt.tk = 1; return engSt; }
@@ -6815,25 +6948,26 @@ function engHome(){ engMode = 'home'; engStats(); const t = dayNum(), done = !!e
   engSet('<div class="eh">' + (d.getMonth() + 1) + '월 ' + d.getDate() + '일 · 오늘의 단어 10개</div>'
     + '<div class="ewl">' + engToday().map(w => '<span class="' + (engSt.learned[w.w] ? 'ok' : '') + '">' + w.w + '</span>').join('') + '</div>'
     + '<button type="button" class="btn primary big" id="engGo">' + (done ? '✅ 오늘 완료! 한 번 더 보기' : '📖 오늘의 단어 외우기') + '</button>'
+    + (function(){ const md = myDue().length; return '<button type="button" class="btn big gold" id="engMy">📌 내 오답 단어장 · 오늘 ' + md + '개 (완전 암기 ' + myDone() + '/' + MY_W.length + ')</button>'; })()
     + '<button type="button" class="btn big" id="engRev"' + (due ? '' : ' disabled') + '>🔁 복습하기 ' + (due ? '(' + due + '개)' : '(오늘 복습 없음)') + '</button>'
     + (FIG_ON ? '<div class="erow2"><button type="button" class="btn big gold" id="engDraw">🎁 단어 뽑기 · 🎟 ' + (engSt.tk || 0) + '장</button><button type="button" class="btn big" id="engFigs">🏆 도감 ' + Object.keys(engSt.figs).length + '/12</button></div>' : '')
     + '<button type="button" class="btn big" id="engRec">📊 내 기록 · 우리 반</button>'
     + '<p class="etip">💡 외운 단어는 1일 → 2일 → 4일 → 7일 → 15일 뒤에 다시 나와요. 잊어버릴 때쯤 다시 보는 게 오래 기억하는 비법이에요 (에빙하우스 망각 곡선).</p>');
-  $('#engGo').onclick = () => engCards(engToday(), 'today'); $('#engRev').onclick = () => engCards(engDue().slice(0, 15), 'review'); $('#engRec').onclick = engRecord; if(FIG_ON){ $('#engDraw').onclick = figDraw; $('#engFigs').onclick = figBook; } }
+  $('#engGo').onclick = () => engCards(engToday(), 'today'); $('#engRev').onclick = () => engCards(engDue().slice(0, 15), 'review'); $('#engRec').onclick = engRecord; $('#engMy').onclick = () => { const l = myDue().slice(0, 15); if(!l.length){ toast('📌 오늘 오답 단어는 다 했어요! 내일 다시 나와요'); return; } engCards(l, 'my'); }; if(FIG_ON){ $('#engDraw').onclick = figDraw; $('#engFigs').onclick = figBook; } }
 function engCards(list, kind){ engMode = 'card'; let i = 0, flip = false; const again = [];
   const show = () => { if(i >= list.length){ if(again.length){ list = list.concat(again.splice(0)); } else { engQuiz(list.filter((w, k, a) => a.findIndex(v => v.w === w.w) === k), kind); return; } }
     const w = list[i]; engBoardDraw(w); flip = false;
-    engSet('<div class="ebar"><i style="width:' + (i/list.length*100) + '%"></i></div><div class="eh">' + (kind === 'today' ? '오늘의 단어' : '복습') + ' ' + (i + 1) + ' / ' + list.length + '</div>'
+    engSet('<div class="ebar"><i style="width:' + (i/list.length*100) + '%"></i></div><div class="eh">' + (kind === 'today' ? '오늘의 단어' : kind === 'my' ? '📌 오답 단어' : '복습') + ' ' + (i + 1) + ' / ' + list.length + '</div>'
       + '<div class="ecard" id="engCard"><div class="ef"><div class="ew">' + escHtml(w.w) + '</div><div class="ep">' + escHtml(w.p) + '</div><div class="etap">눌러서 뜻 보기</div></div>'
       + '<div class="eb"><div class="em">' + escHtml(w.m) + '</div><div class="ee">' + engHi(w.e, w.w) + '</div><div class="ek">' + escHtml(w.k) + '</div></div></div>'
       + '<div class="erow"><button type="button" class="btn" id="engSay">🔊 발음</button><button type="button" class="btn" id="engAgain">🔁 다시 볼래요</button><button type="button" class="btn primary" id="engOk">✅ 외웠어요</button></div>');
     engSay(w.w);
-    $('#engCard').onclick = () => { flip = !flip; $('#engCard').classList.toggle('on', flip); if(flip) engSay(w.e); };
-    $('#engSay').onclick = () => engSay(flip ? w.e : w.w);
+    $('#engCard').onclick = () => { flip = !flip; $('#engCard').classList.toggle('on', flip); if(flip) engSay(w.e || w.w); };
+    $('#engSay').onclick = () => engSay(flip && w.e ? w.e : w.w);
     $('#engAgain').onclick = () => { again.push(w); i++; show(); };
     $('#engOk').onclick = () => { i++; show(); }; };
   show(); }
-function engQuiz(list, kind){ engMode = 'quiz'; const qs = list.map((w, k) => { const type = k % 3, others = ENG_W.filter(v => v.w !== w.w).sort(() => Math.random() - 0.5).slice(0, 3);
+function engQuiz(list, kind){ engMode = 'quiz'; const qs = list.map((w, k) => { const type = w.e ? k % 3 : k % 2, others = (kind === 'my' ? MY_W : ENG_W).filter(v => v.w !== w.w).sort(() => Math.random() - 0.5).slice(0, 3);
     const opts = [w].concat(others).sort(() => Math.random() - 0.5);
     if(type === 0) return { w, q:'<b class="qw">' + escHtml(w.w) + '</b><br>뜻은?', opts:opts.map(o => o.m), ans:w.m };
     if(type === 1) return { w, q:'<b class="qm">' + escHtml(w.m) + '</b><br>영어로?', opts:opts.map(o => o.w), ans:w.w };
@@ -6843,7 +6977,7 @@ function engQuiz(list, kind){ engMode = 'quiz'; const qs = list.map((w, k) => { 
   const show = () => { if(i >= qs.length){ engDone(score, qs.length, kind); return; } const q = qs[i]; engBoardDraw({ w:'Quiz ' + (i + 1), m:'정답을 골라 봐요', p:'', e:'You can do it!' });
     engSet('<div class="ebar"><i style="width:' + (i/qs.length*100) + '%"></i></div><div class="eh">✏️ 퀴즈 ' + (i + 1) + ' / ' + qs.length + ' · 맞힌 개수 ' + score + '</div><div class="eq">' + q.q + '</div><div class="eopts">'
       + q.opts.map((o, k) => '<button type="button" class="btn" data-k="' + k + '">' + escHtml(o) + '</button>').join('') + '</div>');
-    document.querySelectorAll('.eopts .btn').forEach(b => b.onclick = () => { const ok = q.opts[+b.dataset.k] === q.ans; if(ok) score++; engMark(q.w, ok);
+    document.querySelectorAll('.eopts .btn').forEach(b => b.onclick = () => { const ok = q.opts[+b.dataset.k] === q.ans; if(ok) score++; if(kind === 'my') myMark(q.w, ok); else engMark(q.w, ok);
       document.querySelectorAll('.eopts .btn').forEach(c => { c.disabled = true; if(q.opts[+c.dataset.k] === q.ans) c.classList.add('right'); }); if(!ok) b.classList.add('wrong');
       engBoardDraw(q.w); if(ok) engSay(q.w.w); setTimeout(() => { i++; show(); }, ok ? 650 : 1500); }); };
   show(); }
@@ -6851,10 +6985,10 @@ function engDone(score, n, kind){ const t = dayNum(), pass = score >= Math.ceil(
   let gotTk = false; if(kind === 'today' && pass){ engSt.days[t] = Math.max(engSt.days[t] || 0, score); if(FIG_ON && engSt.tkDay !== t){ engSt.tkDay = t; engSt.tk = (engSt.tk || 0) + 1; gotTk = true; } engSave(); lastSent = ''; pushPresence(); }
   engStats(); const st = engStreak();
   engSet('<div class="edone">' + (pass ? '🎉' : '💪') + '</div><div class="eh">' + n + '문제 중 ' + score + '개 맞혔어요!</div>'
-    + (kind === 'today' ? (pass ? '<p class="etip">오늘의 단어 완료! 🔥 연속 ' + st + '일째예요. 틀린 단어는 내일 복습에 다시 나와요.</p>' : '<p class="etip">7개 이상 맞히면 오늘 완료로 기록돼요. 한 번 더 해 볼까요?</p>') : '<p class="etip">복습 완료! 맞힌 단어는 더 오래 뒤에 다시 나와요.</p>')
+    + (kind === 'today' ? (pass ? '<p class="etip">오늘의 단어 완료! 🔥 연속 ' + st + '일째예요. 틀린 단어는 내일 복습에 다시 나와요.</p>' : '<p class="etip">7개 이상 맞히면 오늘 완료로 기록돼요. 한 번 더 해 볼까요?</p>') : kind === 'my' ? '<p class="etip">📌 틀린 단어는 오늘 바로 다시 나오고, 맞힌 단어는 1→2→4→7→15일 뒤에 다시 나와요. 오늘 남은 오답 ' + myDue().length + '개 · 완전 암기 ' + myDone() + '/' + MY_W.length + '</p>' + (myDue().length ? '<button type="button" class="btn primary big" id="engMy2">📌 오답 단어 계속하기</button>' : '') : '<p class="etip">복습 완료! 맞힌 단어는 더 오래 뒤에 다시 나와요.</p>')
     + (gotTk ? '<p class="etip" style="color:#FFE27A;font-weight:800">🎟 단어 뽑기권 1장을 받았어요!</p><button type="button" class="btn primary big" id="engDraw2">🎁 지금 뽑기</button>' : '')
     + '<button type="button" class="btn' + (gotTk ? '' : ' primary') + ' big" id="engHome">처음으로</button>');
-  $('#engHome').onclick = engHome; if($('#engDraw2')) $('#engDraw2').onclick = figDraw; if(pass){ toast(kind === 'today' ? '🔥 오늘의 영단어 완료! 연속 ' + st + '일' : '🔁 복습 완료!'); } }
+  $('#engHome').onclick = engHome; if($('#engMy2')) $('#engMy2').onclick = () => engCards(myDue().slice(0, 15), 'my'); if($('#engDraw2')) $('#engDraw2').onclick = figDraw; if(pass){ toast(kind === 'today' ? '🔥 오늘의 영단어 완료! 연속 ' + st + '일' : '🔁 복습 완료!'); } }
 function engRecord(){ engMode = 'rec'; const t = dayNum(); let cal = ''; for(let k=13;k>=0;k--){ const d = new Date(Date.now() - k*864e5); cal += '<span class="' + (engSt.days[t - k] ? 'on' : '') + '">' + d.getDate() + '</span>'; }
   const mates = []; remotes.forEach(r => { if(r.av.ew) mates.push([r.av.name, r.av.ew, r.av.es || 0]); }); if(engSt.days[t]) mates.push([me.name + ' (나)', 10, engStreak()]);
   mates.sort((a, b) => b[2] - a[2]);
