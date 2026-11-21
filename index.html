@@ -278,6 +278,16 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
 #engUI .eopts .btn.right{background:#2FA36B;color:#fff;border-color:#2FA36B}#engUI .eopts .btn.wrong{background:#C8443A;color:#fff;border-color:#C8443A}
 #engUI .emyta{width:100%;min-height:96px;resize:vertical;background:rgba(255,255,255,.07);border:1px solid rgba(255,226,170,.25);border-radius:12px;color:#F6EEDC;font:14px/1.5 var(--font-b);padding:10px;box-sizing:border-box}
 #engUI .emyl{display:flex;flex-direction:column;gap:5px}#engUI .emyl div{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);border-radius:10px;padding:6px 6px 6px 10px;font-size:13.5px}#engUI .emyl div b{font:700 15px Georgia,serif}#engUI .emyl div span{flex:1;color:#CFC4AE}#engUI .emyl div button{background:none;border:0;color:#E9A0A0;font-size:15px;cursor:pointer;padding:4px 8px}
+#engUI .hsec{font-size:12px;color:#8A6A44;font-weight:800}#engUI .hq{font-size:19px;line-height:1.55;font-weight:800;text-align:center;word-break:keep-all}#engUI .ha{font-size:25px;font-weight:900;color:#FFE27A;text-align:center;word-break:keep-all;line-height:1.35}#engUI .hx{font-size:14px;line-height:1.6;color:#E8E2CF;text-align:center;word-break:keep-all}
+#engUI .hqq{font-size:17px;font-weight:700;word-break:keep-all}#engUI .hsecs{display:grid;gap:6px}#engUI .hsecs .btn{display:flex;justify-content:space-between;gap:8px;padding:11px 12px;font-size:14px;text-align:left}#engUI .hsecs i{font-style:normal;color:#FFE27A;font-weight:800}
+#engUI .hseq .btn{display:flex;align-items:center;gap:10px}#engUI .hseq .btn b{flex:none;width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:13px}#engUI .hseq .btn.on{border-color:#FFE27A}#engUI .hseq .btn.on b{background:#FFE27A;color:#2A1E12}
+#engUI .hans{display:grid;gap:5px}#engUI .hans div{display:flex;gap:8px;align-items:center;background:rgba(255,255,255,.06);border-radius:10px;padding:7px 10px;font-size:14px}#engUI .hans b{color:#FFE27A}#engUI .hans span{flex:1}#engUI .hans i{font-style:normal;color:#9FE8B8;font-weight:800}
+#engUI .hgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}#engUI .hgrid .btn{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px 12px;font-size:14.5px;text-align:left;min-height:58px}#engUI .hgrid small{font-size:11.5px;font-weight:600;opacity:.75}
+#engUI .hsrc{background:#F4EAD2;color:#2A1E12;border-radius:12px;padding:12px 14px;font:15px/1.7 "Noto Serif KR","Noto Sans KR",serif;word-break:keep-all;border-left:5px solid #A8784A}
+#engUI .hmapnav{display:grid;grid-template-columns:48px 1fr 48px;gap:8px;align-items:center}#engUI .hmapnav .btn{min-height:48px;padding:0;font-size:18px}#engUI .hmapnav div{display:flex;flex-direction:column;align-items:center;text-align:center;gap:1px}#engUI .hmapnav b{color:#FFE27A;font-size:13px}#engUI .hmapnav span{font-size:16px;font-weight:900;word-break:keep-all}
+#engUI .hdots{display:flex;gap:5px;justify-content:center}#engUI .hdots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.2)}#engUI .hdots i.on{background:#FFE27A;width:18px;border-radius:4px}
+#engUI .hrange{width:100%;accent-color:#FFE27A}
+#engUI.mini{background:rgba(22,17,12,.82)}@media (max-width:760px){#engUI.mini{height:auto;max-height:42vh}}@media (min-width:761px){#engUI.mini{top:auto;max-height:60vh}}
 #engUI .edone{font-size:64px;text-align:center}
 #engUI .ecal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}#engUI .ecal span{aspect-ratio:1;border-radius:10px;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}#engUI .ecal span.on{background:#FF8A3C;color:#fff}
 #engUI .emates div{display:flex;justify-content:space-between;padding:8px 10px;background:rgba(255,255,255,.06);border-radius:10px;margin-bottom:6px}
@@ -600,6 +610,7 @@ body.demo [data-skill],body.demo [data-fly],body.demo #isleFight{display:none!im
     <button type="button" class="btn" data-go="quiz">🔐 수학 탈출</button>
     <button type="button" class="btn" data-go="cinema">🎬 영화관</button>
     <button type="button" class="btn" data-go="eng">🔤 영어</button>
+    <button type="button" class="btn" data-go="hist">🏯 한국사</button>
     <button type="button" class="btn warm" id="lobbyBack">⬅ 교실</button>
   </div>
   <div id="dockUI" hidden>
@@ -704,7 +715,7 @@ body.demo [data-skill],body.demo [data-fly],body.demo #isleFight{display:none!im
     </div>
     </div>
     <button class="btn primary" type="submit" id="enterBtn" hidden>교실 입장</button>
-    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 102</p>
+    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 104</p>
   </form>
 </div>
 
@@ -1835,7 +1846,7 @@ function handlePlayers(){
     av.studyStart = num(s.studyStart, 0, now, now);
     av.total = (s.date === todayStr && s.v === DATA_VER) ? num(s.total, 0, 86400, 0) : 0; av.flying = s.fly === true;
     av.streak = Math.floor(num(s.streak, 0, 999, 0)); av.steady = s.steady === true; av.geo = s.geo === true; av.pet = s.pet && typeof s.pet === 'object' && (PET_SP[s.pet.sp] || s.pet.sp === 'egg') ? { sp:s.pet.sp, st:clamp(Math.floor(num(s.pet.st, 0, 3, 0)), 0, 3), nm:String(s.pet.nm || '').slice(0, 8) } : null; av.isl = typeof s.isl === 'string' ? s.isl.slice(0, 5) : ''; av.isleY = num(s.iy, -2, 80, 0); av.ride = s.rd === 1; av.rideVy = num(s.rv, -60, 60, 0); av.qd = s.qd && typeof s.qd === 'object' ? { to:String(s.qd.to || ''), seed:num(s.qd.seed, 0, 2e9, 0), n:num(s.qd.n, 0, 1e14, 0), acc:s.qd.acc === true, st:num(s.qd.st, 0, 1e14, 0), sc:num(s.qd.sc, 0, 3, 0), done:num(s.qd.done, 0, 1e14, 0) } : null; av.where = typeof s.where === 'string' ? s.where.slice(0, 24) : ''; av.best = num(s.best, 0, 86400, 0);
-    av.room = (s.room === 'sea' || s.room === 'nino' || s.room === 'space' || s.room === 'geo' || s.room === 'isle' || s.room === 'quiz' || s.room === 'cinema' || s.room === 'eng' || s.room === 'lobby') ? s.room : 'class';
+    av.room = (s.room === 'sea' || s.room === 'nino' || s.room === 'space' || s.room === 'geo' || s.room === 'isle' || s.room === 'quiz' || s.room === 'cinema' || s.room === 'eng' || s.room === 'hist' || s.room === 'lobby') ? s.room : 'class';
     av.cg = Math.round(num(s.cg, -1, 4, -1)); av.cs = Math.round(num(s.cs, -1, 47, -1));
     if(av.room === 'quiz' && room === 'quiz' && av.group.parent === qzScene){ /* 수학 탈출방 대결 상대는 의자에 그대로 */ }
     else if(av.room === 'cinema'){ if(room === 'cinema' && cinScene){ if(av.group.parent !== cinScene) cinScene.add(av.group); av.group.visible = av.cg === cinG; } else { if(av.group.parent !== scene) scene.add(av.group); av.group.visible = false; } }
@@ -3203,7 +3214,7 @@ const lobbyRight = lwall(LZ*2, LX1, 0, -Math.PI/2, '#46518A'), lobbyBack = lwall
   const rb = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 10.8), mat('#2E3A78')); rb.rotation.x = -Math.PI/2; rb.position.set(LX0 + 2.6, 0.012, 0); lobbyScene.add(rb);
   const title = new THREE.Mesh(new THREE.PlaneGeometry(3.6, 0.4), signMat('✦ 1학년 8반 체험관 ✦', '#141833', '#FFE27A', 900, 100, '800 52px "Noto Sans KR", sans-serif')); title.position.set(0, 3.36, 0.05); lobbyBack.add(title); }
 const DOOR_Z = { sea:-5.25, space:-1.75, nino:1.75, geo:5.25 };   // 로비 문 위치 (z)
-const DOOR_NAME = { eng:'영어 탐구실', sea:'심해 탐험실', space:'우주 발사장', nino:'엘니뇨 탐구실', geo:'기하 탐구실', isle:'공중섬', quiz:'수학 탈출방', cinema:'영화관' };
+const DOOR_NAME = { hist:'한국사 탐구실', eng:'영어 탐구실', sea:'심해 탐험실', space:'우주 발사장', nino:'엘니뇨 탐구실', geo:'기하 탐구실', isle:'공중섬', quiz:'수학 탈출방', cinema:'영화관' };
 const seaDoor = makeDoor(lobbyWall, 5.25, 'sea', '심해 탐험실', '3시간공부후출입가능', '#B83B4E', '#1F4F7A', '#0A3A66');
 const ninoDoor = makeDoor(lobbyWall, -1.75, 'nino', '엘니뇨 탐구실', '엘니뇨 탐구실 · 누구나', '#2B6CB0', '#2B5E4A', '#2E86DE');
 const geoDoor = makeDoor(lobbyWall, -5.25, 'geo', '기하 탐구실', '📐 기하 탐구실 · 지하 ↓', '#2E8F7F', '#1E3A4A', '#0B1530');
@@ -3211,6 +3222,7 @@ const isleDoor = makeDoor(lobbyFront, 0, 'isle', '공중섬', '☁ 공중섬 · 
 const exitDoor = makeDoor(lobbyRight, 0, 'class', '교실', '⬅ 교실로 돌아가기', '#2FA36B', '#2B5E4A', '#A9D3FF');
 const quizDoor = makeDoor(lobbyBack, 0, 'quiz', '수학 탈출방', '🔐 수학 탈출방 · 3문제', '#8A3A5A', '#4A3A5A', '#FFC2DC');
 const cinemaDoor = makeDoor(lobbyRight, -4.2, 'cinema', '영화관', '🎬 영화관 · 8반 시네마', '#B3242F', '#3A1A20', '#FFD38A');
+const histDoor = makeDoor(lobbyFront, 2.8, 'hist', '한국사 탐구실', '🏯 한국사 탐구실 · 시험 대비', '#8A4A2A', '#4A2E1E', '#FFD9A0');
 const engDoor = makeDoor(lobbyRight, 4.2, 'eng', '영어 탐구실', '🔤 영어 탐구실 · 매일 단어', '#2F7D4F', '#2E4A3A', '#C9F2D5');
 // ✨ 로비 꾸미기: 대리석 바닥 · 짙은 벽 · 문마다 네온 테두리와 바닥 조명 · 가운데 원형 카펫
 { const fc = document.createElement('canvas'); fc.width = fc.height = 256; const x = fc.getContext('2d'); x.fillStyle = '#8E8474'; x.fillRect(0, 0, 256, 256);
@@ -3279,6 +3291,7 @@ function enterLobby(from){
   if(from === 'quiz'){ me.pos.set((LX0 + LX1)/2, 0, -LZ + 2.4); me.ry = me.targetRy = 0; }
   if(from === 'cinema'){ me.pos.set(LX1 - 2.4, 0, -4.2); me.ry = me.targetRy = -Math.PI/2; }
   if(from === 'eng'){ me.pos.set(LX1 - 2.4, 0, 4.2); me.ry = me.targetRy = -Math.PI/2; }
+  if(from === 'hist'){ me.pos.set((LX0 + LX1)/2 - 2.8, 0, LZ - 2.4); me.ry = me.targetRy = Math.PI; }
   Object.assign(camLim, CLASS_LIM); cam.yaw = Math.PI/2; cam.pitch = 0.5; cam.dist = 7.5; cam.t.set(me.pos.x, 1, me.pos.z);
   lastSent = ''; pushPresence();
   if(fromClass) toast('체험관이에요! 가고 싶은 방의 문으로 걸어가요');
@@ -3304,6 +3317,7 @@ function lobbyTick(dt){
   if(me.pos.x > LX1 - 2.2 && Math.abs(me.pos.z) < 1) near = 'class';
   if(me.pos.x > LX1 - 2.2 && Math.abs(me.pos.z + 4.2) < 1 && !demoHidden('cinema')) near = 'cinema';
   if(me.pos.x > LX1 - 2.2 && Math.abs(me.pos.z - 4.2) < 1) near = 'eng';
+  if(me.pos.z > LZ - 2.2 && Math.abs(me.pos.x - ((LX0 + LX1)/2 - 2.8)) < 1) near = 'hist';
   if(me.pos.z > LZ - 2.2 && Math.abs(me.pos.x - (LX0 + LX1)/2) < 1 && !demoHidden('isle')) near = 'isle';
   if(me.pos.z < -LZ + 2.2 && Math.abs(me.pos.x - (LX0 + LX1)/2) < 1) near = 'quiz';
   if(near !== lobbyNear){ lobbyNear = near; roomBtnAct = null; const b = $('#roomBtn'); b.hidden = !near; if(near) b.textContent = near === 'class' ? '⬅ 교실로 돌아가기' : '🚪 ' + DOOR_NAME[near] + ' 들어가기'; }
@@ -3358,6 +3372,8 @@ function enterRoom(k){
     enterCinema();
   } else if(k === 'eng'){
     enterEng();
+  } else if(k === 'hist'){
+    enterHist();
   } else if(k === 'space'){
     enterSpace();
   } else {
@@ -3428,7 +3444,7 @@ function roomStudyTick(dt){ if(roomStudy){ me.total += dt; me.week = (me.week ||
 function roomCount(k){ let n = room === k ? 1 : 0; remotes.forEach(r => { if(r.av.room === k) n++; }); return n; }
 function roomTick(dt){
   roomStudyTick(dt);
-  if(room === 'eng') engTick(dt); else if(room === 'lobby') lobbyTick(dt); else if(room === 'sea') seaTick(dt); else if(room === 'nino') ninoTick(dt); else if(room === 'space') spaceTick(dt); else if(room === 'geo') geoTick(dt); else if(room === 'isle') isleTick(dt); else if(room === 'quiz') quizTick(dt); else if(room === 'cinema') cinemaTick(dt);
+  if(room === 'eng') engTick(dt); else if(room === 'hist') histTick(dt); else if(room === 'lobby') lobbyTick(dt); else if(room === 'sea') seaTick(dt); else if(room === 'nino') ninoTick(dt); else if(room === 'space') spaceTick(dt); else if(room === 'geo') geoTick(dt); else if(room === 'isle') isleTick(dt); else if(room === 'quiz') quizTick(dt); else if(room === 'cinema') cinemaTick(dt);
 }
 
 /* ===== 심해 탐험실 ===== */
@@ -7009,12 +7025,12 @@ function engBoardDraw(w){ const key = w.w + w.m; if(engBoardT === key) return; e
   x.font = '700 50px "Noto Sans KR", sans-serif'; x.fillStyle = '#FFE27A'; x.fillText((w.p ? '(' + w.p + ') ' : '') + w.m, W2/2, 270);
   x.font = 'italic 34px Georgia, serif'; x.fillStyle = '#CFE8D8'; const e = w.e.length > 52 ? w.e.slice(0, 50) + '…' : w.e; x.fillText(e, W2/2, 370); engBoard.tex.needsUpdate = true; }
 function enterEng(){
-  if(!engScene) buildEng(); engLoad();
+  if(!engScene) buildEng(); engLoad(); engLetters.forEach(s => s.visible = true); $('#engUI .etop b').textContent = '🔤 영어 탐구실';
   $('#panel').hidden = true; $('#joy').hidden = true; $('#engUI').hidden = false;
   Object.assign(camLim, { pmin:-0.3, pmax:0.6, dmin:6, dmax:12 }); cam.yaw = 0; cam.pitch = 0.08; cam.dist = 9.5; cam.t.set(0, 2.6, 0);
   engHome(); toast('🔤 영어 탐구실! 오늘의 단어 10개를 외우고 퀴즈로 확인해요');
 }
-function leaveEng(){ if(gacha){ gacha = null; if(gachaFig) gachaFig.visible = false; if(gachaRays) gachaRays.visible = false; $('#engUI').classList.remove('dim'); } $('#engUI').hidden = true; try { speechSynthesis.cancel(); } catch(e){} engQ = null; }
+function leaveEng(){ if(typeof histView !== 'undefined' && histView){ histView = ''; } $('#engUI').classList.remove('mini'); if(gacha){ gacha = null; if(gachaFig) gachaFig.visible = false; if(gachaRays) gachaRays.visible = false; $('#engUI').classList.remove('dim'); } $('#engUI').hidden = true; try { speechSynthesis.cancel(); } catch(e){} engQ = null; }
 function engTick(dt){ engT += dt; engLetters.forEach(s => { const u = s.userData, a = u.a + engT*u.s; s.position.set(Math.cos(a)*u.r, u.y + Math.sin(engT*0.8 + u.a*3)*0.25, Math.sin(a)*u.r*0.6 - 1); });
   if(gacha) gachaTick(dt); else cam.yaw = Math.sin(engT*0.05)*0.12; }
 // ── 화면 ──
@@ -7072,8 +7088,518 @@ function engRecord(){ engMode = 'rec'; const t = dayNum(); let cal = ''; for(let
     + (mates.length ? '<div class="emates">' + mates.map(m => '<div><b>' + escHtml(m[0]) + '</b><span>🔥 ' + m[2] + '일</span></div>').join('') + '</div>' : '<p class="etip">아직 없어요. 오늘 1등으로 끝내 봐요!</p>')
     + '<div class="eh">📚 외운 단어 ' + Object.keys(engSt.learned).length + ' / ' + ENG_W.length + '</div><div class="ebar"><i style="width:' + (Object.keys(engSt.learned).length/ENG_W.length*100) + '%"></i></div>'
     + '<button type="button" class="btn big" id="engHome">처음으로</button>'); $('#engHome').onclick = engHome; }
+/* 🏯 한국사 탐구실: 교과서 Ⅱ. 대한민국의 발전(74~118쪽) 카드 + 연표 순서 퀴즈. 영어 탐구실(서재)을 같이 쓰고 기록은 이 폰에만 저장 (Firebase 규칙 변경 없음) */
+const HIST_SEC = { A:'1-1 8·15 광복과 정부 수립 운동', B:'1-2 통일 정부 수립을 위한 노력', C:'1-3 대한민국 정부 수립', D:'1-4 반민 특위와 농지 개혁', E:'2-1 6·25 전쟁', F:'2-2 전쟁의 상처와 분단 고착화', G:'3-1 4·19 혁명', H:'3-2 5·16과 유신 체제', I:'3-3 신군부와 5·18', J:'3-4 6월 민주 항쟁', K:'4-1 경제 개발과 산업화', L:'4-2 경제 성장과 사회 변화' };
+const HIST_RAW = `
+A|제2차 세계 대전 이후 미국 중심 자본주의 진영과 소련 중심 공산주의 진영이 직접 전쟁 없이 대립한 상황은?|냉전|X|두 진영은 세계 여러 곳에서 대립했지만 직접적인 무력 전쟁은 하지 않았다.
+A|미국 트루먼 대통령이 공산주의 확대를 막겠다는 정책을 담아 발표한 것(1947)은?|트루먼 독트린|L|이 발표로 두 진영의 긴장이 뚜렷해졌다.
+A|냉전 속에서 미국이 창설한 군사 기구는?|북대서양 조약 기구(NATO)|O|소련은 바르샤바 조약 기구(WTO)로 맞섰다.
+A|냉전 속에서 소련이 미국에 맞서 창설한 군사 기구는?|바르샤바 조약 기구(WTO)|O|미국의 NATO에 대응하였다.
+A|중국 국공 내전에서 국민당에 승리한 공산당이 세운 나라(1949)는?|중화 인민 공화국|O|마오쩌둥이 수립을 선포했다.
+A|6·25 전쟁이 일어나자 미국이 일본에 대해 추진한 것은?|일본의 재무장|L|미국은 일본을 공산주의에 맞서는 반공 국가로 만들려 했다.
+A|광복 후 미군과 소련군이 일본군 무장 해제를 위해 경계로 삼은 선은?|38도선|X|처음에는 미군과 소련군의 일시적인 점령 지역 구분선이었다.
+A|광복 직전 한반도에 들어와 평양에서 38도선 이북의 행정권을 접수한 군대는?|소련군|O|행정권을 인민 위원회에 넘긴 뒤 자국에 유리하게 영향력을 행사했다.
+A|광복 직후 전국 각지에 조직된 민간 자치 기구로, 소련군이 북한에서 행정권을 넘겨준 곳은?|인민 위원회|O|그 결과 북한은 소련의 지원을 받는 김일성 세력이 권력을 주도했다.
+A|소련보다 늦게 들어온 미군이 38도선 이남에서 택한 통치 방식은?|미군정을 통한 직접 통치|L|대한민국 임시 정부 등은 자격을 인정받지 못했다.
+A|미군정이 통치를 위해 일정 기간 유지한 조직은?|조선 총독부 조직|L|이 때문에 피신했던 친일 관료들이 다시 돌아오기도 했다. 한국 민주당 인사들도 활용했다.
+A|"북위 38도선 이남의 통치는 당분간 본관의 권한 아래에서 시행한다"는 포고령 제1호를 발표한 사람은?|맥아더|P|태평양 미 육군 총사령관 맥아더 포고령 제1호(1945.9.9).
+A|광복 직후 조선 총독부의 치안권을 넘겨받고 조선 건국 준비 위원회를 만든 사람은?|여운형|P|안재홍 등과 함께 조선 건국 동맹을 중심으로 좌우 세력을 연합했다.
+A|여운형이 좌우 세력을 연합해 만들고, 전국에 지부와 치안대를 두어 질서를 유지한 단체는?|조선 건국 준비 위원회|O|좌익이 주도권을 잡자 안재홍 등 민족주의 세력이 탈퇴했다.
+A|조선 건국 준비 위원회가 미군 진주 전에 선포하고, 지부를 인민 위원회로 바꾼 것은?|조선 인민 공화국|O|미군정은 조선 인민 공화국을 인정하지 않았다.
+A|송진우, 김성수 등 지주·자본가 출신 우익 세력이 만들고 임시 정부 지지를 선언한 정당은?|한국 민주당|O|미군정과 가까웠다.
+A|이승만이 귀국 후 조직하여 완전 독립, 38도선 철폐 등을 주장한 단체는?|독립 촉성 중앙 협의회|O|
+A|김구 등 대한민국 임시 정부 요인들이 개인 자격으로 귀국해 활동한 정당은?|한국 독립당|O|미군정 방침 때문에 개인 자격으로 귀국했다.
+A|조선 공산당이 좌익 정당들을 통합해 바꾼 정당은?|남조선 노동당|O|대표 인물은 박헌영이다.
+A|1946년 김구 주도로 유해를 모셔 와 효창 공원에 안장한 세 의사는?|이봉창, 윤봉길, 백정기|P|"조국의 자주독립이 오거든 나의 유골을…"은 백정기의 유언이다.
+B|1945년 12월 미국·영국·소련 외무 장관이 한국 문제를 논의한 회의는?|모스크바 3국 외상 회의|E|임시 민주 정부 수립, 미소 공동 위원회 설치, 최대 5년 신탁 통치를 결정했다.
+B|모스크바 3국 외상 회의에서 결정한 신탁 통치의 최대 기간은?|5년|Y|미·영·중·소 4개국이 최대 5년간 신탁 통치하기로 했다.
+B|모스크바 3국 외상 회의 소식에 김구·이승만 등 우익 세력이 벌인 운동은?|신탁 통치 반대 운동(반탁 운동)|E|
+B|좌익 세력이 처음엔 반대하다가 '임시 정부 수립이 핵심'이라며 바꾼 입장은?|모스크바 3국 외상 회의 결정 총체적 지지|X|이후 좌우 대립이 심해졌다.
+B|동아일보가 모스크바 3국 외상 회의를 잘못 보도한 내용은?|소련은 신탁 통치, 미국은 즉시 독립을 주장했다|X|실제와 다른 보도로 반탁 운동이 거세졌다.
+B|1946년 3월 모스크바 결정을 실행하려고 열린 회의는?|제1차 미소 공동 위원회|E|임시 정부 수립을 위한 협의 대상 단체 문제로 대립하다 결렬됐다.
+B|제1차 미소 공동 위원회가 결렬된 가장 큰 쟁점은?|임시 정부 수립에 참여할 협의 대상 단체 문제|X|소련은 모스크바 결정을 지지하는 단체만, 미국은 모든 정치 세력을 주장했다.
+B|이승만이 남한만이라도 임시 정부를 세우자고 주장한 발언(1946.6)은?|정읍 발언|E|
+B|여운형·김규식 등 중도 세력이 미군정 지원 속에 조직한 단체(1946.7)는?|좌우 합작 위원회|O|
+B|좌우 합작 위원회가 1946년 10월 발표한 원칙은?|좌우 합작 7원칙|L|토지는 몰수·유조건 몰수·체감 매상으로 농민에게 무상 분여, 친일파 처리 등을 담았다.
+B|좌우 합작 7원칙의 토지 개혁 방식은?|몰수·유조건 몰수·체감 매상 → 무상 분여|L|좌익은 무상 몰수·무상 분배, 우익은 유상 매입·유상 분배를 주장했다.
+B|좌우 합작 운동이 사실상 중단된 결정적 계기는?|여운형 암살|E|좌우 주요 세력이 불참하고 미군정도 지원을 철회했다.
+B|1947년 5월 다시 열렸지만 결렬된 회의는?|제2차 미소 공동 위원회|E|이후 미국은 한국 문제를 유엔으로 넘겼다.
+B|1947년 11월 유엔 총회가 결정한 내용은?|인구 비례에 따른 남북한 총선거|L|이를 위해 유엔 한국 임시 위원단을 파견했다.
+B|유엔 한국 임시 위원단의 38도선 이북 입국을 거부한 쪽은?|소련과 북한|O|
+B|1948년 2월 유엔 소총회가 결정한 내용은?|선거가 가능한 지역(남한)만의 총선거|L|남한 단독 선거가 결정됐다.
+B|1948년 4월 김구·김규식이 평양에 가서 통일 정부 수립을 논의한 것은?|남북 협상|E|남한 단독 선거 반대, 미소 양군 철수 등을 결의했지만 실패했다.
+B|"나는 통일된 조국을 건설하려다가 38도선을 베고 쓰러질지언정…"이라고 말한 사람은?|김구|P|「삼천만 동포에게 읍고함」(1948)
+B|1948년 4월 3일 제주도에서 남한 단독 선거 반대 등을 내걸고 일어난 봉기와 진압 과정은?|제주 4·3 사건|E|1947년 3·1절 기념 대회 경찰 발포가 배경이었고, 진압 과정에서 많은 제주도민이 희생됐다.
+B|제주 4·3 사건의 배경이 된 1947년의 일은?|3·1절 기념 대회에서 경찰 발포|E|
+B|제주도 진압 출동 명령을 거부한 군대 안 좌익 세력이 일으킨 사건은?|여수·순천 10·19 사건|E|
+C|1948년 5월 10일 실시된 우리나라 최초의 민주적 선거는?|5·10 총선거|E|21세 이상 모든 국민에게 선거권, 보통·평등·비밀·직접 선거.
+C|5·10 총선거의 4대 원칙은?|보통·평등·비밀·직접 선거|L|
+C|5·10 총선거에 참여하지 않은 세력은?|김구·김규식 등 남북 협상파와 좌익 세력|O|
+C|5·10 총선거에서 제주도 두 곳의 투표가 제대로 안 된 이유는?|제주 4·3 사건의 영향|X|그래서 198명이 국회 의원으로 뽑혔다.
+C|5·10 총선거로 뽑힌 국회 의원 수는?|198명|Y|
+C|5·10 총선거로 구성되어 헌법을 만든 국회는?|제헌 국회|O|국호를 대한민국으로 정하고 임시 정부의 법통 계승을 밝혔다.
+C|제헌 헌법이 공포된 날은?|1948년 7월 17일|Y|대통령 중심제, 대통령·부통령은 국회에서 간접 선거.
+C|제헌 헌법에서 대통령을 뽑는 방법은?|국회에서 간접 선거|L|
+C|제헌 국회가 뽑은 초대 대통령과 부통령은?|이승만, 이시영|P|
+C|대한민국 정부 수립을 국내외에 선포한 날은?|1948년 8월 15일|Y|
+C|1948년 12월 유엔 총회가 대한민국 정부에 대해 결정한 것은?|한반도의 유일한 합법 정부로 승인|L|
+C|제헌 헌법이 계승한다고 밝힌 것은?|대한민국 임시 정부의 법통(3·1 운동 정신)|L|
+C|1946년 2월 김일성을 위원장으로 조직되어 북한에서 사실상 정부 역할을 한 기구는?|북조선 임시 인민 위원회|O|
+C|북한의 토지 개혁 방식은?|무상 몰수, 무상 분배|L|북조선 임시 인민 위원회가 실시했고, 주요 산업도 국유화했다.
+C|1948년 2월 북한에서 창설된 군대는?|조선 인민군|O|
+C|1948년 9월 9일 김일성을 수상으로 수립된 북한 정권은?|조선 민주주의 인민 공화국|O|
+D|1948년 9월 제헌 국회가 친일파를 처벌하려고 만든 법은?|반민족 행위 처벌법(반민법)|L|
+D|반민법에 따라 친일파를 조사하려고 국회에 설치한 기구는?|반민족 행위 특별 조사 위원회(반민 특위)|O|특별 재판부도 설치했다.
+D|반민 특위가 1949년 1월부터 체포·조사한 인물로 알맞은 것은?|이광수, 최남선, 최린 등|P|
+D|반민 특위에 대한 이승만 정부의 태도는?|반공 우선, 반민 특위에 비협조|X|경찰의 반민 특위 사무실 습격, 국회 프락치 사건, 공소 시효 단축이 이어졌다.
+D|1949년 6월 반민 특위 사무실을 습격한 쪽은?|일부 경찰|O|
+D|국회가 반민법의 공소 시효를 줄인 결과는?|1950년 9월 → 1949년 8월로 단축, 반민 특위 해체|X|친일파 청산이 좌절됐다.
+D|미군정이 일본인 소유 토지를 관리하려고 만든 회사는?|신한 공사|O|이후 중앙 토지 행정처가 이 토지를 농민에게 매각했다.
+D|제헌 국회가 제정(1949)하고 이듬해 시행한 토지 개혁 법은?|농지 개혁법|L|
+D|남한 농지 개혁의 방식은?|유상 매입, 유상 분배|L|북한(무상 몰수·무상 분배)과 비교해서 외우기!
+D|농지 개혁법에서 한 가구가 가질 수 있는 농지 상한은?|3정보|Y|3정보를 넘는 농지를 정부가 사들였다. 1정보는 약 3,000평.
+D|농지 개혁 때 정부가 지주에게 토지값으로 준 것은?|지가 증권|L|
+D|농지 개혁의 결과는?|지주제 소멸, 자작농 증가|X|하지만 농민은 상환 부담, 지주는 지가 증권 가치 하락을 겪었다.
+E|1950년 1월 미국 국무 장관이 발표해 한국이 미국 방위선에서 빠진 선언은?|애치슨 선언|L|방위선: 알류샨 열도-일본-오키나와-필리핀.
+E|애치슨 선언 이후에도 미국이 남한을 지원할 근거가 된 협정(1950.1)은?|한미 상호 방위 원조 협정|L|
+E|6·25 전쟁 전 북한이 북한군으로 편입한 병력은?|중국 국공 내전에 참전한 조선 의용군|O|김일성은 소련에서 무기 지원을 약속받고 중국과 군사 비밀 협정을 맺었다.
+E|정부 수립 후 이승만 정부가 내세운 통일 주장은?|북진 통일|L|
+E|6·25 전쟁이 일어난 날은?|1950년 6월 25일|Y|북한군이 38도선을 넘어 기습 남침, 3일 만에 서울 함락.
+E|북한군에 밀려 국군이 마지막으로 지킨 방어선은?|낙동강 전선|X|임시 수도는 대전 → 대구 → 부산으로 옮겨졌다.
+E|북한 공격을 침략으로 규정하고 유엔군 파병을 결의한 곳은?|유엔 안전 보장 이사회|O|미국 등 16개국이 참전했다.
+E|1950년 9월 15일 전세를 뒤집은 작전은?|인천 상륙 작전|E|9월 28일 서울 수복, 10월 평양 점령, 압록강까지 진격.
+E|국군과 유엔군이 압록강까지 진격한 뒤 전세가 다시 바뀐 이유는?|중국군 참전|E|1950년 10월
+E|중국군 공세로 1951년 1월 서울을 다시 빼앗긴 일은?|1·4 후퇴|E|그전 1950년 12월에는 흥남 철수가 있었다.
+E|국군과 유엔군이 서울을 재수복한 때는?|1951년 3월|Y|이후 38도선 부근에서 전선이 굳어졌다.
+E|전선이 교착되자 소련의 제의로 정전 회담이 시작된 때는?|1951년 7월|Y|이승만 정부는 휴전을 반대하고 북진 통일을 주장했다.
+E|정전 회담에서 가장 큰 쟁점이었던 문제는?|포로 송환 문제|X|미국은 자유 송환, 북한·중국은 자동(강제) 송환을 주장했다.
+E|정전 회담 중 이승만 정부가 일방적으로 한 일은?|반공 포로 석방|E|
+E|정전 협정이 체결된 날은?|1953년 7월 27일|Y|유엔군·북한군·중국군이 서명, 비무장 지대(DMZ) 설치.
+E|정전 협정 뒤 한국과 미국이 맺어 미군이 한국에 머물게 된 조약(1953.10)은?|한미 상호 방위 조약|L|
+F|6·25 전쟁 중 북한에 협조할 수 있다는 이유로 학살당한 사람들은?|국민 보도 연맹원|O|
+F|6·25 전쟁 때 큰 경제적 이익(전쟁 특수)을 얻은 나라는?|일본|X|1951년 샌프란시스코 강화 조약으로 주권을 되찾았다.
+F|일본이 연합국과 맺어 주권을 회복한 조약(1951)은?|샌프란시스코 강화 조약|L|
+F|1952년 임시 수도 부산에서 국회 의원들을 탄압하며 대통령 직선제로 바꾼 개헌은?|발췌 개헌|L|부산 정치 파동 속에서 통과됐다.
+F|발췌 개헌 당시 국회 의원을 탄압한 사건은?|부산 정치 파동|E|
+F|초대 대통령에 한해 3선 금지 조항을 없앤 개헌(1954)은?|사사오입 개헌|L|135.333…표를 반올림해 135표로 통과시켰다.
+F|1956년 대통령 선거에서 많은 표를 얻은 진보당 후보는?|조봉암|P|부통령에는 민주당 장면이 당선됐다.
+F|1956년 선거에서 부통령으로 당선된 민주당 인물은?|장면|P|
+F|조봉암과 진보당 간부들이 간첩 혐의를 받은 사건은?|진보당 사건|E|조봉암은 사형됐고 2011년 재심에서 무죄 판결을 받았다.
+F|이승만 정부가 1959년 폐간시킨 정부 비판 신문은?|경향신문|O|국가 보안법도 개정했다.
+F|6·25 전쟁 후 북한 김일성이 전쟁 실패 책임을 물어 숙청한 세력은?|남로당 계열(박헌영 등)|O|이후 연안파·소련파도 제거하고 1인 독재를 굳혔다.
+F|1950년대 후반 북한이 노동력을 동원해 생산을 늘리려고 벌인 운동은?|천리마 운동|E|
+F|6·25 전쟁 후 북한이 만든 경제 체제는?|사회주의 경제 체제(농업 협동화, 상공업 국영화)|L|
+G|1960년 이기붕을 부통령에 당선시키려고 벌인 부정 선거는?|3·15 부정 선거|E|4할 사전 투표, 3~9인조 공개 투표, 투표함 바꿔치기 등.
+G|1960년 선거 직전 사망한 민주당 대통령 후보는?|조병옥|P|
+G|3·15 부정 선거 당일 선거 무효 시위가 일어나고, 뒤에 김주열의 시신이 발견된 곳은?|마산|X|
+G|최루탄에 맞아 숨진 채 발견되어 시위를 전국으로 퍼지게 한 학생은?|김주열|P|
+G|1960년 4월 19일 학생과 시민이 이승만 정권에 맞선 민주 혁명은?|4·19 혁명|E|대학교수단 시국 선언 → 이승만 하야.
+G|4·19 혁명 뒤 허정 과도 정부가 바꾼 정치 제도는?|내각 책임제와 양원제 국회|L|
+G|4·19 혁명 후 대통령과 국무총리는?|윤보선 대통령, 장면 국무총리|P|민주당 정부(장면 내각)
+G|장면 내각이 제대로 해결하지 못한 문제는?|부정 선거 관련자 처벌 소극적, 민주당 신·구파 분열|X|그러나 4·19 이후 학원 민주화, 교원 노조, 남북 학생 회담 요구 등이 터져 나왔다.
+H|1961년 5월 16일 박정희 등 일부 군인이 일으킨 사건은?|5·16 군사 정변|E|혁명 공약에서 반공을 국시로 내세웠다.
+H|5·16 군사 정변 뒤 최고 통치 기구는?|국가 재건 최고 회의|O|중앙정보부도 만들었다.
+H|5·16 뒤 정보·감시를 맡은 기구는?|중앙정보부|O|
+H|박정희가 처음 대통령에 당선된 해는?|1963년|Y|제5대 대통령, 민주 공화당 후보.
+H|한일 국교 정상화를 위한 비밀 회담(1962) 두 사람은?|김종필, 오히라|P|김종필·오히라 메모
+H|한일 회담을 '굴욕 외교'라며 반대한 시위(1964)는?|6·3 시위|E|정부는 비상계엄으로 진압했다.
+H|1965년 일본과 국교를 맺은 조약은?|한일 기본 조약|L|식민 지배 사과와 배상 문제가 남았다.
+H|베트남 파병 대가로 미국이 국군 현대화와 경제 원조를 약속한 문서(1966)는?|브라운 각서|L|
+H|1968년 북한 특수 부대가 청와대를 습격하려 한 사건은?|1·21 사태|E|이후 향토 예비군이 창설됐다.
+H|1968년 미국 정보함이 북한에 나포된 사건은?|푸에블로호 피랍 사건|E|
+H|대통령 3회 연임을 허용한 개헌(1969)은?|3선 개헌|L|
+H|1971년 대통령 선거에서 박정희와 겨룬 야당 후보는?|김대중|P|
+H|미국 닉슨 대통령이 "아시아 방위는 아시아인 스스로"라고 한 발표(1969)는?|닉슨 독트린|L|냉전 완화(데탕트)의 계기.
+H|자주·평화·민족적 대단결의 통일 3대 원칙을 밝힌 것(1972)은?|7·4 남북 공동 성명|L|
+H|대통령을 통일 주체 국민 회의에서 뽑고 임기 6년·중임 제한이 없는 헌법은?|유신 헌법|L|1972년. 국회 의원 3분의 1 추천권, 긴급 조치권, 국회 해산권.
+H|유신 헌법에서 대통령을 뽑는 기구는?|통일 주체 국민 회의|O|
+H|유신 헌법에서 대통령의 임기는?|6년(중임 제한 없음)|Y|
+H|유신 정권이 내세운 민주주의는?|한국적 민주주의|X|
+H|1973년 일어나 유신 반대 운동이 커지는 계기가 된 사건은?|김대중 납치 사건|E|장준하 등이 개헌 청원 100만 인 서명 운동을 벌였다.
+H|유신 반대 운동을 탄압한 대통령의 특별 명령은?|긴급 조치|L|
+H|1974년 유신 정부가 학생들을 탄압한 사건은?|민청학련 사건|E|
+H|1974년 8명이 사형되고 2007년 재심에서 무죄가 된 사건은?|인혁당 재건위 사건|E|
+H|1976년 재야 인사들이 명동 성당에서 발표한 유신 반대 선언은?|3·1 민주 구국 선언|L|
+H|1979년 여성 노동자들이 회사 폐업에 항의해 신민당사에서 농성한 사건은?|YH 무역 사건|E|경찰이 강제 진압했다.
+H|YH 무역 사건을 비판한 신민당 총재가 국회에서 제명된 사람은?|김영삼|P|
+H|1979년 부산과 마산에서 일어난 유신 반대 시위는?|부마 민주 항쟁|E|
+H|1979년 중앙정보부장 김재규가 박정희를 살해한 사건은?|10·26 사태|E|유신 체제가 무너졌다.
+I|1979년 전두환·노태우 등 신군부가 군사 반란으로 권력을 잡은 사건은?|12·12 사태|E|
+I|1980년 봄 학생과 시민들이 유신 헌법 폐지와 계엄 해제를 요구한 상황은?|서울의 봄|E|
+I|1980년 5월 17일 신군부가 한 일은?|비상계엄 전국 확대|E|국회 폐쇄, 김대중 등 체포, 대학 휴교령.
+I|1980년 광주에서 계엄군 진압에 맞서 일어난 민주화 운동은?|5·18 민주화 운동|E|5월 21일 계엄군 발포 → 시민군, 2011년 유네스코 세계 기록 유산.
+I|5·18 민주화 운동 기록물이 등재된 것은?|유네스코 세계 기록 유산(2011)|L|
+I|5·18 이후 미국의 책임을 물으며 일어난 사건(1982)은?|부산 미국 문화원 방화 사건|E|
+I|5·18 진압 후 신군부가 만든 권력 기구는?|국가 보위 비상 대책 위원회(국보위)|O|삼청 교육대, 언론 통폐합.
+I|전두환 정부가 언론 보도를 통제하려고 내린 지침은?|보도 지침|L|
+I|전두환 정부 헌법에서 대통령 임기와 선출 방식은?|7년 단임, 대통령 선거인단 간접 선거|L|
+I|전두환 정부의 대표적인 유화 정책은?|야간 통행금지 해제, 교복 자율화, 프로 스포츠|L|
+I|1981년 전두환 정부가 연 대규모 문화 행사는?|국풍 81|E|
+J|1986년 1천만 명 서명 운동으로 요구한 것은?|대통령 직선제 개헌|L|
+J|1987년 1월 서울대생이 경찰 조사 중 숨진 사건은?|박종철 고문치사 사건|E|
+J|1987년 전두환이 직선제 개헌 논의를 중단한다고 발표한 것은?|4·13 호헌 조치|L|
+J|6월 민주 항쟁을 이끈 범국민 단체는?|민주 헌법 쟁취 국민운동 본부|O|
+J|1987년 6월 9일 시위 중 최루탄에 맞아 쓰러진 학생은?|이한열|P|
+J|1987년 6월 '호헌 철폐, 독재 타도'를 외친 전국적 시위는?|6월 민주 항쟁|E|
+J|노태우가 대통령 직선제 개헌을 받아들인다고 발표한 것은?|6·29 민주화 선언|L|이후 5년 단임 대통령 직선제 헌법이 만들어졌다.
+J|6월 민주 항쟁으로 만들어진 헌법의 대통령 선출 방식은?|5년 단임 대통령 직선제|L|
+J|1986년 경찰이 대학생을 성 고문한 사건은?|부천 경찰서 성 고문 사건|E|
+K|미국 원조 물자인 밀·원당·면화를 가공한 1950년대 산업은?|삼백 산업|X|제분·제당·면방직, 원료가 모두 흰색이라 삼백.
+K|미국 원조 물자를 팔아 모은 돈은?|대충자금|L|
+K|1950년대 후반 미국 원조가 어떻게 바뀌었나?|무상 원조 감소 → 유상 차관|X|
+K|5·16 이전에 경제 개발 5개년 계획을 세웠지만 시행하지 못한 정부는?|장면 내각|O|
+K|제1차 경제 개발 5개년 계획 기간은?|1962~1966년|Y|노동 집약적 경공업, 수출 주도형 정책.
+K|1960년대 경제 개발에서 육성한 산업은?|노동 집약적 경공업|X|
+K|1960년대 박정희 정부의 경제 정책 방향은?|수출 주도형 정책|L|
+K|1970년 개통된 고속 도로는?|경부 고속 도로|X|제2차 경제 개발 5개년 계획 기간.
+K|1968년 설립되어 철강 산업의 기반이 된 곳은?|포항 제철|O|
+K|1972년 기업의 사채를 동결한 조치는?|8·3 긴급 경제 조치|L|
+K|1970년대 제3·4차 경제 개발 계획에서 집중 육성한 산업은?|중화학 공업|X|철강, 조선, 전자, 석유 화학, 기계, 비철 금속.
+K|수출 100억 달러를 달성한 해는?|1977년|Y|계획보다 4년 앞서 달성.
+K|제1차 석유 파동(1973)을 극복한 방법은?|중동 건설 사업 진출|X|
+K|1980년대 중반 고도성장을 가져온 3저 호황의 '3저'는?|저유가, 저금리, 저달러|X|
+K|1960년대 독일로 파견되어 외화를 벌어 온 사람들은?|파독 광부와 간호사|P|
+L|정치와 경제가 서로 깊은 관계를 맺고 이익을 나누는 문제는?|정경 유착|X|재벌 중심 성장의 부작용.
+L|1960년대 저곡가 정책의 결과로 농촌 사람들이 도시로 떠난 현상은?|이촌향도|X|
+L|1970년부터 근면·자조·협동을 내건 농촌 운동은?|새마을 운동|E|2013년 유네스코 세계 기록 유산.
+L|새마을 운동의 3대 정신은?|근면·자조·협동|L|
+L|1976~1978년 전남 함평 농민들이 벌인 운동은?|함평 고구마 피해 보상 운동|E|
+L|1979년 오원춘 납치 등으로 알려진 농민 운동 사건은?|안동 교구 가톨릭 농민회 사건|E|
+L|1970년 "근로 기준법을 준수하라"를 외치며 분신한 노동자는?|전태일|P|평화 시장 재단사, 노동 운동이 확산됐다.
+L|1977~1978년 여성 노동자들이 노조를 지키려다 탄압받은 사건은?|동일 방직 사건|E|
+L|1969년 중학교 입시 경쟁을 줄이려고 도입한 제도는?|중학교 무시험 추첨제|L|'뺑뺑이 세대'라는 말이 생겼다.
+L|1970년대 고등학교 입시 경쟁을 줄이려고 시행한 정책은?|고교 평준화 정책|L|
+L|1980년 전두환 정부가 과열된 사교육을 막으려고 한 조치는?|과외 전면 금지|L|
+L|1993년 도입된 대학 입시 제도는?|대학 수학 능력 시험|L|
+L|1965년 중학교 입시 문제 정답 논란으로 학부모들이 무즙을 들고 항의한 사건은?|무즙 파동|E|
+L|1961년 제정된 생활이 어려운 사람을 돕는 법은?|생활 보호법|L|1970년에는 사회 복지 사업법.
+L|전 국민 의료 보험이 실시된 해는?|1989년|Y|의료 보험은 1970년대 후반 처음 시행됐다.
+L|1985년 울산 공단 주변 주민들에게 나타난 공해병은?|온산병|E|
+L|1991년 낙동강에 유독 물질이 흘러든 사건은?|낙동강 페놀 유출 사건|E|
+L|2007년 충남 태안 앞바다에서 일어나 자원봉사자들이 기름을 닦은 사건은?|태안 기름 유출 사건|E|
+L|1994년 환경 보호를 위해 정부가 승격한 기관은?|환경부|O|
+L|서울 쓰레기 매립장이었다가 공원이 된 곳은?|난지도|X|
+`;
+const HIST_SEQ_RAW = `
+1945.08.15|8·15 광복
+1945.12.20|모스크바 3국 외상 회의
+1946.03.20|제1차 미소 공동 위원회
+1946.06.03|이승만 정읍 발언
+1946.07.25|좌우 합작 위원회 조직
+1946.10.07|좌우 합작 7원칙 발표
+1947.05.21|제2차 미소 공동 위원회
+1947.11.14|유엔 총회, 남북한 총선거 결정
+1948.02.26|유엔 소총회, 남한 단독 선거 결정
+1948.04.19|남북 협상
+1948.05.10|5·10 총선거
+1948.07.17|제헌 헌법 공포
+1948.08.15|대한민국 정부 수립
+1948.09.22|반민족 행위 처벌법 제정
+1949.06.21|농지 개혁법 제정
+1950.01.12|애치슨 선언
+1950.06.25|6·25 전쟁 발발
+1950.09.15|인천 상륙 작전
+1950.10.25|중국군 참전
+1951.01.04|1·4 후퇴
+1951.07.10|정전 회담 시작
+1952.07.04|발췌 개헌
+1953.07.27|정전 협정 체결
+1953.10.01|한미 상호 방위 조약
+1954.11.29|사사오입 개헌
+1958.01.13|진보당 사건
+1960.03.15|3·15 부정 선거
+1960.04.19|4·19 혁명
+1961.05.16|5·16 군사 정변
+1962.01.13|제1차 경제 개발 5개년 계획 시작
+1964.06.03|6·3 시위
+1965.06.22|한일 기본 조약
+1968.01.21|1·21 사태
+1969.10.17|3선 개헌
+1970.07.07|경부 고속 도로 개통
+1970.11.13|전태일 분신
+1972.07.04|7·4 남북 공동 성명
+1972.10.17|유신 헌법
+1973.10.17|제1차 석유 파동
+1977.12.22|수출 100억 달러 달성
+1979.08.11|YH 무역 사건
+1979.10.16|부마 민주 항쟁
+1979.10.26|10·26 사태
+1979.12.12|12·12 사태
+1980.05.18|5·18 민주화 운동
+1981.05.28|국풍 81
+1987.01.14|박종철 고문치사 사건
+1987.04.13|4·13 호헌 조치
+1987.06.10|6월 민주 항쟁
+1987.06.29|6·29 민주화 선언
+1989.07.01|전 국민 의료 보험
+1991.03.14|낙동강 페놀 유출 사건
+1993.08.20|대학 수학 능력 시험 도입
+`;
+const HIST_C = HIST_RAW.trim().split('\n').map((l, i) => { const [s, q, a, t, x] = l.split('|'); return { id:'h' + i, s, q, a, t, x:x || '' }; });
+const HIST_E = HIST_SEQ_RAW.trim().split('\n').map(l => { const [k, n] = l.split('|'); return { k, n, y:k.slice(0, 4) }; });
+let histSt = null;
+function histLoad(){ histSt = store.get('class8-hist', null) || {}; histSt.box = histSt.box || {}; histSt.days = histSt.days || {}; histSt.seqBest = histSt.seqBest || 0; return histSt; }
+function histSave(){ store.set('class8-hist', histSt); }
+function histBox(c){ return histSt.box[c.id]; }
+function histMark(c, ok){ const t = dayNum(), b = histBox(c) || { b:0, due:t }; b.b = ok ? Math.min(5, b.b + 1) : 0; b.due = t + (ok ? ENG_BOX[b.b] : 0); b.w = ok ? (b.w || 0) : (b.w || 0) + 1; histSt.box[c.id] = b; histSave(); }
+function histNew(){ return HIST_C.filter(c => !histBox(c)); }
+function histDue(){ const t = dayNum(); return HIST_C.filter(c => { const b = histBox(c); return b && b.due <= t; }).sort((a, c) => histBox(a).b - histBox(c).b); }
+function histWrong(){ return HIST_C.filter(c => { const b = histBox(c); return b && b.b === 0; }); }
+function histKnown(){ return HIST_C.filter(c => { const b = histBox(c); return b && b.b >= 2; }).length; }
+function histStreak(){ let s = 0, t = dayNum(); if(!histSt.days[t]) t--; while(histSt.days[t]){ s++; t--; } return s; }
+function histStats(){ $('#engStat').innerHTML = '<span>🔥 연속 ' + histStreak() + '일</span><span>📚 외운 카드 ' + histKnown() + '/' + HIST_C.length + '</span><span>🔁 복습 ' + histDue().length + '</span>'; }
+function histBoard(top, big, sub){ const key = top + big + sub; if(engBoardT === key) return; engBoardT = key; const x = engBoard.cv.getContext('2d'), W2 = 1024, H2 = 460;
+  x.fillStyle = '#20301F'; x.fillRect(0, 0, W2, H2); x.globalAlpha = 0.06; for(let i=0;i<40;i++){ x.fillStyle = '#fff'; x.fillRect(Math.random()*W2, Math.random()*H2, 80 + Math.random()*200, 2); } x.globalAlpha = 1;
+  x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.font = '700 34px "Noto Sans KR", sans-serif'; x.fillStyle = '#CFE8D8'; x.fillText(fitText(x, top, 940), W2/2, 70);
+  let fs = 96; x.font = '900 ' + fs + 'px "Noto Sans KR", sans-serif'; while(fs > 44 && x.measureText(big).width > 960){ fs -= 6; x.font = '900 ' + fs + 'px "Noto Sans KR", sans-serif'; }
+  x.fillStyle = '#F4F1E6'; x.fillText(fitText(x, big, 980), W2/2, 210);
+  x.font = '700 38px "Noto Sans KR", sans-serif'; x.fillStyle = '#FFE27A'; x.fillText(fitText(x, sub, 960), W2/2, 350); engBoard.tex.needsUpdate = true; }
+function enterHist(){
+  if(!engScene) buildEng(); engLoad(); histLoad(); histView = ''; $('#engUI').classList.remove('mini'); engLetters.forEach(s => s.visible = false);
+  $('#panel').hidden = true; $('#joy').hidden = true; $('#engUI').hidden = false; $('#engUI .etop b').textContent = '🏯 한국사 탐구실';
+  Object.assign(camLim, { pmin:-0.3, pmax:0.6, dmin:6, dmax:12 }); cam.yaw = 0; cam.pitch = 0.08; cam.dist = 9.5; cam.t.set(0, 2.6, 0);
+  histHome(); toast('🏯 한국사 탐구실! 교과서 Ⅱ단원을 카드와 퀴즈로 외워요');
+}
+function histHome(){ engMode = 'hhome'; histStats(); const t = dayNum(), done = !!histSt.days[t], nw = histNew(), due = histDue().length, wr = histWrong().length, d = new Date();
+  histBoard('한국사 · Ⅱ. 대한민국의 발전', '1945 → 1987', '광복부터 6월 민주 항쟁까지');
+  const next = nw.slice(0, 10);
+  engSet('<div class="eh">' + (d.getMonth() + 1) + '월 ' + d.getDate() + '일 · 오늘의 한국사 ' + (next.length || 0) + '장</div>'
+    + (next.length ? '<p class="etip">📖 ' + escHtml(HIST_SEC[next[0].s]) + (next[next.length - 1].s !== next[0].s ? ' ~ ' + escHtml(HIST_SEC[next[next.length - 1].s]) : '') + '</p>' : '<p class="etip">🎉 교과서 카드를 한 번씩 다 봤어요! 이제 복습과 오답으로 굳혀요.</p>')
+    + (next.length ? '<button type="button" class="btn primary big" id="hGo">' + (done ? '✅ 오늘 완료! 다음 10장 더 하기' : '📖 오늘의 카드 10장 외우기') + '</button>' : '')
+    + '<button type="button" class="btn big" id="hRev"' + (due ? '' : ' disabled') + '>🔁 복습하기 ' + (due ? '(' + due + '장)' : '(오늘 복습 없음)') + '</button>'
+    + '<button type="button" class="btn big gold" id="hWrong"' + (wr ? '' : ' disabled') + '>❌ 틀린 카드만 다시 ' + (wr ? '(' + wr + '장)' : '(없음)') + '</button>'
+    + '<div class="eh" style="font-size:14px;margin-top:4px">🎯 시험형 연습</div><div class="hgrid"><button type="button" class="btn" id="hSrc">📜 사료 퀴즈<small>자료 보고 사건 맞히기</small></button><button type="button" class="btn" id="hFlow">🧠 흐름·비교<small>원인·결과·순서</small></button><button type="button" class="btn" id="hSeq">⏳ 연표 순서<small>시대 순 나열</small></button><button type="button" class="btn" id="hSec">📚 단원별<small>범위 골라 공부</small></button></div>'
+    + '<div class="eh" style="font-size:14px;margin-top:4px">🧊 3D로 보기</div><div class="hgrid"><button type="button" class="btn gold" id="hMap">🗺 6·25 전선 지도<small>전선이 움직여요</small></button><button type="button" class="btn gold" id="hLine">🛤 3D 연표 길<small>1945 → 1993 걷기</small></button></div>'
+    + '<p class="etip">💡 틀린 카드는 그날 바로 다시 나오고, 맞히면 1→2→4→7→15일 뒤에 다시 나와요. 하루 10장씩이면 2주 만에 Ⅱ단원(' + HIST_C.length + '장) 한 바퀴! 시험 문제 단골인 사건 순서는 연표 퀴즈로 연습해요.</p>');
+  if($('#hGo')) $('#hGo').onclick = () => histCards(histNew().slice(0, 10), 'today');
+  $('#hRev').onclick = () => histCards(histDue().slice(0, 15), 'review'); $('#hWrong').onclick = () => histCards(histWrong().slice(0, 15), 'wrong');
+  $('#hSeq').onclick = () => histSeq(); $('#hSec').onclick = histSecs; $('#hSrc').onclick = () => histMultiQuiz('src'); $('#hFlow').onclick = () => histMultiQuiz('flow'); $('#hMap').onclick = histMapOpen; $('#hLine').onclick = histLineOpen; }
+function histSecs(){ engMode = 'hsec'; histStats();
+  engSet('<div class="eh">📚 단원 골라 공부하기</div><div class="hsecs">' + Object.keys(HIST_SEC).map(k => { const L = HIST_C.filter(c => c.s === k), kn = L.filter(c => { const b = histBox(c); return b && b.b >= 2; }).length;
+    return '<button type="button" class="btn" data-s="' + k + '"><span>' + escHtml(HIST_SEC[k]) + '</span><i>' + kn + '/' + L.length + '</i></button>'; }).join('') + '</div><button type="button" class="btn big" id="hBack">처음으로</button>');
+  document.querySelectorAll('#engBody [data-s]').forEach(b => b.onclick = () => histCards(HIST_C.filter(c => c.s === b.dataset.s), 'sec'));
+  $('#hBack').onclick = histHome; }
+function histCards(list, kind){ if(!list.length){ histHome(); return; } engMode = 'hcard'; let i = 0, flip = false; const again = [];
+  const lab = { today:'오늘의 카드', review:'복습', wrong:'❌ 틀린 카드', sec:'단원 공부' }[kind];
+  const show = () => { if(i >= list.length){ if(again.length){ list = list.concat(again.splice(0)); } else { histQuiz(list.filter((c, k, a) => a.indexOf(c) === k), kind); return; } }
+    const c = list[i]; flip = false; histBoard(HIST_SEC[c.s], '?', '눌러서 정답 확인');
+    engSet('<div class="ebar"><i style="width:' + (i/list.length*100) + '%"></i></div><div class="eh">' + lab + ' ' + (i + 1) + ' / ' + list.length + '</div>'
+      + '<div class="ecard" id="engCard"><div class="ef"><div class="hsec">' + escHtml(HIST_SEC[c.s]) + '</div><div class="hq">' + escHtml(c.q) + '</div><div class="etap">눌러서 정답 보기</div></div>'
+      + '<div class="eb"><div class="ha">' + escHtml(c.a) + '</div>' + (c.x ? '<div class="hx">' + escHtml(c.x) + '</div>' : '') + '</div></div>'
+      + '<div class="erow" style="grid-template-columns:1fr 1fr"><button type="button" class="btn" id="engAgain">🔁 다시 볼래요</button><button type="button" class="btn primary" id="engOk">✅ 외웠어요</button></div>');
+    $('#engCard').onclick = () => { flip = !flip; $('#engCard').classList.toggle('on', flip); histBoard(HIST_SEC[c.s], flip ? c.a : '?', flip ? (c.x || '') : '눌러서 정답 확인'); };
+    $('#engAgain').onclick = () => { again.push(c); i++; show(); };
+    $('#engOk').onclick = () => { i++; show(); }; };
+  show(); }
+function histOpts(c){ const pool = HIST_C.filter(o => o !== c && o.a !== c.a), same = pool.filter(o => o.t === c.t), near = same.filter(o => o.s === c.s);
+  const out = [], seen = { [c.a]:1 }; [near, same, pool].forEach(P => P.slice().sort(() => Math.random() - 0.5).forEach(o => { if(out.length < 3 && !seen[o.a]){ seen[o.a] = 1; out.push(o.a); } }));
+  return out.concat([c.a]).sort(() => Math.random() - 0.5); }
+function histQuiz(list, kind){ engMode = 'hquiz'; const qs = list.map(c => ({ c, opts:histOpts(c) })); let i = 0, score = 0;
+  const show = () => { if(i >= qs.length){ histDone(score, qs.length, kind); return; } const q = qs[i]; histBoard('퀴즈 ' + (i + 1) + ' / ' + qs.length, '정답은?', HIST_SEC[q.c.s]);
+    engSet('<div class="ebar"><i style="width:' + (i/qs.length*100) + '%"></i></div><div class="eh">✏️ 퀴즈 ' + (i + 1) + ' / ' + qs.length + ' · 맞힌 개수 ' + score + '</div><div class="eq hqq">' + escHtml(q.c.q) + '</div><div class="eopts">'
+      + q.opts.map((o, k) => '<button type="button" class="btn" data-k="' + k + '">' + escHtml(o) + '</button>').join('') + '</div><div id="hExp"></div>');
+    document.querySelectorAll('.eopts .btn').forEach(b => b.onclick = () => { const ok = q.opts[+b.dataset.k] === q.c.a; if(ok) score++; histMark(q.c, ok);
+      document.querySelectorAll('.eopts .btn').forEach(x => { x.disabled = true; if(q.opts[+x.dataset.k] === q.c.a) x.classList.add('right'); }); if(!ok) b.classList.add('wrong');
+      histBoard(HIST_SEC[q.c.s], q.c.a, ok ? '정답! 👍' : '틀렸어요 · 오늘 다시 나와요');
+      if(!ok && q.c.x){ $('#hExp').innerHTML = '<p class="etip" style="margin-top:4px">📌 ' + escHtml(q.c.x) + '</p><button type="button" class="btn primary big" id="hNext" style="margin-top:8px">다음 ▶</button>'; $('#hNext').onclick = () => { i++; show(); }; }
+      else setTimeout(() => { i++; show(); }, ok ? 650 : 1600); }); };
+  show(); }
+function histDone(score, n, kind){ const t = dayNum(), pass = score >= Math.ceil(n*0.7);
+  if(kind === 'today' && pass){ histSt.days[t] = 1; histSave(); }
+  histStats(); const wr = histWrong().length;
+  histBoard('결과', n + '문제 중 ' + score + '개', pass ? '잘했어요! 🎉' : '틀린 카드는 다시 나와요');
+  engSet('<div class="edone">' + (pass ? '🎉' : '💪') + '</div><div class="eh">' + n + '문제 중 ' + score + '개 맞혔어요!</div>'
+    + '<p class="etip">' + (kind === 'today' ? (pass ? '오늘의 한국사 완료! 🔥 연속 ' + histStreak() + '일째예요.' : '7할 이상 맞히면 오늘 완료로 기록돼요.') + ' ' : '') + '틀린 카드는 오늘 바로 다시, 맞힌 카드는 며칠 뒤에 다시 나와요.</p>'
+    + (wr ? '<button type="button" class="btn big gold" id="hW2">❌ 틀린 카드 ' + wr + '장 바로 다시</button>' : '')
+    + '<button type="button" class="btn primary big" id="hH2">처음으로</button>');
+  if($('#hW2')) $('#hW2').onclick = () => histCards(histWrong().slice(0, 15), 'wrong'); $('#hH2').onclick = histHome;
+  if(pass) toast(kind === 'today' ? '🏯 오늘의 한국사 완료!' : '👍 잘했어요!'); }
+/* ⏳ 연표 순서 퀴즈: 사건 4개를 일어난 순서대로 눌러요 (5라운드) */
+function histSeq(){ engMode = 'hseq'; let round = 0, score = 0;
+  const pick = () => { const span = 14 + Math.floor(Math.random()*12), st = Math.floor(Math.random()*Math.max(1, HIST_E.length - span)), seg = HIST_E.slice(st, st + span).sort(() => Math.random() - 0.5).slice(0, 4); return seg; };
+  const show = () => { if(round >= 5){ histSt.seqBest = Math.max(histSt.seqBest || 0, score); histSave();
+      histBoard('연표 순서 퀴즈', '5문제 중 ' + score + '개', '최고 기록 ' + histSt.seqBest + '개');
+      engSet('<div class="edone">' + (score >= 4 ? '🏆' : '⏳') + '</div><div class="eh">순서 퀴즈 5문제 중 ' + score + '개 맞혔어요!</div><p class="etip">최고 기록 ' + histSt.seqBest + '개. 시험에 자주 나오는 "시대 순 나열" 문제 연습이에요.</p>'
+        + '<button type="button" class="btn primary big" id="hS2">⏳ 한 번 더</button><button type="button" class="btn big" id="hH3">처음으로</button>');
+      $('#hS2').onclick = () => histSeq(); $('#hH3').onclick = histHome; return; }
+    const set = pick(), ans = set.slice().sort((a, b) => a.k < b.k ? -1 : 1), picked = [];
+    histBoard('연표 순서 퀴즈 ' + (round + 1) + ' / 5', '먼저 일어난 순서는?', '맞힌 개수 ' + score);
+    const draw = () => { engSet('<div class="ebar"><i style="width:' + (round/5*100) + '%"></i></div><div class="eh">⏳ ' + (round + 1) + ' / 5 · 먼저 일어난 것부터 차례로 눌러요</div><div class="eopts hseq">'
+        + set.map((e, k) => { const p = picked.indexOf(e); return '<button type="button" class="btn' + (p >= 0 ? ' on' : '') + '" data-k="' + k + '"><b>' + (p >= 0 ? p + 1 : '') + '</b>' + escHtml(e.n) + '</button>'; }).join('') + '</div>'
+        + '<div class="erow" style="grid-template-columns:1fr"><button type="button" class="btn" id="hUndo"' + (picked.length ? '' : ' disabled') + '>↩ 하나 취소</button></div><div id="hRes"></div>');
+      document.querySelectorAll('.hseq .btn').forEach(b => b.onclick = () => { const e = set[+b.dataset.k]; if(picked.indexOf(e) >= 0) return; picked.push(e); if(picked.length < 4) draw(); else check(); });
+      $('#hUndo').onclick = () => { picked.pop(); draw(); }; };
+    const check = () => { const ok = picked.every((e, k) => e === ans[k]); if(ok) score++; draw(); document.querySelectorAll('.hseq .btn, #hUndo').forEach(b => b.disabled = true);
+      histBoard('연표 순서 퀴즈 ' + (round + 1) + ' / 5', ok ? '정답! 👍' : '아쉬워요', ans.map(e => e.y).join(' → '));
+      $('#hRes').innerHTML = '<p class="etip" style="margin-top:6px;color:' + (ok ? '#9FE8B8' : '#FFB4A8') + ';font-weight:800">' + (ok ? '✅ 정답!' : '❌ 정답 순서') + '</p><div class="hans">' + ans.map((e, k) => '<div><b>' + (k + 1) + '</b><span>' + escHtml(e.n) + '</span><i>' + e.y + '</i></div>').join('') + '</div><button type="button" class="btn primary big" id="hNx" style="margin-top:8px">다음 ▶</button>';
+      $('#hNx').onclick = () => { round++; show(); }; };
+    draw(); };
+  show(); }
+
+/* 📜 사료 퀴즈 · 🧠 흐름·비교 퀴즈 */
+const HIST_SRC = `
+맥아더 포고령 제1호(1945.9.)|북위 38도선 이남의 조선 영토와 조선 인민에 대한 정부의 모든 권한은 당분간 본관의 권한 아래에서 시행한다.|미군정의 직접 통치|태평양 미 육군 총사령관 맥아더가 발표했다. 미군은 남한에서 군정을 실시했다.
+모스크바 3국 외상 회의 결정(1945.12.)|조선을 독립 국가로 재건하기 위하여 임시 조선 민주주의 정부를 수립한다. … 미·영·중·소 4개국이 최고 5년 기한으로 신탁 통치를 실시한다.|모스크바 3국 외상 회의|임시 민주 정부 수립, 미소 공동 위원회 설치, 최대 5년 신탁 통치를 결정했다.
+이승만의 발언(1946.6.)|이제 무기 휴회된 미소 공동 위원회가 재개될 기색도 보이지 않으니 … 남방만이라도 임시 정부 혹은 위원회 같은 것을 조직하여 38도선 이북에서 소련이 철수하도록 세계 공론에 호소해야 할 것이다.|정읍 발언|제1차 미소 공동 위원회 결렬 뒤 남한 단독 정부 수립을 처음 주장했다.
+좌우 합작 위원회 발표(1946.10.)|토지 개혁에 있어 몰수, 유조건 몰수, 체감 매상하여 농민에게 무상으로 분여하며 … 친일파 및 민족 반역자를 처리할 조례를 입법 기구에서 심리 결정한다.|좌우 합작 7원칙|여운형·김규식 등 중도 세력이 좌우 합작을 위해 발표했다.
+김구, 「삼천만 동포에게 읍고함」(1948.2.)|나는 통일된 조국을 건설하려다가 38도선을 베고 쓰러질지언정 일신의 구차한 안일을 취하여 단독 정부를 세우는 데는 협력하지 아니하겠다.|남북 협상|김구는 남한 단독 선거에 반대하고 김규식과 함께 평양에서 남북 협상을 벌였다.
+헌법 전문과 제1조(1948.7.)|유구한 역사와 전통에 빛나는 우리들 대한 국민은 기미 삼일 운동으로 대한민국을 건립하여 세계에 선포한 위대한 독립 정신을 계승하여 … 제1조 대한민국은 민주 공화국이다.|제헌 헌법|대한민국 임시 정부의 법통을 계승한다는 뜻을 밝혔다. 대통령은 국회에서 간접 선거로 뽑았다.
+법률(1948.9.)|일본 정부와 통모하여 한일 합병에 적극 협력한 자 … 는 사형 또는 무기 징역에 처하고 그 재산과 유산의 전부 혹은 2분의 1 이상을 몰수한다.|반민족 행위 처벌법|제헌 국회가 친일파 청산을 위해 제정했다. 반민 특위가 설치됐지만 이승만 정부의 비협조로 해체됐다.
+법률(1949.6.)|다음의 농지는 정부가 매수한다. 농가 아닌 자의 농지, 자경하지 않는 자의 농지, 본법 규정의 한도(3정보)를 초과하는 부분의 농지|농지 개혁법|유상 매입·유상 분배 방식. 지주에게는 지가 증권을 주었다.
+미국 국무 장관의 연설(1950.1.)|이 방위선은 알류샨 열도에서 일본을 거쳐 오키나와로 이어진다. … 기타 태평양 지역의 군사적 안전에 대해서는 누구도 보장할 수 없다.|애치슨 선언|한국과 타이완이 미국의 태평양 방위선에서 빠졌다.
+조약(1953.10.)|상호 합의에 의하여 미합중국의 육군, 해군과 공군을 대한민국의 영토 내와 그 부근에 배치하는 권리를 대한민국은 이를 허여하고 미합중국은 이를 수락한다.|한미 상호 방위 조약|정전 협정 뒤 체결되어 주한 미군 주둔의 근거가 되었다.
+개헌 때의 계산(1954.11.)|재적 의원 203명의 3분의 2는 135.333…명이므로 사사오입하면 135명이다. 따라서 찬성 135표로 개헌안은 가결되었다.|사사오입 개헌|초대 대통령에 한해 3선 금지 조항을 없앴다.
+대학교수단 시국 선언문(1960.4.)|마산, 서울, 기타 각지의 학생 데모는 주권을 빼앗긴 국민의 울분을 대신하여 궐기한 순정한 정의감의 발로이다. … 3·15 선거는 불법 선거이다. 공명선거에 의하여 정부통령 선거를 다시 실시하라.|4·19 혁명|교수단 시위 뒤 이승만이 대통령직에서 물러났다.
+혁명 공약(1961.5.)|반공을 국시의 제일의로 삼고 지금까지 형식적이고 구호에만 그친 반공 태세를 재정비 강화한다. … 민생고를 시급히 해결하고 국가 자주 경제 재건에 총력을 경주한다.|5·16 군사 정변|박정희 등 군인들이 정변을 일으키고 발표했다.
+조약(1965.6.)|1910년 8월 22일 및 그 이전에 대한 제국과 대일본 제국 간에 체결된 모든 조약 및 협정이 이미 무효임을 확인한다.|한일 기본 조약|'이미 무효'의 해석이 달라 식민 지배 불법성 문제가 남았다.
+각서(1966.3.)|한국 국군의 현대화 계획을 위해 상당량의 장비를 제공한다. … 베트남에 파견되는 추가 병력에 필요한 경비를 부담한다.|브라운 각서|베트남 추가 파병의 대가로 미국이 군사·경제 원조를 약속했다.
+미국 대통령의 발표(1969.7.)|아시아의 방위는 아시아인 스스로 해결해야 한다. 미국은 아시아 국가의 내란이나 침략에 군사적으로 직접 개입하지 않는다.|닉슨 독트린|냉전이 완화되는 계기가 되었고 박정희 정부는 안보 위기를 강조했다.
+남북 합의(1972.7.)|첫째, 통일은 외세에 의존하거나 외세의 간섭을 받음이 없이 자주적으로 해결하여야 한다. 둘째, 통일은 서로 상대방을 반대하는 무력행사에 의거하지 않고 평화적 방법으로 실현하여야 한다.|7·4 남북 공동 성명|자주·평화·민족적 대단결의 통일 3대 원칙을 밝혔다.
+헌법(1972.12.)|대통령은 통일 주체 국민 회의에서 토론 없이 무기명 투표로 선거한다. … 대통령은 국가의 안전 보장 또는 공공의 안녕질서가 중대한 위협을 받을 우려가 있을 때 긴급 조치를 할 수 있다.|유신 헌법|대통령 임기 6년·중임 제한 없음, 국회 의원 3분의 1 추천권, 국회 해산권을 주었다.
+명동 성당 선언(1976.3.)|국가 안보라는 구실 아래 신앙과 양심의 자유는 날로 위축되어 가고 언론의 자유, 학원의 자주성은 박탈당하고 있다. … 이 나라는 1인 독재 아래 신음하고 있다.|3·1 민주 구국 선언|재야 인사와 종교인들이 유신 체제 철폐를 요구했다.
+광주 시민 궐기문(1980.5.)|우리는 왜 총을 들 수밖에 없었는가? 그 대답은 너무나 간단합니다. 너무나 무자비한 만행을 더 이상 보고 있을 수만 없어서 너도나도 총을 들고 나섰던 것입니다.|5·18 민주화 운동|신군부의 계엄군 진압에 맞서 광주 시민들이 시민군을 조직했다.
+경찰의 발표(1987.1.)|책상을 '탁' 치니 '억' 하고 죽었다.|박종철 고문치사 사건|경찰이 고문 사실을 숨기려 했지만 진실이 드러나 6월 민주 항쟁의 계기가 되었다.
+국민 대회 선언문(1987.6.)|국가의 미래요 소망인 꽃다운 젊은이를 야만적인 고문으로 죽여 놓고 … 국민적 여망인 개헌을 일방적으로 파기한 4·13 폭거를 철회시키기 위한 범국민적 투쟁을 시작한다.|6월 민주 항쟁|호헌 철폐, 독재 타도를 외치며 전국에서 시위가 이어졌다.
+여당 대표의 발표(1987.6.29.)|여야 합의하에 조속히 대통령 직선제로 개헌하고 새 헌법에 의한 대통령 선거를 통해 1988년 2월 평화적 정부 이양을 실현하도록 해야겠습니다.|6·29 민주화 선언|노태우가 발표했고, 5년 단임 대통령 직선제 헌법이 만들어졌다.
+노동자의 편지(1969~1970)|저희는 근로 기준법의 혜택을 조금도 못 받으며 … 하루 15시간의 작업은 너무 과중합니다. … 1개월에 첫 주와 삼 주 2일을 쉬는 것은 희망합니다.|전태일 분신|평화 시장 재단사 전태일은 "근로 기준법을 준수하라"를 외치며 분신했다.
+대통령 긴급 명령(1972.8.)|모든 기업은 1972년 8월 2일 현재 보유하는 모든 사채를 정부에 신고하여야 한다. … 신고된 사채는 월 1.35%, 3년 거치 5년 분할 상환으로 조정한다.|8·3 긴급 경제 조치|기업의 사채를 동결해 어려움에 빠진 기업을 지원했다.
+조봉암의 진보당 창당 개회사(1956)|인간의 존엄성이 무시당하는 일을 없애고 모든 사람의 자유가 완전히 보장되고 모든 사람이 착취당하는 것 없이 응분의 노력과 사회적 보장에 의해 다 같이 평화롭고 행복스럽게 잘 살 수 있는 세상|진보당|평화 통일을 주장했던 조봉암은 진보당 사건으로 사형되었고 2011년 재심에서 무죄를 받았다.
+`.trim().split('\n').map(l => { const [h, t, a, x] = l.split('|'); return { h, t, a, x }; });
+const HIST_FLOW = `
+남한 농지 개혁과 북한 토지 개혁을 바르게 비교한 것은?|남한은 유상 매입·유상 분배, 북한은 무상 몰수·무상 분배|남한은 무상 몰수·무상 분배, 북한은 유상 매입·유상 분배|남북 모두 유상 매입·유상 분배|남북 모두 무상 몰수·무상 분배|남한: 농지 개혁법(1949), 3정보 상한. 북한: 북조선 임시 인민 위원회(1946).
+반민 특위가 친일파 청산에 실패한 까닭으로 알맞은 것은?|반공을 앞세운 이승만 정부의 비협조와 경찰의 반민 특위 습격|유엔이 반민 특위 해산을 결의해서|북한군 남침으로 국회가 사라져서|친일파가 모두 해외로 도망가서|국회 프락치 사건, 공소 시효 단축(1949.8.)으로 반민 특위가 해체됐다.
+5·10 총선거에 대한 설명으로 옳은 것은?|우리나라 최초의 보통·평등·직접·비밀 선거였다|김구와 김규식이 적극 참여했다|남북한 전체에서 실시되었다|국민이 대통령을 직접 뽑았다|남북 협상파와 좌익은 불참했고, 제주도 2개 선거구는 4·3 사건으로 무산됐다.
+모스크바 3국 외상 회의 이후 좌우 대립이 심해진 이유는?|우익은 신탁 통치 반대, 좌익은 결정 총체적 지지로 입장이 갈려서|미국과 소련이 곧바로 전쟁을 시작해서|좌익과 우익이 모두 신탁 통치를 찬성해서|유엔이 남한 단독 정부를 승인해서|좌익은 처음엔 반대했다가 "임시 정부 수립이 핵심"이라며 지지로 바뀌었다.
+미국이 한국 문제를 유엔으로 넘긴 직접적인 계기는?|제2차 미소 공동 위원회 결렬|6·25 전쟁 발발|애치슨 선언 발표|5·10 총선거 실시|1947년 미소 공동 위원회가 끝내 결렬되자 미국은 한국 문제를 유엔 총회에 넘겼다.
+6·25 전쟁이 일어나기 전의 상황으로 옳은 것은?|애치슨 선언으로 한국이 미국의 방위선에서 빠졌다|중국군이 이미 한반도에 들어와 있었다|정전 협정이 체결되어 있었다|한미 상호 방위 조약으로 미군이 주둔했다|북한은 소련의 무기 지원과 조선 의용군 편입으로 군사력을 키웠다.
+인천 상륙 작전 이후 일어난 일을 순서대로 바르게 나열한 것은?|서울 수복 → 압록강 진격 → 중국군 참전 → 1·4 후퇴|중국군 참전 → 서울 수복 → 1·4 후퇴 → 압록강 진격|1·4 후퇴 → 서울 수복 → 중국군 참전 → 압록강 진격|압록강 진격 → 1·4 후퇴 → 서울 수복 → 중국군 참전|1950.9.15 인천 상륙 → 9.28 서울 수복 → 10월 평양·압록강 → 중국군 참전 → 1951.1.4 후퇴
+정전 회담이 2년이나 걸린 가장 큰 이유는?|포로 송환 방식을 두고 의견이 달라서|소련이 회담에 참여하지 않아서|미국이 북진 통일을 고집해서|군사 분계선을 38도선으로 하자고 해서|유엔군은 자유 송환, 공산군은 자동 송환을 주장했다. 이승만은 반공 포로를 석방했다.
+6·25 전쟁의 결과로 옳지 않은 것은?|남북 통일이 이루어졌다|이산가족과 전쟁고아가 생겼다|남북 모두 독재 체제가 강해졌다|일본은 전쟁 특수로 경제가 살아났다|전쟁 후 분단이 더 굳어졌다. 남한은 이승만 장기 집권, 북한은 김일성 1인 독재가 강화됐다.
+이승만 정부의 장기 집권 과정을 순서대로 바르게 나열한 것은?|발췌 개헌 → 사사오입 개헌 → 진보당 사건 → 3·15 부정 선거|사사오입 개헌 → 발췌 개헌 → 3·15 부정 선거 → 진보당 사건|진보당 사건 → 발췌 개헌 → 사사오입 개헌 → 3·15 부정 선거|3·15 부정 선거 → 발췌 개헌 → 진보당 사건 → 사사오입 개헌|1952 발췌 개헌 → 1954 사사오입 → 1958 진보당 사건 → 1960 3·15 부정 선거
+4·19 혁명 이후의 변화로 옳은 것은?|내각 책임제와 양원제 국회로 헌법을 고쳤다|대통령 임기를 6년으로 늘렸다|통일 주체 국민 회의를 만들었다|국가 보위 비상 대책 위원회를 만들었다|허정 과도 정부 → 장면 내각(국무총리)과 윤보선 대통령.
+3선 개헌과 유신 헌법을 비교한 것으로 옳은 것은?|3선 개헌은 대통령 3회 연임 허용, 유신 헌법은 중임 제한을 아예 없앴다|둘 다 대통령을 국민이 직접 뽑지 못하게 했다|3선 개헌으로 통일 주체 국민 회의가 생겼다|유신 헌법은 대통령 임기를 4년으로 줄였다|유신 헌법: 통일 주체 국민 회의 간선, 임기 6년, 긴급 조치권, 국회 해산권.
+박정희 정부가 1972년 유신 헌법을 만들 때 내세운 명분은?|급변하는 국제 정세에 대응하고 평화 통일을 준비한다|부정 선거를 바로잡는다|5·18 민주화 운동을 수습한다|대통령 직선제를 지킨다|닉슨 독트린과 데탕트 속에서 안보를 강조하며 비상계엄을 선포하고 유신 헌법을 만들었다.
+유신 체제가 무너지게 된 과정으로 옳은 것은?|YH 무역 사건 → 김영삼 제명 → 부마 민주 항쟁 → 10·26 사태|부마 민주 항쟁 → YH 무역 사건 → 12·12 사태 → 10·26 사태|10·26 사태 → YH 무역 사건 → 김영삼 제명 → 부마 민주 항쟁|김영삼 제명 → 10·26 사태 → YH 무역 사건 → 부마 민주 항쟁|1979년 8월 YH → 10월 김영삼 제명 → 부마 항쟁 → 10·26 박정희 피살
+유신 헌법과 전두환 정부 헌법의 대통령 선출 방식으로 옳은 것은?|유신: 통일 주체 국민 회의 간선 / 전두환: 대통령 선거인단 간선 7년 단임|유신: 국민 직선 / 전두환: 국회 간선|둘 다 국민 직선 5년 단임|유신: 국회 간선 / 전두환: 국민 직선|6월 민주 항쟁 이후에야 5년 단임 대통령 직선제가 되었다.
+5·18 민주화 운동이 일어나게 된 직접적인 계기는?|신군부가 비상계엄을 전국으로 확대하고 시위를 무력 진압해서|대통령이 부정 선거를 저질러서|한일 회담이 굴욕적이라서|박종철이 고문으로 숨져서|12·12 사태 → 서울의 봄 → 5·17 비상계엄 전국 확대 → 5·18
+6월 민주 항쟁이 일어난 과정을 순서대로 바르게 나열한 것은?|박종철 고문치사 → 4·13 호헌 조치 → 이한열 부상 → 6·29 민주화 선언|4·13 호헌 조치 → 6·29 민주화 선언 → 박종철 고문치사 → 이한열 부상|6·29 민주화 선언 → 박종철 고문치사 → 4·13 호헌 조치 → 이한열 부상|이한열 부상 → 6·29 민주화 선언 → 4·13 호헌 조치 → 박종철 고문치사|그 결과 5년 단임 대통령 직선제 개헌이 이루어졌다.
+4·19 혁명과 6월 민주 항쟁의 공통점으로 알맞은 것은?|학생과 시민이 독재에 맞서 민주주의를 되찾았다|군인이 정변을 일으켜 권력을 잡았다|유엔군이 개입해 정부를 바꿨다|북한과 합의해 통일 헌법을 만들었다|4·19 → 이승만 하야, 6월 항쟁 → 대통령 직선제 개헌.
+1950년대 경제의 특징으로 옳은 것은?|미국 원조 물자를 가공하는 삼백 산업이 발달했다|중화학 공업을 집중 육성했다|수출 100억 달러를 달성했다|3저 호황으로 고도성장했다|삼백 산업(제분·제당·면방직), 대충자금. 1950년대 후반 무상 원조가 줄었다.
+1960년대와 1970년대 경제 개발을 바르게 비교한 것은?|1960년대 노동 집약적 경공업, 1970년대 중화학 공업 육성|1960년대 중화학 공업, 1970년대 경공업 육성|둘 다 삼백 산업 중심|둘 다 농업 중심|1960년대: 수출 주도, 경부 고속 도로(1970). 1970년대: 포항 제철, 수출 100억 달러(1977).
+제1차 석유 파동과 제2차 석유 파동이 우리 경제에 준 영향으로 옳은 것은?|1차는 중동 건설 진출로 극복, 2차는 중화학 과잉 투자와 겹쳐 큰 위기|1차와 2차 모두 별다른 영향이 없었다|1차는 3저 호황으로 극복했다|2차 때 수출 100억 달러를 달성했다|1973년 제1차, 1978~1979년 제2차 석유 파동.
+빠른 경제 성장의 그늘(문제점)로 알맞지 않은 것은?|농촌 소득이 도시보다 훨씬 빠르게 늘었다|재벌 중심 성장과 정경 유착|저임금·장시간 노동|도시와 농촌의 격차, 이촌향도|정부는 새마을 운동(1970)으로 농촌 환경 개선을 추진했다.
+1970년대 노동 운동에 대한 설명으로 옳은 것은?|전태일 분신을 계기로 노동 운동이 확산되었다|정부가 노동조합 활동을 적극 보호했다|노동자의 단체 행동권이 넓어졌다|노동자의 근로 시간이 크게 줄었다|동일 방직 사건(1977~1978), YH 무역 사건(1979)이 대표적이다.
+`.trim().split('\n').map(l => { const p = l.split('|'); return { q:p[0], a:p[1], w:[p[2], p[3], p[4]], x:p[5] || '' }; });
+function histShuf(a){ return a.slice().sort(() => Math.random() - 0.5); }
+function histMultiQuiz(kind){ engMode = 'h' + kind; const N = 8;
+  const qs = kind === 'src' ? histShuf(HIST_SRC).slice(0, N).map(s => ({ head:'📜 ' + s.h, body:'<div class="hsrc">' + escHtml(s.t) + '</div><div class="hqq" style="margin-top:6px">이 자료와 관련된 것은?</div>', a:s.a, opts:histShuf([s.a].concat(histShuf(HIST_SRC.filter(o => o.a !== s.a)).slice(0, 3).map(o => o.a))), x:s.x }))
+    : histShuf(HIST_FLOW).slice(0, N).map(f => ({ head:'🧠 흐름·비교', body:'<div class="hqq">' + escHtml(f.q) + '</div>', a:f.a, opts:histShuf([f.a].concat(f.w)), x:f.x }));
+  let i = 0, score = 0; const wrong = [];
+  const show = () => { if(i >= qs.length){ const best = kind === 'src' ? 'srcBest' : 'flowBest'; histSt[best] = Math.max(histSt[best] || 0, score); histSave();
+      histBoard(kind === 'src' ? '사료 퀴즈' : '흐름·비교 퀴즈', qs.length + '문제 중 ' + score + '개', '최고 기록 ' + histSt[best] + '개');
+      engSet('<div class="edone">' + (score >= 6 ? '🏆' : '💪') + '</div><div class="eh">' + qs.length + '문제 중 ' + score + '개 맞혔어요!</div>'
+        + (wrong.length ? '<div class="eh" style="font-size:14px">틀린 것 다시 보기</div><div class="hans">' + wrong.map(q => '<div style="flex-direction:column;align-items:flex-start"><b>' + escHtml(q.a) + '</b><span style="font-size:13px;color:#CFC4AE">' + escHtml(q.x) + '</span></div>').join('') + '</div>' : '')
+        + '<button type="button" class="btn primary big" id="hM2">한 번 더 (새 문제)</button><button type="button" class="btn big" id="hH4">처음으로</button>');
+      $('#hM2').onclick = () => histMultiQuiz(kind); $('#hH4').onclick = histHome; return; }
+    const q = qs[i]; histBoard(q.head.replace(/^\S+ /, ''), kind === 'src' ? '무슨 사건일까?' : '골라 봐요', '퀴즈 ' + (i + 1) + ' / ' + qs.length);
+    engSet('<div class="ebar"><i style="width:' + (i/qs.length*100) + '%"></i></div><div class="eh">' + escHtml(q.head) + ' · ' + (i + 1) + ' / ' + qs.length + '</div>' + q.body + '<div class="eopts">'
+      + q.opts.map((o, k) => '<button type="button" class="btn" data-k="' + k + '">' + escHtml(o) + '</button>').join('') + '</div><div id="hExp"></div>');
+    document.querySelectorAll('.eopts .btn').forEach(b => b.onclick = () => { const ok = q.opts[+b.dataset.k] === q.a; if(ok) score++; else wrong.push(q);
+      document.querySelectorAll('.eopts .btn').forEach(x => { x.disabled = true; if(q.opts[+x.dataset.k] === q.a) x.classList.add('right'); }); if(!ok) b.classList.add('wrong');
+      $('#hExp').innerHTML = '<p class="etip" style="margin-top:4px">' + (ok ? '✅ ' : '📌 ') + escHtml(q.x) + '</p><button type="button" class="btn primary big" id="hNext" style="margin-top:8px">다음 ▶</button>';
+      $('#hNext').onclick = () => { i++; show(); }; }); };
+  show(); }
+
+/* 🗺 3D 6·25 전쟁 전선 지도 · 🛤 3D 연표 길 (한국사 탐구실 전용 장면) */
+let histScene = null, histView = '', histMap = null, histLine = null, histT = 0;
+const KP = [[124.3,39.9],[125.4,40.4],[126.0,40.9],[126.9,41.8],[127.6,41.4],[128.1,41.6],[128.3,42.0],[129.0,42.1],[129.7,42.4],[130.6,42.4],[130.2,42.0],[129.8,41.8],[129.6,41.2],[129.2,40.7],[128.9,40.4],[128.2,40.0],[127.6,39.8],[127.4,39.4],[127.5,39.15],[127.9,38.9],[128.4,38.4],[128.6,38.2],[128.9,37.75],[129.2,37.4],[129.4,37.0],[129.45,36.5],[129.55,36.05],[129.4,35.5],[129.05,35.1],[128.6,34.9],[128.0,34.8],[127.5,34.6],[126.9,34.4],[126.3,34.5],[126.4,34.8],[126.3,35.6],[126.6,36.0],[126.2,36.7],[126.7,37.0],[126.6,37.45],[126.4,37.7],[126.0,37.75],[125.3,37.9],[124.8,38.1],[125.3,38.75],[125.2,39.2],[124.9,39.6]];
+const KCITY = [['서울',126.98,37.57],['평양',125.75,39.03],['부산',129.07,35.18],['대구',128.6,35.87],['대전',127.38,36.35],['인천',126.63,37.45],['흥남',127.6,39.83],['원산',127.45,39.15],['판문점',126.68,37.95],['압록강',125.2,40.45]];
+const KS = (lat) => [[123,33],[123,lat],[132,lat],[132,33]];
+const DMZ = [[123,37.75],[126.1,37.75],[126.7,37.9],[127.3,38.25],[127.9,38.3],[128.4,38.62],[132,38.62],[132,33],[123,33]];
+const KSTAGE = [
+  { d:'1950. 6. 이전', t:'38도선으로 나뉜 한반도', s:KS(38), ar:[], x:'광복 뒤 미군과 소련군이 38도선을 경계로 남북을 나누어 점령했고, 1948년 남북에 각각 정부가 세워졌어요.' },
+  { d:'1950. 6. 25.', t:'북한군의 기습 남침', s:KS(38), ar:[[126.6,38.4,126.95,37.7,'r'],[127.4,38.4,127.6,37.7,'r'],[128.3,38.4,128.6,37.8,'r']], x:'새벽에 북한군이 38도선 전역에서 남침했어요. 유엔 안전 보장 이사회는 이를 침략으로 규정했어요.' },
+  { d:'1950. 6. 28.', t:'3일 만에 서울 함락', s:KS(37.15), ar:[[126.98,37.6,127.1,36.6,'r'],[127.9,37.4,128.0,36.6,'r']], x:'서울이 함락되고 정부는 대전 → 대구 → 부산으로 옮겨 갔어요. 미국 등 16개국이 유엔군으로 참전했어요.' },
+  { d:'1950. 8. ~ 9.', t:'낙동강 방어선', s:[[128.25,33],[128.25,35.7],[128.55,36.25],[129.4,36.25],[132,36.25],[132,33]], ar:[[127.4,36.3,128.3,35.9,'r'],[127.5,35.3,128.2,35.3,'r'],[128.7,36.7,129.2,36.3,'r']], x:'국군과 유엔군은 낙동강을 따라 마지막 방어선을 지키며 버텼어요.' },
+  { d:'1950. 9. 15. ~ 28.', t:'인천 상륙 작전 · 서울 수복', s:KS(37.9), ar:[[125.6,37.1,126.6,37.45,'b'],[126.7,37.45,126.98,37.57,'b'],[128.6,35.9,127.6,37.0,'b']], x:'유엔군이 인천에 상륙해 북한군의 허리를 끊었고, 9월 28일 서울을 되찾았어요.' },
+  { d:'1950. 10. ~ 11.', t:'평양 점령 · 압록강까지', s:[[123,33],[123,40.3],[125.4,40.6],[126.3,41.1],[127.4,41.0],[128.3,41.3],[129.2,40.9],[129.9,41.4],[132,41.4],[132,33]], ar:[[126.98,37.9,125.75,38.95,'b'],[125.75,39.1,125.6,40.3,'b'],[127.5,39.3,128.2,40.9,'b']], x:'국군과 유엔군은 38도선을 넘어 10월 19일 평양을 점령하고 압록강까지 나아갔어요.' },
+  { d:'1950. 10. ~ 1951. 1.', t:'중국군 참전 · 1·4 후퇴', s:[[123,33],[123,36.95],[127.2,36.95],[128.2,37.2],[129.3,37.3],[132,37.3],[132,33]], ar:[[125.9,40.6,125.8,38.7,'r'],[126.5,38.4,127.0,37.2,'r'],[127.6,39.9,129.0,35.3,'s']], x:'중국군이 참전하자 흥남에서 피란민과 군인이 배로 철수했고(흥남 철수), 1951년 1월 4일 서울을 다시 빼앗겼어요.' },
+  { d:'1951. 3. ~ 7.', t:'서울 재수복 · 전선 교착', s:DMZ, ar:[[127.1,37.1,126.98,37.55,'b'],[128.2,37.2,128.3,38.2,'b']], x:'서울을 되찾은 뒤 38도선 부근에서 전선이 굳었고, 1951년 7월 정전 회담이 시작됐어요.' },
+  { d:'1953. 7. 27.', t:'정전 협정 · 휴전선', s:DMZ, ar:[], dmz:1, x:'판문점에서 정전 협정이 체결되어 군사 분계선과 비무장 지대(DMZ)가 생겼어요. 이후 한미 상호 방위 조약이 맺어졌어요.' }
+];
+const HMK = 1.6, hmx = lon => (lon - 127.5)*HMK, hmz = lat => -(lat - 38)*HMK*1.25;
+function histMapDraw(cv, st){ const x = cv.getContext('2d'), W2 = cv.width, H2 = cv.height, px = lon => (lon - 124)/7*W2, py = lat => (43 - lat)/9*H2;
+  x.clearRect(0, 0, W2, H2); x.save(); x.beginPath(); KP.forEach(([lo, la], i) => i ? x.lineTo(px(lo), py(la)) : x.moveTo(px(lo), py(la))); x.closePath(); x.clip();
+  x.fillStyle = '#D8494A'; x.fillRect(0, 0, W2, H2); x.fillStyle = '#3A7FE0'; x.beginPath(); st.s.forEach(([lo, la], i) => i ? x.lineTo(px(lo), py(la)) : x.moveTo(px(lo), py(la))); x.closePath(); x.fill();
+  x.globalAlpha = 0.06; x.fillStyle = '#fff'; for(let i=0;i<60;i++){ x.beginPath(); x.arc(Math.random()*W2, Math.random()*H2, 6 + Math.random()*20, 0, 7); x.fill(); } x.globalAlpha = 1;
+  if(st.dmz){ x.strokeStyle = '#FFE27A'; x.lineWidth = 16; x.beginPath(); DMZ.slice(0, 6).forEach(([lo, la], i) => i ? x.lineTo(px(lo), py(la)) : x.moveTo(px(lo), py(la))); x.stroke(); }
+  x.restore();
+  x.setLineDash([14, 10]); x.strokeStyle = 'rgba(255,255,255,.75)'; x.lineWidth = 3; x.beginPath(); x.moveTo(px(124.4), py(38)); x.lineTo(px(129.2), py(38)); x.stroke(); x.setLineDash([]);
+  x.font = '700 26px "Noto Sans KR", sans-serif'; x.fillStyle = 'rgba(255,255,255,.85)'; x.fillText('38도선', px(124.0) + 6, py(38) - 10);
+  x.strokeStyle = 'rgba(20,20,30,.8)'; x.lineWidth = 4; x.beginPath(); KP.forEach(([lo, la], i) => i ? x.lineTo(px(lo), py(la)) : x.moveTo(px(lo), py(la))); x.closePath(); x.stroke();
+  KCITY.forEach(([n, lo, la]) => { x.fillStyle = '#fff'; x.beginPath(); x.arc(px(lo), py(la), 9, 0, 7); x.fill(); x.font = '800 34px "Noto Sans KR", sans-serif'; x.lineWidth = 7; x.strokeStyle = 'rgba(10,14,30,.85)'; x.strokeText(n, px(lo) + 14, py(la) + 12); x.fillText(n, px(lo) + 14, py(la) + 12); }); }
+function histArrow(a){ const [lo1, la1, lo2, la2, c] = a, p1 = new THREE.Vector3(hmx(lo1), 0.55, hmz(la1)), p2 = new THREE.Vector3(hmx(lo2), 0.55, hmz(la2)), mid = p1.clone().add(p2).multiplyScalar(0.5); mid.y += 0.5 + p1.distanceTo(p2)*0.15;
+  const curve = new THREE.QuadraticBezierCurve3(p1, mid, p2), col = c === 'r' ? '#FF5A4E' : c === 's' ? '#FFFFFF' : '#5CB8FF', m = new THREE.MeshBasicMaterial({ color:col });
+  const tube = new THREE.Mesh(new THREE.TubeGeometry(curve, 30, 0.09, 8, false), m), head = new THREE.Mesh(new THREE.ConeGeometry(0.24, 0.55, 12), m), g = new THREE.Group(); g.add(tube, head);
+  const tan = curve.getTangent(1); head.position.copy(p2); head.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), tan); g.userData = { tube, head, n:tube.geometry.index.count }; return g; }
+function buildHistScene(){ histScene = new THREE.Scene(); histScene.background = new THREE.Color('#0D1530'); histScene.fog = new THREE.Fog('#0D1530', 30, 70);
+  histScene.add(new THREE.HemisphereLight('#E8F0FF', '#20283F', 0.9)); const dl = new THREE.DirectionalLight('#FFF4E0', 0.6); dl.position.set(-6, 14, 8); histScene.add(dl);
+  // 지도 테이블
+  const G = new THREE.Group(); histScene.add(G); const sea = new THREE.Mesh(new THREE.BoxGeometry(18, 0.3, 22), mat('#1D4E7A')); sea.position.set(0, -0.15, -0.6); G.add(sea);
+  const sh = new THREE.Shape(KP.map(([lo, la]) => new THREE.Vector2(hmx(lo), -hmz(la)))), land = new THREE.Mesh(new THREE.ExtrudeGeometry(sh, { depth:0.4, bevelEnabled:false }), mat('#C9B98A')); land.rotation.x = -Math.PI/2; G.add(land);
+  const mkTop = () => { const cv = document.createElement('canvas'); cv.width = 1024; cv.height = 1316; const tex = new THREE.CanvasTexture(cv), pl = new THREE.Mesh(new THREE.PlaneGeometry(7*HMK, 9*HMK*1.25), new THREE.MeshBasicMaterial({ map:tex, transparent:true, depthWrite:false }));
+    pl.rotation.x = -Math.PI/2; pl.position.set(hmx(127.5), 0.42, hmz(38.5)); G.add(pl); return { cv, tex, pl }; };
+  histMap = { G, a:mkTop(), b:mkTop(), i:0, fade:1, arrows:[], k:0 }; histMap.b.pl.position.y = 0.43; histMap.b.pl.material.opacity = 0;
+  // 연표 길
+  const L = new THREE.Group(); L.position.set(40, 0, 0); histScene.add(L); const road = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.1, HIST_E.length*4.5 + 8), mat('#3A3F5A')); road.position.set(0, -0.05, -HIST_E.length*2.25 + 2); L.add(road);
+  const dec = { 194:'#6E8BFF', 195:'#E2574C', 196:'#3BB273', 197:'#F2A93B', 198:'#9B6BFF', 199:'#3FC1C9' }, pins = [];
+  HIST_E.forEach((e, i) => { const z = -i*4.5, sx = i % 2 ? 1.9 : -1.9, col = dec[e.k.slice(0, 3)] || '#888';
+    const post = new THREE.Mesh(new THREE.BoxGeometry(0.18, 1.6, 0.18), mat('#2A2F45')); post.position.set(sx, 0.8, z); L.add(post);
+    const cv = document.createElement('canvas'); cv.width = 512; cv.height = 300; const x = cv.getContext('2d'); x.fillStyle = '#FFF8E8'; x.fillRect(0, 0, 512, 300); x.fillStyle = col; x.fillRect(0, 0, 512, 84);
+    x.fillStyle = '#fff'; x.font = '900 62px "Noto Sans KR", sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(e.k.slice(0, 4) + '. ' + (+e.k.slice(5, 7)) + '.', 256, 44);
+    x.fillStyle = '#1E1A14'; let fs = 58; x.font = '900 ' + fs + 'px "Noto Sans KR", sans-serif'; const words = e.n; while(fs > 30 && x.measureText(words).width > 480){ fs -= 4; x.font = '900 ' + fs + 'px "Noto Sans KR", sans-serif'; }
+    if(x.measureText(words).width > 480){ const h = Math.ceil(words.length/2), sp = words.lastIndexOf(' ', h + 3); const a = sp > 0 ? words.slice(0, sp) : words.slice(0, h), b = sp > 0 ? words.slice(sp + 1) : words.slice(h); x.fillText(a, 256, 165); x.fillText(b, 256, 235); } else x.fillText(words, 256, 190);
+    const tex = new THREE.CanvasTexture(cv), board = new THREE.Mesh(new THREE.PlaneGeometry(2.1, 1.23), new THREE.MeshBasicMaterial({ map:tex, side:THREE.DoubleSide })); board.position.set(sx, 2.15, z); board.rotation.y = sx > 0 ? -0.35 : 0.35; L.add(board);
+    const tile = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.12, 0.5), mat(col)); tile.position.set(0, 0.02, z); L.add(tile); pins.push({ board, z, sx }); });
+  Object.keys(dec).forEach(k => { const i = HIST_E.findIndex(e => e.k.slice(0, 3) === k); if(i < 0) return; const sp = labelSprite((k + '0') + '년대', dec[k]); sp.scale.set(3.6, 0.9, 1); sp.position.set(0, 3.9, -i*4.5 + 2); L.add(sp); });
+  histLine = { L, pins, i:0, zc:0 }; }
+function histSetView(v){ histView = v; const ui = $('#engUI'); ui.classList.toggle('mini', !!v); if(v && !histScene) buildHistScene();
+  if(v === 'map'){ Object.assign(camLim, { pmin:0.35, pmax:1.45, dmin:10, dmax:34 }); cam.yaw = 0; cam.pitch = 1.0; cam.dist = window.innerWidth < window.innerHeight ? 28 : 22; cam.t.set(0, 0, -0.5); me.group.visible = false; }
+  if(v === 'line'){ Object.assign(camLim, { pmin:0.1, pmax:1.0, dmin:5, dmax:16 }); cam.yaw = 0.3; cam.pitch = 0.4; cam.dist = 9.5; histScene.add(me.group); me.group.visible = true; me.pos.set(40, 0, 2); me.ry = me.targetRy = Math.PI; me.mode = 'idle'; }
+  if(!v){ camera.clearViewOffset(); me.group.visible = false; Object.assign(camLim, { pmin:-0.3, pmax:0.6, dmin:6, dmax:12 }); cam.yaw = 0; cam.pitch = 0.08; cam.dist = 9.5; cam.t.set(0, 2.6, 0); } }
+function histMapStage(k){ const M = histMap; k = Math.max(0, Math.min(KSTAGE.length - 1, k)); M.k = k; const st = KSTAGE[k];
+  const nb = M.i ? M.a : M.b; histMapDraw(nb.cv, st); nb.tex.needsUpdate = true; nb.pl.position.y = 0.44; (M.i ? M.b : M.a).pl.position.y = 0.42; M.i = 1 - M.i; M.fade = 0;
+  M.arrows.forEach(g => M.G.remove(g)); M.arrows = st.ar.map(a => { const g = histArrow(a); M.G.add(g); g.userData.tube.geometry.setDrawRange(0, 0); g.userData.head.visible = false; return g; }); M.at = 0;
+  histBoard('6·25 전쟁 · ' + (k + 1) + ' / ' + KSTAGE.length, st.t, st.d);
+  engSet('<div class="hmapnav"><button type="button" class="btn" id="hmP"' + (k ? '' : ' disabled') + '>◀</button><div><b>' + escHtml(st.d) + '</b><span>' + escHtml(st.t) + '</span></div><button type="button" class="btn primary" id="hmN"' + (k < KSTAGE.length - 1 ? '' : ' disabled') + '>▶</button></div>'
+    + '<div class="hdots">' + KSTAGE.map((_, j) => '<i class="' + (j === k ? 'on' : '') + '"></i>').join('') + '</div><p class="etip">' + escHtml(st.x) + '</p>'
+    + '<p class="etip" style="font-size:11.5px">🟦 국군·유엔군 지역 🟥 북한군·중국군 지역 · 화살표 = 진격 방향' + (k === 6 ? ' · 흰 화살표 = 흥남 철수' : '') + ' · 손가락으로 지도를 돌려 볼 수 있어요</p>'
+    + '<button type="button" class="btn big" id="hmX">⬅ 한국사 탐구실로</button>');
+  $('#hmP').onclick = () => histMapStage(k - 1); $('#hmN').onclick = () => histMapStage(k + 1); $('#hmX').onclick = () => { histSetView(''); histHome(); }; }
+function histMapOpen(){ histSetView('map'); histMapStage(0); toast('🗺 ▶를 눌러 6·25 전쟁의 전선 변화를 따라가 봐요'); }
+function histLineGo(i){ const H = histLine; i = Math.max(0, Math.min(HIST_E.length - 1, i)); H.i = i; const e = HIST_E[i];
+  const rel = HIST_C.find(c => c.a === e.n || c.a.indexOf(e.n) >= 0 || e.n.indexOf(c.a.split('(')[0]) >= 0 && c.a.length > 3);
+  histBoard(e.k.slice(0, 4) + '년 ' + (+e.k.slice(5, 7)) + '월', e.n, (i + 1) + ' / ' + HIST_E.length);
+  const prev = HIST_E[i - 1], next = HIST_E[i + 1];
+  engSet('<div class="hmapnav"><button type="button" class="btn" id="hlP"' + (i ? '' : ' disabled') + '>◀</button><div><b>' + e.k.slice(0, 4) + '. ' + (+e.k.slice(5, 7)) + '.</b><span>' + escHtml(e.n) + '</span></div><button type="button" class="btn primary" id="hlN"' + (next ? '' : ' disabled') + '>▶</button></div>'
+    + '<input type="range" id="hlR" min="0" max="' + (HIST_E.length - 1) + '" value="' + i + '" class="hrange">'
+    + (rel && rel.x ? '<p class="etip">📌 ' + escHtml(rel.x) + '</p>' : '')
+    + '<p class="etip" style="font-size:12px">' + (prev ? '⬅ 이전: ' + escHtml(prev.n) : '') + (prev && next ? '  ·  ' : '') + (next ? '다음: ' + escHtml(next.n) + ' ➡' : '') + '</p>'
+    + '<button type="button" class="btn big" id="hlX">⬅ 한국사 탐구실로</button>');
+  $('#hlP').onclick = () => histLineGo(i - 1); $('#hlN').onclick = () => histLineGo(i + 1); $('#hlR').oninput = ev => histLineGo(+ev.target.value); $('#hlX').onclick = () => { histSetView(''); histHome(); }; }
+function histLineOpen(){ histSetView('line'); histLineGo(0); toast('🛤 ▶를 누르면 연표 길을 따라 걸어가요'); }
+function histTick(dt){ histT += dt; if(!histView){ engTick(dt); return; }
+  { const w = window.innerWidth, h = window.innerHeight, ui = $('#engUI'); if(w > 760) camera.setViewOffset(w, h, (ui.offsetWidth + 16)/2, 0, w, h); else camera.setViewOffset(w, h, 0, ui.offsetHeight/2, w, h); }
+  if(histView === 'map' && histMap){ const M = histMap; if(M.fade < 1){ M.fade = Math.min(1, M.fade + dt*2.2); const nw = M.i ? M.b : M.a, od = M.i ? M.a : M.b; nw.pl.material.opacity = M.fade; od.pl.material.opacity = 1 - M.fade*0.999; }
+    M.at = (M.at || 0) + dt; M.arrows.forEach((g, j) => { const u = Math.max(0, Math.min(1, (M.at - 0.4 - j*0.35)/1.1)); g.userData.tube.geometry.setDrawRange(0, Math.floor(u*g.userData.n/6)*6); g.userData.head.visible = u >= 1; if(u >= 1) g.userData.head.scale.setScalar(1 + Math.sin(histT*6)*0.12); }); }
+  if(histView === 'line' && histLine){ const H = histLine, p = H.pins[H.i], tz = p.z + 2.6; const dz = tz - (me.pos.z), sp = Math.min(Math.abs(dz), dt*6);
+    if(Math.abs(dz) > 0.05){ me.pos.z += Math.sign(dz)*sp; me.pos.x += (40 - me.pos.x)*Math.min(1, dt*4); me.targetRy = dz < 0 ? Math.PI : 0; me.mode = 'walk'; } else { me.mode = 'idle'; me.targetRy = p.sx > 0 ? -Math.PI*0.75 : Math.PI*0.75; }
+    me.update(dt); const kk = 1 - Math.exp(-dt*4); cam.t.lerp(new THREE.Vector3(40 + p.sx*0.7, 1.6, Math.max(p.z + 0.3, me.pos.z - 2.3)), kk); if(!H.drag){ let dy = -p.sx*0.28 - cam.yaw; dy = Math.atan2(Math.sin(dy), Math.cos(dy)); cam.yaw += dy*kk*0.5; }
+    H.pins.forEach((q, j) => { q.board.visible = j >= H.i; const s = j === H.i ? 1.15 : 1; q.board.scale.x += (s - q.board.scale.x)*Math.min(1, dt*6); q.board.scale.y = q.board.scale.x; }); } }
+
 $('#engExit').addEventListener('click', exitRoom);
-$('#engHomeBtn').addEventListener('click', () => { engHome(); });
+$('#engHomeBtn').addEventListener('click', () => { if(room === 'hist'){ if(histView) histSetView(''); histHome(); } else engHome(); });
 /* ===== 🎁 단어 뽑기: 오늘의 단어를 끝내면 뽑기 1번 → 8반 오리지널 '워디' 미니 피규어 12종 (👑 1%) ===== */
 const FIGS = [
   { n:'하늘 워디', r:0, c:'#8FD3FF', a:'book' }, { n:'딸기 워디', r:0, c:'#FF9DB8', a:'scarf' }, { n:'레몬 워디', r:0, c:'#FFE07A', a:'pencil' },
@@ -8332,7 +8858,7 @@ function loop(){
   leftWall.visible = camera.position.x > -W/2 + 0.2; rightWall.visible = camera.position.x < W/2 - 0.2; outdoor.visible = rightWall.visible && !arOn;
   uiT -= dt; if(uiT <= 0){ uiT = 0.25; updateUI(); }
   const fpHid = fpHideList(eye);
-  renderer.render(room === 'sea' ? seaScene : room === 'nino' ? ninoScene : room === 'space' ? (spacePhase === 'space' ? spaceScene : launchScene) : room === 'geo' ? geoScene : room === 'isle' ? isleScene : room === 'eng' ? engScene : room === 'cinema' ? cinScene : room === 'quiz' ? qzScene : room === 'lobby' ? lobbyScene : scene, camera);
+  renderer.render(room === 'sea' ? seaScene : room === 'nino' ? ninoScene : room === 'space' ? (spacePhase === 'space' ? spaceScene : launchScene) : room === 'geo' ? geoScene : room === 'isle' ? isleScene : room === 'eng' ? engScene : room === 'hist' ? (histView ? histScene : engScene) : room === 'cinema' ? cinScene : room === 'quiz' ? qzScene : room === 'lobby' ? lobbyScene : scene, camera);
   fpHid.forEach(o => { o.visible = true; });
   requestAnimationFrame(loop);
 }
