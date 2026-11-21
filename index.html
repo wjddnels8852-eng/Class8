@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="8반 교실">
 <title>8반 3D 교실</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Myeongjo:wght@400;700;800&family=Nanum+Pen+Script&family=Noto+Sans+KR:wght@400;700&display=swap">
 <style>
 /* 레이아웃: 화면 전체가 3D 교실, 위에는 상태 칩, 아래에는 조작 패널 */
 :root{
@@ -286,8 +286,76 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
 #engUI .hsrc{background:#F4EAD2;color:#2A1E12;border-radius:12px;padding:12px 14px;font:15px/1.7 "Noto Serif KR","Noto Sans KR",serif;word-break:keep-all;border-left:5px solid #A8784A}
 #engUI .hmapnav{display:grid;grid-template-columns:48px 1fr 48px;gap:8px;align-items:center}#engUI .hmapnav .btn{min-height:48px;padding:0;font-size:18px}#engUI .hmapnav div{display:flex;flex-direction:column;align-items:center;text-align:center;gap:1px}#engUI .hmapnav b{color:#FFE27A;font-size:13px}#engUI .hmapnav span{font-size:16px;font-weight:900;word-break:keep-all}
 #engUI .hdots{display:flex;gap:5px;justify-content:center}#engUI .hdots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.2)}#engUI .hdots i.on{background:#FFE27A;width:18px;border-radius:4px}
+#engUI .hlc{font-size:12px;color:#CFC4AE;text-align:center}
 #engUI .hrange{width:100%;accent-color:#FFE27A}
 #engUI.mini{background:rgba(22,17,12,.82)}@media (max-width:760px){#engUI.mini{height:auto;max-height:42vh}}@media (min-width:761px){#engUI.mini{top:auto;max-height:60vh}}
+#examOv{position:fixed;inset:0;z-index:60;overflow:auto;-webkit-overflow-scrolling:touch}
+#examOv[hidden]{display:none}
+#examOv.cover{background:radial-gradient(ellipse at 50% 30%,#3A2E22,#14100C 75%);display:flex;align-items:center;justify-content:center;padding:24px 16px}
+.ex-cover{position:relative;width:min(420px,100%);display:flex;flex-direction:column;align-items:center;gap:18px;color:#F4EBDB;font-family:"Noto Sans KR",sans-serif}
+.ex-x{position:absolute;top:-8px;right:-4px;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.12);color:#fff;font-size:18px;z-index:3}
+.ex-env{position:relative;width:100%;aspect-ratio:1.45;margin-top:40px;perspective:900px}
+.ex-front{position:absolute;inset:0;border-radius:6px;overflow:visible!important;background:linear-gradient(160deg,#D8B88A,#C29A66);box-shadow:0 24px 50px rgba(0,0,0,.55),inset 0 0 0 2px rgba(120,80,40,.25);z-index:2;overflow:hidden}
+.ex-front::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,rgba(255,255,255,.05) 0 2px,transparent 2px 7px)}
+.ex-front::after{content:"";position:absolute;left:0;right:0;top:0;height:42%;background:linear-gradient(to bottom right,transparent 49.5%,rgba(90,60,30,.25) 50%,transparent 51%),linear-gradient(to bottom left,transparent 49.5%,rgba(90,60,30,.25) 50%,transparent 51%)}
+.ex-flap{position:absolute;left:0;right:0;top:0;height:42%;background:linear-gradient(180deg,#CDAA77,#BE955F);clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top;z-index:4;transition:transform .7s cubic-bezier(.4,.1,.3,1),z-index 0s .35s;box-shadow:0 4px 8px rgba(0,0,0,.2)}
+.ex-env.open .ex-flap{transform:rotateX(180deg);z-index:1}
+.ex-paper-peek{position:absolute;left:7%;right:7%;top:8%;height:80%;background:#FBF8F1;border-radius:3px;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#222;font-family:"Nanum Myeongjo",serif;transition:transform .7s .45s cubic-bezier(.3,.1,.2,1)}
+.ex-paper-peek b{font-size:30px;font-weight:800}.ex-paper-peek span{font-size:14px;color:#555}
+.ex-env.open .ex-paper-peek{transform:translateY(-62%);z-index:3}
+.ex-lbl{position:absolute;left:9%;right:9%;bottom:7%;background:#FFFDF6;border:1.5px solid #8A6A44;padding:12px 14px;display:flex;flex-direction:column;gap:3px;color:#2A1E12;font-family:"Nanum Myeongjo",serif;z-index:3}
+.ex-lbl small{font-size:11px;color:#6A5440}.ex-lbl b{font-size:19px;font-weight:800}.ex-lbl span{font-size:11.5px;color:#4A3A2A}.ex-lbl i{font-style:normal;font-size:11px;color:#8A6A44;text-align:right}
+.ex-seal{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);width:56px;height:56px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#E0484A,#A01E22);color:#FFE3D2;font:800 13px/1.15 "Nanum Myeongjo",serif;display:flex;align-items:center;justify-content:center;text-align:center;box-shadow:0 3px 8px rgba(0,0,0,.4),inset 0 0 0 3px rgba(255,255,255,.18);z-index:5}
+.ex-env.open .ex-seal{opacity:0;transition:opacity .3s}
+.ex-stamp{position:absolute;right:6%;top:6%;z-index:6!important;border:2.5px solid rgba(190,30,40,.75);color:rgba(190,30,40,.8);font:900 15px "Nanum Myeongjo",serif;padding:3px 8px;transform:rotate(12deg);z-index:3}
+.ex-env.locked .ex-front{filter:saturate(.7) brightness(.85)}
+.ex-btn{width:100%;min-height:54px;border:0;border-radius:14px;background:linear-gradient(180deg,#FFD66B,#F0A830);color:#2A1A00;font:800 17px "Noto Sans KR",sans-serif;box-shadow:0 4px 0 #A06A10;cursor:pointer}
+.ex-lock{width:100%;background:rgba(0,0,0,.35);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px;font-size:14px}
+.ex-lock p{margin:0;font-size:12.5px;line-height:1.6;color:#D8CBB4}.ex-lock span{font-size:13px;color:#FFE27A;font-weight:700}
+.ex-bar{height:10px;border-radius:6px;background:rgba(255,255,255,.12);overflow:hidden}.ex-bar i{display:block;height:100%;background:linear-gradient(90deg,#FFE27A,#6EE7A8)}
+.ex-note{margin:0;font-size:12.5px;color:#D8CBB4;text-align:center}
+#examOv.paper{background:#5B4A3A;padding:0 0 40px}
+.ex-top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;padding:10px max(12px,env(safe-area-inset-left));padding-top:calc(10px + env(safe-area-inset-top));background:rgba(30,24,18,.94);color:#fff;font-family:"Noto Sans KR",sans-serif}
+.ex-top b{font:800 20px ui-monospace,Menlo,monospace;letter-spacing:1px}.ex-top b.warn{color:#FF7A6A}.ex-top span{flex:1;font-size:13px;color:#D8CBB4}
+.ex-top button{border:0;border-radius:10px;padding:9px 14px;font:800 14px "Noto Sans KR",sans-serif}.ex-x2{background:rgba(255,255,255,.12);color:#fff}.ex-sub{background:#FFD66B;color:#2A1A00}
+.ex-sheet *,.ex-sheet{box-sizing:border-box}.ex-sheet{width:min(980px,calc(100% - 16px));margin:14px auto 0;background:#FBFAF6;color:#111;padding:22px 18px 26px;box-shadow:0 10px 40px rgba(0,0,0,.45);font-family:"Nanum Myeongjo","Batang",serif;background-image:linear-gradient(rgba(0,0,0,.015) 1px,transparent 1px);background-size:100% 3px}
+.ex-head{position:relative;display:flex;border:2px solid #111;margin-bottom:12px}
+.ex-hl{flex:1;display:flex;flex-direction:column;gap:3px;padding:10px 12px;font-size:13.5px}.ex-hl b{font-size:16px}
+.ex-hr{width:38%;display:flex;align-items:center;justify-content:center;font:800 26px "Nanum Myeongjo",serif;border-left:2px solid #111;background:linear-gradient(90deg,#fff,#E6E6E6)}
+.ex-score{position:absolute;right:-6px;top:-30px;display:none;align-items:baseline;color:#D0021B;font-family:"Nanum Pen Script","Jua",cursive;transform:rotate(-8deg)}
+.ex-score.show{display:flex}.ex-score b{font-size:56px;line-height:1;text-shadow:0 0 1px #D0021B}.ex-score small{font-size:20px}
+.ex-guide{border:1.5px solid #111;padding:8px 12px;font-size:13px;line-height:1.6;margin-bottom:16px;width:fit-content;max-width:100%}
+.ex-cols{column-count:1;column-gap:28px;column-rule:1.5px solid #222}
+@media (min-width:820px){.ex-cols{column-count:2}.ex-sheet{padding:28px 30px 30px}}
+.ex-q{position:relative;break-inside:avoid;margin:0 0 26px;padding-top:2px}
+.ex-qt{margin:0 0 8px;font-size:15px;line-height:1.6;word-break:keep-all}.ex-qt b{font-weight:800}.ex-pt{font-size:13px;white-space:nowrap}
+.ex-box{border:1.2px solid #222;padding:10px 12px;font-size:14px;line-height:1.75;margin:0 0 10px;word-break:keep-all}.ex-box p{margin:0}.ex-box u{text-underline-offset:3px}
+.ex-src{text-align:right;font-size:13px;margin-top:4px}
+.ex-bogi{border:1px solid #222;padding:14px 12px 8px;position:relative;margin:14px 0 10px;font-size:14px;line-height:1.7}.ex-bogi p{margin:0}
+.ex-bogi-t{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#FBFAF6;padding:0 10px;font-size:13px}
+.ex-tl{margin:4px 0 12px;font-size:12px}.ex-tl-row{display:grid;grid-template-columns:repeat(5,1fr);text-align:center;font-weight:800;font-size:13px;padding:0 calc(50%/6)}
+.ex-tl-line{display:grid;grid-template-columns:repeat(6,1fr);border-top:1.5px solid #111;margin-top:4px}
+.ex-tl-line i{position:relative;font-style:normal;text-align:center;padding-top:10px;line-height:1.3;word-break:keep-all}.ex-tl-line i::before{content:"";position:absolute;top:-1px;left:50%;height:8px;border-left:1.5px dashed #111}
+.ex-tl-line em{font-style:normal;font-size:11px}
+.ex-opts{display:flex;flex-direction:column;gap:2px}.ex-opts.grid{display:grid;grid-template-columns:repeat(3,1fr)}
+.ex-opts button{all:unset;cursor:pointer;display:block;padding:5px 6px;border-radius:6px;font:14px/1.6 "Nanum Myeongjo","Batang",serif;color:#111;word-break:keep-all;position:relative}
+.ex-opts button:active{background:rgba(0,0,0,.05)}
+.ex-n{display:inline-block;width:20px;position:relative}
+.ex-opts button.on .ex-n::after{content:"";position:absolute;left:-6px;top:-4px;width:26px;height:26px;border:2.5px solid #1A3FA8;border-radius:50%;transform:rotate(-12deg)}
+.ex-opts button.on{color:#1A3FA8;font-weight:700}
+.ex-note2{display:block;font-style:normal;font-family:"Noto Sans KR",sans-serif;font-size:11.5px;color:#7A5A30;padding-left:22px}
+.ex-note2:empty{display:none}
+.ex-q.ok .ex-qt b,.ex-q.bad .ex-qt b{position:relative}
+.ex-mark{position:absolute;left:-8px;top:-8px;width:34px;height:34px;pointer-events:none}
+.ex-q.ok .ex-mark{border:3px solid #D0021B;border-radius:50%}
+.ex-q.bad .ex-mark::before{content:"";position:absolute;left:0;top:14px;width:40px;border-top:3px solid #D0021B;transform:rotate(-55deg)}
+.ex-opts button.ans{background:rgba(46,160,90,.12)}.ex-opts button.ans .ex-n{color:#1E8A4A;font-weight:800}
+.ex-opts button.wr{text-decoration:line-through;text-decoration-color:#D0021B;color:#9A2A2A}
+.ex-foot{display:flex;justify-content:space-between;border-top:2px solid #111;margin-top:10px;padding-top:6px;font-size:13px;font-weight:700}
+.ex-exp{margin-top:6px;padding:8px 10px;background:rgba(46,160,90,.08);border-left:3px solid #2E9A5A;font:12.5px/1.6 'Noto Sans KR',sans-serif;color:#3A3020}
+.ex-res{margin:18px 0 10px;padding:12px 14px;border:2px solid #D0021B;color:#A0101B;font-size:15px;line-height:1.6}.ex-res b{font-size:22px}.ex-res small{color:#6A5440;font-size:12px}
+.ex-sheet .ex-btn{margin-top:14px;font-family:"Noto Sans KR",sans-serif}
+#engUI .hexam{width:100%;min-height:62px;border-radius:14px;border:2px solid #8A6A44;background:linear-gradient(160deg,#E8CFA4,#C9A26E);color:#2A1E12;font:800 16px 'Noto Sans KR',sans-serif;display:flex;align-items:center;gap:10px;padding:8px 14px;text-align:left}#engUI .hexam small{display:block;font-size:12px;font-weight:600;color:#5A4430}#engUI .hexam i{font-style:normal;font-size:28px}
 #engUI .edone{font-size:64px;text-align:center}
 #engUI .ecal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}#engUI .ecal span{aspect-ratio:1;border-radius:10px;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}#engUI .ecal span.on{background:#FF8A3C;color:#fff}
 #engUI .emates div{display:flex;justify-content:space-between;padding:8px 10px;background:rgba(255,255,255,.06);border-radius:10px;margin-bottom:6px}
@@ -715,7 +783,7 @@ body.demo [data-skill],body.demo [data-fly],body.demo #isleFight{display:none!im
     </div>
     </div>
     <button class="btn primary" type="submit" id="enterBtn" hidden>교실 입장</button>
-    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 104</p>
+    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 109</p>
   </form>
 </div>
 
@@ -919,7 +987,7 @@ body.demo [data-skill],body.demo [data-fly],body.demo #isleFight{display:none!im
 
 <div class="toast" id="toast" hidden></div>
 
-<div id="movOv" hidden></div><div id="arUI" hidden><div class="arTop">📱 AR · 폰을 움직여 교실을 둘러봐요</div><div class="arBar"><button type="button" class="btn" id="arCenter">⟲ 가운데로</button><button type="button" class="btn warm" id="arOff">✕ AR 끄기</button></div></div><div id="engUI" hidden><div class="etop"><b>🔤 영어 탐구실</b><button type="button" class="btn" id="engHomeBtn">🏠</button><button type="button" class="btn warm" id="engExit">⬅ 나가기</button></div><div id="engStat"></div><div id="engBody"></div></div><canvas id="fx4d"></canvas><div id="fx4dB"></div><button type="button" class="btn warm" id="ytBack" hidden>⬅ 극장으로</button><div id="ytPick" hidden><div class="yp"><b>📺 유튜브 영화 상영</b><p>무료로 공개된 블렌더 단편 영화예요. 다른 영상은 유튜브 링크를 붙여 넣어요. (퍼가기를 막아 둔 영상은 안 나올 수 있어요)</p><div id="ypList"></div><div class="row"><input id="ypIn" placeholder="유튜브 링크 붙여넣기" autocomplete="off"><button type="button" class="btn primary" id="ypGo">상영</button></div><button type="button" class="btn" id="ypX">닫기</button></div></div>
+<div id="movOv" hidden></div><div id="examOv" hidden></div><div id="arUI" hidden><div class="arTop">📱 AR · 폰을 움직여 교실을 둘러봐요</div><div class="arBar"><button type="button" class="btn" id="arCenter">⟲ 가운데로</button><button type="button" class="btn warm" id="arOff">✕ AR 끄기</button></div></div><div id="engUI" hidden><div class="etop"><b>🔤 영어 탐구실</b><button type="button" class="btn" id="engHomeBtn">🏠</button><button type="button" class="btn warm" id="engExit">⬅ 나가기</button></div><div id="engStat"></div><div id="engBody"></div></div><canvas id="fx4d"></canvas><div id="fx4dB"></div><button type="button" class="btn warm" id="ytBack" hidden>⬅ 극장으로</button><div id="ytPick" hidden><div class="yp"><b>📺 유튜브 영화 상영</b><p>무료로 공개된 블렌더 단편 영화예요. 다른 영상은 유튜브 링크를 붙여 넣어요. (퍼가기를 막아 둔 영상은 안 나올 수 있어요)</p><div id="ypList"></div><div class="row"><input id="ypIn" placeholder="유튜브 링크 붙여넣기" autocomplete="off"><button type="button" class="btn primary" id="ypGo">상영</button></div><button type="button" class="btn" id="ypX">닫기</button></div></div>
   <div id="cinUI" hidden><button type="button" class="btn primary" id="cinWatch" hidden>🎬 영화보기</button><button type="button" class="btn" id="cinBig" hidden>⛶ 크게 보기</button><button type="button" class="btn" id="cin4D" hidden>🌀 4DX</button><button type="button" class="btn" id="cinSX" hidden>🖼 ScreenX</button><button type="button" class="btn" id="cinYT" hidden>📺 유튜브</button><button type="button" class="btn" id="cinStand" hidden>⬆ 일어나기</button><button type="button" class="btn warm" id="cinExit">⬅ 나가기</button></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -939,7 +1007,7 @@ const store = {
 
 const HAIR  = ['#3B2A24','#15151C','#E7B75A','#F08FB5','#6E5BD8'];
 const SHIRT = ['#2C6FD1','#2FA36B','#E7A92B','#2B2F45','#D9534F'];
-const SUBJECTS = ['수학','영어','국어','통합과학'];
+const SUBJECTS = ['수학','영어','국어','통합과학','한국사'];
 
 /* ---------- 1. 3D 기본 세팅 (렌더러, 장면, 카메라, 조명) ---------- */
 const canvas = $('#c');
@@ -3213,16 +3281,16 @@ const lobbyRight = lwall(LZ*2, LX1, 0, -Math.PI/2, '#46518A'), lobbyBack = lwall
 { const rug = new THREE.Mesh(new THREE.PlaneGeometry(2.4, 11), mat('#B8923E')); rug.rotation.x = -Math.PI/2; rug.position.set(LX0 + 2.6, 0.01, 0); lobbyScene.add(rug);
   const rb = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 10.8), mat('#2E3A78')); rb.rotation.x = -Math.PI/2; rb.position.set(LX0 + 2.6, 0.012, 0); lobbyScene.add(rb);
   const title = new THREE.Mesh(new THREE.PlaneGeometry(3.6, 0.4), signMat('✦ 1학년 8반 체험관 ✦', '#141833', '#FFE27A', 900, 100, '800 52px "Noto Sans KR", sans-serif')); title.position.set(0, 3.36, 0.05); lobbyBack.add(title); }
-const DOOR_Z = { sea:-5.25, space:-1.75, nino:1.75, geo:5.25 };   // 로비 문 위치 (z)
+const DOOR_Z = { sea:-5.25, space:-4.2, nino:0, geo:5.25, hist:4.2 };   // 로비 문 위치 (z)
 const DOOR_NAME = { hist:'한국사 탐구실', eng:'영어 탐구실', sea:'심해 탐험실', space:'우주 발사장', nino:'엘니뇨 탐구실', geo:'기하 탐구실', isle:'공중섬', quiz:'수학 탈출방', cinema:'영화관' };
 const seaDoor = makeDoor(lobbyWall, 5.25, 'sea', '심해 탐험실', '3시간공부후출입가능', '#B83B4E', '#1F4F7A', '#0A3A66');
-const ninoDoor = makeDoor(lobbyWall, -1.75, 'nino', '엘니뇨 탐구실', '엘니뇨 탐구실 · 누구나', '#2B6CB0', '#2B5E4A', '#2E86DE');
+const ninoDoor = makeDoor(lobbyWall, 0, 'nino', '엘니뇨 탐구실', '엘니뇨 탐구실 · 누구나', '#2B6CB0', '#2B5E4A', '#2E86DE');
 const geoDoor = makeDoor(lobbyWall, -5.25, 'geo', '기하 탐구실', '📐 기하 탐구실 · 지하 ↓', '#2E8F7F', '#1E3A4A', '#0B1530');
 const isleDoor = makeDoor(lobbyFront, 0, 'isle', '공중섬', '☁ 공중섬 · 내 섬 키우기', '#3D8FE0', '#3A6EA5', '#9FD8FF');
 const exitDoor = makeDoor(lobbyRight, 0, 'class', '교실', '⬅ 교실로 돌아가기', '#2FA36B', '#2B5E4A', '#A9D3FF');
 const quizDoor = makeDoor(lobbyBack, 0, 'quiz', '수학 탈출방', '🔐 수학 탈출방 · 3문제', '#8A3A5A', '#4A3A5A', '#FFC2DC');
 const cinemaDoor = makeDoor(lobbyRight, -4.2, 'cinema', '영화관', '🎬 영화관 · 8반 시네마', '#B3242F', '#3A1A20', '#FFD38A');
-const histDoor = makeDoor(lobbyFront, 2.8, 'hist', '한국사 탐구실', '🏯 한국사 탐구실 · 시험 대비', '#8A4A2A', '#4A2E1E', '#FFD9A0');
+const histDoor = makeDoor(lobbyWall, -4.2, 'hist', '한국사 탐구실', '🏯 한국사 탐구실 · 시험 대비', '#8A4A2A', '#4A2E1E', '#FFD9A0');
 const engDoor = makeDoor(lobbyRight, 4.2, 'eng', '영어 탐구실', '🔤 영어 탐구실 · 매일 단어', '#2F7D4F', '#2E4A3A', '#C9F2D5');
 // ✨ 로비 꾸미기: 대리석 바닥 · 짙은 벽 · 문마다 네온 테두리와 바닥 조명 · 가운데 원형 카펫
 { const fc = document.createElement('canvas'); fc.width = fc.height = 256; const x = fc.getContext('2d'); x.fillStyle = '#8E8474'; x.fillRect(0, 0, 256, 256);
@@ -3258,12 +3326,13 @@ const DEMO_HIDE = ['sea', 'geo', 'isle'];
 const PETS_OFF = true;   // 🐾 펫 기능 삭제 (true = 어디서도 안 나와요)
 const DEMO_FORCE = true;   // ⚠ 시연 준비: 모두에게 엘니뇨·우주정거장·수학 탈출방만 보여요 (false로 바꾸면 심해·기하·공중섬이 다시 돌아와요. 섬·포인트·펫 데이터는 그대로 남아 있어요)
 let demoMode = DEMO_FORCE ? store.get('class8-demo2', true) !== false : (/[?&]demo=1/.test(location.search) || store.get('class8-demo', false) === true);
-function demoHidden(k){ return demoMode && DEMO_HIDE.indexOf(k) >= 0; }
+const HIDE_ALWAYS = ['sea', 'geo'];   // 🧹 로비 정리: 안 쓰는 방은 항상 숨겨요 (코드·데이터는 그대로)
+function demoHidden(k){ return HIDE_ALWAYS.indexOf(k) >= 0 || (demoMode && DEMO_HIDE.indexOf(k) >= 0); }
 function applyDemo(){
   [seaDoor, geoDoor, isleDoor, cinemaDoor, engDoor].forEach(d => { d.visible = !demoHidden(d.userData.door); });
-  if(doorFx.sea){ doorFx.sea.puddle.visible = doorFx.sea.stream.visible = !demoMode; }
-  doorFx.ripples.forEach(r => { r.m.visible = !demoMode; }); doorFx.fish.forEach(f => { f.g.visible = !demoMode; }); (doorFx.shapes || []).forEach(s => { s.m.visible = !demoMode; });
-  if(doorFx.geoGlow) doorFx.geoGlow.visible = !demoMode;
+  if(doorFx.sea){ doorFx.sea.puddle.visible = doorFx.sea.stream.visible = false; }
+  doorFx.ripples.forEach(r => { r.m.visible = false; }); doorFx.fish.forEach(f => { f.g.visible = false; }); (doorFx.shapes || []).forEach(s => { s.m.visible = false; });
+  if(doorFx.geoGlow) doorFx.geoGlow.visible = false;
   document.querySelectorAll('#lobbyUI [data-go]').forEach(b => { b.hidden = demoHidden(b.dataset.go); });
   $('#demoTxt').textContent = demoMode ? '🎓 시연 모드 ON' : '🎓 시연 모드 OFF'; $('#btnDemo').classList.toggle('on', demoMode);
   $('#btnPet').hidden = demoMode || PETS_OFF; document.body.classList.toggle('demo', demoMode); try { isles.forEach(I => { if(I.wild) I.g.visible = !demoMode && !PETS_OFF; }); } catch(e){}
@@ -3291,7 +3360,6 @@ function enterLobby(from){
   if(from === 'quiz'){ me.pos.set((LX0 + LX1)/2, 0, -LZ + 2.4); me.ry = me.targetRy = 0; }
   if(from === 'cinema'){ me.pos.set(LX1 - 2.4, 0, -4.2); me.ry = me.targetRy = -Math.PI/2; }
   if(from === 'eng'){ me.pos.set(LX1 - 2.4, 0, 4.2); me.ry = me.targetRy = -Math.PI/2; }
-  if(from === 'hist'){ me.pos.set((LX0 + LX1)/2 - 2.8, 0, LZ - 2.4); me.ry = me.targetRy = Math.PI; }
   Object.assign(camLim, CLASS_LIM); cam.yaw = Math.PI/2; cam.pitch = 0.5; cam.dist = 7.5; cam.t.set(me.pos.x, 1, me.pos.z);
   lastSent = ''; pushPresence();
   if(fromClass) toast('체험관이에요! 가고 싶은 방의 문으로 걸어가요');
@@ -3317,7 +3385,6 @@ function lobbyTick(dt){
   if(me.pos.x > LX1 - 2.2 && Math.abs(me.pos.z) < 1) near = 'class';
   if(me.pos.x > LX1 - 2.2 && Math.abs(me.pos.z + 4.2) < 1 && !demoHidden('cinema')) near = 'cinema';
   if(me.pos.x > LX1 - 2.2 && Math.abs(me.pos.z - 4.2) < 1) near = 'eng';
-  if(me.pos.z > LZ - 2.2 && Math.abs(me.pos.x - ((LX0 + LX1)/2 - 2.8)) < 1) near = 'hist';
   if(me.pos.z > LZ - 2.2 && Math.abs(me.pos.x - (LX0 + LX1)/2) < 1 && !demoHidden('isle')) near = 'isle';
   if(me.pos.z < -LZ + 2.2 && Math.abs(me.pos.x - (LX0 + LX1)/2) < 1) near = 'quiz';
   if(near !== lobbyNear){ lobbyNear = near; roomBtnAct = null; const b = $('#roomBtn'); b.hidden = !near; if(near) b.textContent = near === 'class' ? '⬅ 교실로 돌아가기' : '🚪 ' + DOOR_NAME[near] + ' 들어가기'; }
@@ -4214,8 +4281,8 @@ function ninoTick(dt){
 }
 
 /* ===== 우주 발사장: 로켓 타고 10초 → 우주 (무중력) ===== */
-const spaceDoor = makeDoor(lobbyWall, 1.75, 'space', '우주 발사장', '우주 발사장 · 누구나', '#5B3FA8', '#2A2F5A', '#0B0F2A');
-lobbyTargets.push(spaceDoor); doorGlow(spaceDoor, '#B79CFF');
+const spaceDoor = makeDoor(lobbyWall, 4.2, 'space', '우주 발사장', '우주 발사장 · 누구나', '#5B3FA8', '#2A2F5A', '#0B0F2A');
+lobbyTargets.push(spaceDoor, histDoor); doorGlow(spaceDoor, '#B79CFF'); doorGlow(histDoor, '#FFB870');
 
 /* ===== 📐 기하 탐구실 (지하): 교실 구석 구멍으로 내려가요 ===== */
 const HOLE = { x:-8.6, z:5.9 };
@@ -7369,12 +7436,13 @@ function histHome(){ engMode = 'hhome'; histStats(); const t = dayNum(), done = 
     + (next.length ? '<button type="button" class="btn primary big" id="hGo">' + (done ? '✅ 오늘 완료! 다음 10장 더 하기' : '📖 오늘의 카드 10장 외우기') + '</button>' : '')
     + '<button type="button" class="btn big" id="hRev"' + (due ? '' : ' disabled') + '>🔁 복습하기 ' + (due ? '(' + due + '장)' : '(오늘 복습 없음)') + '</button>'
     + '<button type="button" class="btn big gold" id="hWrong"' + (wr ? '' : ' disabled') + '>❌ 틀린 카드만 다시 ' + (wr ? '(' + wr + '장)' : '(없음)') + '</button>'
+    + (function(){ const sec = histSecGet(), ok = sec >= EXAM_NEED; return '<button type="button" class="hexam" id="hExam"><i>' + (ok ? '✉' : '🔒') + '</i><span>실전 모의고사 (학교 시험 형식)<small>' + (ok ? '25문항 · 100점 · 50분' + (histSt.examBest != null ? ' · 최고 ' + histSt.examBest + '점' : '') : '한국사 공부 3시간이면 열려요 · 지금 ' + fmtTime(sec)) + '</small></span></button>'; })()
     + '<div class="eh" style="font-size:14px;margin-top:4px">🎯 시험형 연습</div><div class="hgrid"><button type="button" class="btn" id="hSrc">📜 사료 퀴즈<small>자료 보고 사건 맞히기</small></button><button type="button" class="btn" id="hFlow">🧠 흐름·비교<small>원인·결과·순서</small></button><button type="button" class="btn" id="hSeq">⏳ 연표 순서<small>시대 순 나열</small></button><button type="button" class="btn" id="hSec">📚 단원별<small>범위 골라 공부</small></button></div>'
     + '<div class="eh" style="font-size:14px;margin-top:4px">🧊 3D로 보기</div><div class="hgrid"><button type="button" class="btn gold" id="hMap">🗺 6·25 전선 지도<small>전선이 움직여요</small></button><button type="button" class="btn gold" id="hLine">🛤 3D 연표 길<small>1945 → 1993 걷기</small></button></div>'
     + '<p class="etip">💡 틀린 카드는 그날 바로 다시 나오고, 맞히면 1→2→4→7→15일 뒤에 다시 나와요. 하루 10장씩이면 2주 만에 Ⅱ단원(' + HIST_C.length + '장) 한 바퀴! 시험 문제 단골인 사건 순서는 연표 퀴즈로 연습해요.</p>');
   if($('#hGo')) $('#hGo').onclick = () => histCards(histNew().slice(0, 10), 'today');
   $('#hRev').onclick = () => histCards(histDue().slice(0, 15), 'review'); $('#hWrong').onclick = () => histCards(histWrong().slice(0, 15), 'wrong');
-  $('#hSeq').onclick = () => histSeq(); $('#hSec').onclick = histSecs; $('#hSrc').onclick = () => histMultiQuiz('src'); $('#hFlow').onclick = () => histMultiQuiz('flow'); $('#hMap').onclick = histMapOpen; $('#hLine').onclick = histLineOpen; }
+  $('#hSeq').onclick = () => histSeq(); $('#hSec').onclick = histSecs; $('#hSrc').onclick = () => histMultiQuiz('src'); $('#hFlow').onclick = () => histMultiQuiz('flow'); $('#hMap').onclick = histMapOpen; $('#hExam').onclick = examOpen; $('#hLine').onclick = histLineOpen; }
 function histSecs(){ engMode = 'hsec'; histStats();
   engSet('<div class="eh">📚 단원 골라 공부하기</div><div class="hsecs">' + Object.keys(HIST_SEC).map(k => { const L = HIST_C.filter(c => c.s === k), kn = L.filter(c => { const b = histBox(c); return b && b.b >= 2; }).length;
     return '<button type="button" class="btn" data-s="' + k + '"><span>' + escHtml(HIST_SEC[k]) + '</span><i>' + kn + '/' + L.length + '</i></button>'; }).join('') + '</div><button type="button" class="btn big" id="hBack">처음으로</button>');
@@ -7560,13 +7628,13 @@ function buildHistScene(){ histScene = new THREE.Scene(); histScene.background =
     x.fillStyle = '#fff'; x.font = '900 62px "Noto Sans KR", sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(e.k.slice(0, 4) + '. ' + (+e.k.slice(5, 7)) + '.', 256, 44);
     x.fillStyle = '#1E1A14'; let fs = 58; x.font = '900 ' + fs + 'px "Noto Sans KR", sans-serif'; const words = e.n; while(fs > 30 && x.measureText(words).width > 480){ fs -= 4; x.font = '900 ' + fs + 'px "Noto Sans KR", sans-serif'; }
     if(x.measureText(words).width > 480){ const h = Math.ceil(words.length/2), sp = words.lastIndexOf(' ', h + 3); const a = sp > 0 ? words.slice(0, sp) : words.slice(0, h), b = sp > 0 ? words.slice(sp + 1) : words.slice(h); x.fillText(a, 256, 165); x.fillText(b, 256, 235); } else x.fillText(words, 256, 190);
-    const tex = new THREE.CanvasTexture(cv), board = new THREE.Mesh(new THREE.PlaneGeometry(2.1, 1.23), new THREE.MeshBasicMaterial({ map:tex, side:THREE.DoubleSide })); board.position.set(sx, 2.15, z); board.rotation.y = sx > 0 ? -0.35 : 0.35; L.add(board);
-    const tile = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.12, 0.5), mat(col)); tile.position.set(0, 0.02, z); L.add(tile); pins.push({ board, z, sx }); });
-  Object.keys(dec).forEach(k => { const i = HIST_E.findIndex(e => e.k.slice(0, 3) === k); if(i < 0) return; const sp = labelSprite((k + '0') + '년대', dec[k]); sp.scale.set(3.6, 0.9, 1); sp.position.set(0, 3.9, -i*4.5 + 2); L.add(sp); });
+    const qv = document.createElement('canvas'); qv.width = 512; qv.height = 300; const q = qv.getContext('2d'); q.fillStyle = '#2A2F48'; q.fillRect(0, 0, 512, 300); q.strokeStyle = col; q.lineWidth = 10; q.strokeRect(5, 5, 502, 290); q.fillStyle = col; q.font = '900 150px "Noto Sans KR", sans-serif'; q.textAlign = 'center'; q.textBaseline = 'middle'; q.fillText('?', 256, 150);
+    const tex = new THREE.CanvasTexture(cv), qtex = new THREE.CanvasTexture(qv), board = new THREE.Mesh(new THREE.PlaneGeometry(2.1, 1.23), new THREE.MeshBasicMaterial({ map:tex, side:THREE.DoubleSide })); board.position.set(sx, 2.15, z); board.rotation.y = sx > 0 ? -0.35 : 0.35; board.visible = false; L.add(board); post.visible = false;
+    const tile = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.12, 0.5), mat(col)); tile.position.set(0, 0.02, z); L.add(tile); pins.push({ board, post, z, sx, tex, qtex }); });
   histLine = { L, pins, i:0, zc:0 }; }
 function histSetView(v){ histView = v; const ui = $('#engUI'); ui.classList.toggle('mini', !!v); if(v && !histScene) buildHistScene();
   if(v === 'map'){ Object.assign(camLim, { pmin:0.35, pmax:1.45, dmin:10, dmax:34 }); cam.yaw = 0; cam.pitch = 1.0; cam.dist = window.innerWidth < window.innerHeight ? 28 : 22; cam.t.set(0, 0, -0.5); me.group.visible = false; }
-  if(v === 'line'){ Object.assign(camLim, { pmin:0.1, pmax:1.0, dmin:5, dmax:16 }); cam.yaw = 0.3; cam.pitch = 0.4; cam.dist = 9.5; histScene.add(me.group); me.group.visible = true; me.pos.set(40, 0, 2); me.ry = me.targetRy = Math.PI; me.mode = 'idle'; }
+  if(v === 'line'){ Object.assign(camLim, { pmin:0.1, pmax:1.0, dmin:5, dmax:16 }); cam.yaw = 0.12; cam.pitch = 0.38; cam.dist = window.innerWidth < window.innerHeight ? 13 : 9; histScene.add(me.group); me.group.visible = true; me.pos.set(40, 0, 2); me.ry = me.targetRy = Math.PI; me.mode = 'idle'; }
   if(!v){ camera.clearViewOffset(); me.group.visible = false; Object.assign(camLim, { pmin:-0.3, pmax:0.6, dmin:6, dmax:12 }); cam.yaw = 0; cam.pitch = 0.08; cam.dist = 9.5; cam.t.set(0, 2.6, 0); } }
 function histMapStage(k){ const M = histMap; k = Math.max(0, Math.min(KSTAGE.length - 1, k)); M.k = k; const st = KSTAGE[k];
   const nb = M.i ? M.a : M.b; histMapDraw(nb.cv, st); nb.tex.needsUpdate = true; nb.pl.position.y = 0.44; (M.i ? M.b : M.a).pl.position.y = 0.42; M.i = 1 - M.i; M.fade = 0;
@@ -7578,25 +7646,164 @@ function histMapStage(k){ const M = histMap; k = Math.max(0, Math.min(KSTAGE.len
     + '<button type="button" class="btn big" id="hmX">⬅ 한국사 탐구실로</button>');
   $('#hmP').onclick = () => histMapStage(k - 1); $('#hmN').onclick = () => histMapStage(k + 1); $('#hmX').onclick = () => { histSetView(''); histHome(); }; }
 function histMapOpen(){ histSetView('map'); histMapStage(0); toast('🗺 ▶를 눌러 6·25 전쟁의 전선 변화를 따라가 봐요'); }
-function histLineGo(i){ const H = histLine; i = Math.max(0, Math.min(HIST_E.length - 1, i)); H.i = i; const e = HIST_E[i];
+function histLineGo(i){ const H = histLine; i = Math.max(0, Math.min(HIST_E.length - 1, i)); H.i = i; H.max = Math.max(H.max || 0, i); const e = HIST_E[i], next = HIST_E[i + 1];
   const rel = HIST_C.find(c => c.a === e.n || c.a.indexOf(e.n) >= 0 || e.n.indexOf(c.a.split('(')[0]) >= 0 && c.a.length > 3);
-  histBoard(e.k.slice(0, 4) + '년 ' + (+e.k.slice(5, 7)) + '월', e.n, (i + 1) + ' / ' + HIST_E.length);
-  const prev = HIST_E[i - 1], next = HIST_E[i + 1];
-  engSet('<div class="hmapnav"><button type="button" class="btn" id="hlP"' + (i ? '' : ' disabled') + '>◀</button><div><b>' + e.k.slice(0, 4) + '. ' + (+e.k.slice(5, 7)) + '.</b><span>' + escHtml(e.n) + '</span></div><button type="button" class="btn primary" id="hlN"' + (next ? '' : ' disabled') + '>▶</button></div>'
-    + '<input type="range" id="hlR" min="0" max="' + (HIST_E.length - 1) + '" value="' + i + '" class="hrange">'
+  H.pins.forEach((p, j) => { const show = j >= i && j <= i + 1; p.board.visible = p.post.visible = show; p.board.material.map = j === i + 1 && j > H.max ? p.qtex : p.tex; p.board.material.needsUpdate = true; });
+  histBoard(e.k.slice(0, 4) + '년 ' + (+e.k.slice(5, 7)) + '월', e.n, '연표 길 ' + (i + 1) + ' / ' + HIST_E.length);
+  let opts = []; if(next){ let pool = HIST_E.filter((v, j) => j > i + 1 && j <= i + 8); if(pool.length < 2) pool = HIST_E.filter((v, j) => j !== i + 1 && j !== i && Math.abs(j - i) <= 8); opts = histShuf([next.n].concat(histShuf(pool).slice(0, 2).map(v => v.n))); }
+  engSet('<div class="hmapnav"><button type="button" class="btn" id="hlP"' + (i ? '' : ' disabled') + '>◀</button><div><b>' + e.k.slice(0, 4) + '. ' + (+e.k.slice(5, 7)) + '.</b><span>' + escHtml(e.n) + '</span></div><span class="hlc">' + (i + 1) + '/' + HIST_E.length + '</span></div>'
     + (rel && rel.x ? '<p class="etip">📌 ' + escHtml(rel.x) + '</p>' : '')
-    + '<p class="etip" style="font-size:12px">' + (prev ? '⬅ 이전: ' + escHtml(prev.n) : '') + (prev && next ? '  ·  ' : '') + (next ? '다음: ' + escHtml(next.n) + ' ➡' : '') + '</p>'
+    + (next ? (i + 1 <= H.max ? '<button type="button" class="btn primary big" id="hlN">▶ 다음: ' + escHtml(next.n) + '</button>'
+      : '<div class="eh" style="font-size:14px">❓ 바로 다음에 일어난 사건은?</div><div class="eopts">' + opts.map((o, k) => '<button type="button" class="btn" data-k="' + k + '">' + escHtml(o) + '</button>').join('') + '</div><div id="hlHint"></div>')
+      : '<p class="etip" style="color:#9FE8B8;font-weight:800">🎉 연표 길 끝까지 왔어요! 1945 → 1993</p>')
     + '<button type="button" class="btn big" id="hlX">⬅ 한국사 탐구실로</button>');
-  $('#hlP').onclick = () => histLineGo(i - 1); $('#hlN').onclick = () => histLineGo(i + 1); $('#hlR').oninput = ev => histLineGo(+ev.target.value); $('#hlX').onclick = () => { histSetView(''); histHome(); }; }
-function histLineOpen(){ histSetView('line'); histLineGo(0); toast('🛤 ▶를 누르면 연표 길을 따라 걸어가요'); }
+  $('#hlP').onclick = () => histLineGo(i - 1); $('#hlX').onclick = () => { histSetView(''); histHome(); }; if($('#hlN')) $('#hlN').onclick = () => histLineGo(i + 1);
+  document.querySelectorAll('#engBody .eopts .btn').forEach(b => b.onclick = () => { const ok = opts[+b.dataset.k] === next.n;
+    if(ok){ b.classList.add('right'); histLineGo(i + 1); toast('✅ 정답! ' + next.k.slice(0, 4) + '년 ' + next.n); }
+    else { b.classList.add('wrong'); b.disabled = true; const w = HIST_E.find(v => v.n === opts[+b.dataset.k]); $('#hlHint').innerHTML = '<p class="etip" style="color:#FFB4A8">❌ ' + escHtml(w.n) + '은(는) ' + w.k.slice(0, 4) + '년이에요. 힌트: 정답은 ' + next.k.slice(0, 4) + '년!</p>'; } }); }
+function histLineOpen(){ histSetView('line'); histLine.max = 0; histLineGo(0); toast('🛤 다음 사건을 맞히면 한 칸씩 걸어가요'); }
 function histTick(dt){ histT += dt; if(!histView){ engTick(dt); return; }
   { const w = window.innerWidth, h = window.innerHeight, ui = $('#engUI'); if(w > 760) camera.setViewOffset(w, h, (ui.offsetWidth + 16)/2, 0, w, h); else camera.setViewOffset(w, h, 0, ui.offsetHeight/2, w, h); }
   if(histView === 'map' && histMap){ const M = histMap; if(M.fade < 1){ M.fade = Math.min(1, M.fade + dt*2.2); const nw = M.i ? M.b : M.a, od = M.i ? M.a : M.b; nw.pl.material.opacity = M.fade; od.pl.material.opacity = 1 - M.fade*0.999; }
     M.at = (M.at || 0) + dt; M.arrows.forEach((g, j) => { const u = Math.max(0, Math.min(1, (M.at - 0.4 - j*0.35)/1.1)); g.userData.tube.geometry.setDrawRange(0, Math.floor(u*g.userData.n/6)*6); g.userData.head.visible = u >= 1; if(u >= 1) g.userData.head.scale.setScalar(1 + Math.sin(histT*6)*0.12); }); }
   if(histView === 'line' && histLine){ const H = histLine, p = H.pins[H.i], tz = p.z + 2.6; const dz = tz - (me.pos.z), sp = Math.min(Math.abs(dz), dt*6);
     if(Math.abs(dz) > 0.05){ me.pos.z += Math.sign(dz)*sp; me.pos.x += (40 - me.pos.x)*Math.min(1, dt*4); me.targetRy = dz < 0 ? Math.PI : 0; me.mode = 'walk'; } else { me.mode = 'idle'; me.targetRy = p.sx > 0 ? -Math.PI*0.75 : Math.PI*0.75; }
-    me.update(dt); const kk = 1 - Math.exp(-dt*4); cam.t.lerp(new THREE.Vector3(40 + p.sx*0.7, 1.6, Math.max(p.z + 0.3, me.pos.z - 2.3)), kk); if(!H.drag){ let dy = -p.sx*0.28 - cam.yaw; dy = Math.atan2(Math.sin(dy), Math.cos(dy)); cam.yaw += dy*kk*0.5; }
-    H.pins.forEach((q, j) => { q.board.visible = j >= H.i; const s = j === H.i ? 1.15 : 1; q.board.scale.x += (s - q.board.scale.x)*Math.min(1, dt*6); q.board.scale.y = q.board.scale.x; }); } }
+    me.update(dt); const kk = 1 - Math.exp(-dt*4); cam.t.lerp(new THREE.Vector3(40, 1.7, p.z - 1.6), kk); if(!H.drag){ let dy = 0.12 - cam.yaw; dy = Math.atan2(Math.sin(dy), Math.cos(dy)); cam.yaw += dy*kk*0.5; }
+    H.pins.forEach((q, j) => { const s = j === H.i ? 1.15 : 1; q.board.scale.x += (s - q.board.scale.x)*Math.min(1, dt*6); q.board.scale.y = q.board.scale.x; }); } }
+
+const EXAM_Q = [
+{ p:3.5, q:'(가)에 들어갈 단체로 옳은 것은?', box:'광복 직후 여운형은 안재홍 등과 함께 [ (가) ]을/를 조직하여 치안대를 두고 전국 각지에 지부를 설치하였다. 이후 [ (가) ]은/는 미군이 들어오기 직전 조선 인민 공화국 수립을 선포하고 지부를 인민 위원회로 바꾸었다.',
+  o:['한국 민주당','조선 건국 준비 위원회','독립 촉성 중앙 협의회','좌우 합작 위원회','남조선 노동당'], a:2,
+  n:['송진우·김성수 등 우익, 임시 정부 지지(1945.9)','정답 · 1945.8 여운형·안재홍','이승만이 귀국 후 조직(1945.10)','여운형·김규식 중도 세력(1946.7)','박헌영 중심 좌익 정당(1946.11)'] },
+{ p:3.6, q:'다음 결정이 발표된 회의 이후에 있었던 사실로 옳은 것은?', box:'조선을 독립 국가로 재건하기 위하여 임시 조선 민주주의 정부를 수립한다. …… 미·영·중·소 4개국이 최고 5년 기한으로 신탁 통치를 실시한다.', src:'1945. 12.',
+  o:['조선 건국 준비 위원회가 조직되었다.','맥아더 포고령 제1호가 발표되었다.','미소 공동 위원회가 개최되었다.','카이로 선언에서 한국의 독립이 약속되었다.','8·15 광복을 맞이하였다.'], a:3,
+  n:['1945.8 → 회의 이전','1945.9 → 회의 이전','정답 · 제1차 미소 공동 위원회 1946.3','1943 → 회의 이전','1945.8 → 회의 이전'] },
+{ p:4, q:'밑줄 친 \'발언\'이 나온 시기로 옳은 것은?', box:'이제 무기 휴회된 공위가 재개될 기색도 보이지 않으며 통일 정부를 고대하나 여의케 되지 않으니, 우리는 남방만이라도 임시 정부 혹은 위원회 같은 것을 조직하여 38 이북에서 소련이 철수하도록 세계 공론에 호소하여야 될 것이다.', src:'이승만의 <u>발언</u>',
+  tl:['모스크바 3국 외상 회의','제1차 미소 공동 위원회','좌우 합작 위원회 결성','제2차 미소 공동 위원회','남북 협상','5·10 총선거'], o:['(가)','(나)','(다)','(라)','(마)'], fix:1, a:2,
+  n:['1945.12 ~ 1946.3','정답 · 정읍 발언 1946.6 (1차 미소공위 결렬 뒤, 좌우 합작 위원회 7월 전)','1946.7 ~ 1947.5','1947.5 ~ 1948.4','1948.4 ~ 1948.5'] },
+{ p:4.1, q:'(가) 원칙에 대한 설명으로 옳은 것만을 <보기>에서 고른 것은?', box:'[ (가) ]<br>1. 조선의 민주 독립을 보장한 삼상 회의 결정에 의하여 남북을 통한 좌우 합작으로 민주주의 임시 정부를 수립할 것<br>3. 토지 개혁에 있어 몰수, 유조건 몰수, 체감 매상하여 농민에게 무상으로 분여할 것<br>6. 친일파 및 민족 반역자를 처리할 조례를 입법 기구에서 심리 결정할 것',
+  bogi:['ㄱ. 여운형, 김규식 등 중도 세력이 발표하였다.','ㄴ. 이승만과 한국 민주당이 적극 지지하였다.','ㄷ. 토지 개혁 방식으로 유상 매입·유상 분배를 제시하였다.','ㄹ. 친일파 처리 문제를 담고 있었다.'],
+  o:['ㄱ, ㄴ','ㄱ, ㄷ','ㄱ, ㄹ','ㄴ, ㄷ','ㄷ, ㄹ'], fix:1, a:3,
+  n:['ㄴ ✗ 우익 주요 세력은 반대·불참','ㄷ ✗ 몰수·유조건 몰수·체감 매상 → 무상 분여','정답 · 좌우 합작 7원칙(1946.10)','',''] },
+{ p:3.5, q:'다음 글을 쓴 인물의 활동으로 옳은 것은?', box:'나는 통일된 조국을 건설하려다가 38도선을 베고 쓰러질지언정 일신의 구차한 안일을 취하여 단독 정부를 세우는 데는 협력하지 아니하겠다.', src:'「삼천만 동포에게 읍고함」, 1948',
+  o:['정읍에서 남한 단독 정부 수립을 주장하였다.','조선 건국 준비 위원회를 조직하였다.','김규식과 함께 평양에서 남북 협상에 참여하였다.','남조선 노동당을 결성하였다.','5·10 총선거로 제헌 국회 의원에 당선되었다.'], a:3,
+  n:['이승만(1946.6)','여운형(1945.8)','정답 · 김구, 1948.4 남북 협상','박헌영','김구는 5·10 총선거에 불참'] },
+{ p:4, q:'다음 사건에 대한 설명으로 옳은 것은?', box:'1948년 4월 3일 제주도에서 남한 단독 선거 반대 등을 내걸고 무장봉기가 일어났다. 이후 진압 과정에서 수많은 제주도민이 희생되었다.',
+  o:['1947년 3·1절 기념 대회에서 일어난 경찰의 발포가 배경이 되었다.','남북 협상이 성공한 결과로 일어났다.','군대 안 좌익 세력이 제주도 출동 명령을 거부하며 시작되었다.','이 사건으로 5·10 총선거가 전국에서 무효가 되었다.','반민 특위 해체에 반발하여 일어났다.'], a:1,
+  n:['정답 · 제주 4·3 사건의 배경','남북 협상은 실패','여수·순천 10·19 사건','제주도 2개 선거구만 무산','반민 특위 해체는 1949'] },
+{ p:3.6, q:'밑줄 친 \'선거\'에 대한 설명으로 옳지 않은 것은?', box:'1948년 5월 10일, 유엔 한국 임시 위원단의 감시 아래 우리나라 최초의 민주적 <u>선거</u>가 실시되었다.',
+  o:['21세 이상 모든 국민에게 선거권이 주어졌다.','보통·평등·직접·비밀 선거로 실시되었다.','김구, 김규식 등 남북 협상파가 참여하지 않았다.','제주도의 일부 선거구에서는 투표가 이루어지지 못하였다.','이 선거로 구성된 국회는 대통령 직선제 헌법을 제정하였다.'], a:5,
+  n:['옳음','옳음','옳음','옳음 · 4·3 사건 영향','정답(옳지 않음) · 제헌 헌법은 국회 간선제'] },
+{ p:4.1, q:'다음 헌법에 대한 설명으로 옳은 것은?', box:'유구한 역사와 전통에 빛나는 우리들 대한 국민은 기미 삼일 운동으로 대한민국을 건립하여 세계에 선포한 위대한 독립 정신을 계승하여 ……<br>제1조 대한민국은 민주 공화국이다.',
+  o:['대통령을 국회에서 선출하도록 하였다.','대통령의 임기를 6년으로 하고 중임 제한을 두지 않았다.','대통령 선거인단에서 7년 단임의 대통령을 선출하였다.','초대 대통령에 한해 중임 제한을 없앴다.','내각 책임제와 양원제 국회를 채택하였다.'], a:1,
+  n:['정답 · 제헌 헌법(1948.7.17)','유신 헌법(1972)','전두환 정부 헌법(1980)','사사오입 개헌(1954)','4·19 혁명 이후 개헌(1960)'] },
+{ p:4.4, q:'(가)~(다)를 일어난 순서대로 옳게 나열한 것은?', bx:['(가) 제헌 국회가 친일파 처벌을 위해 반민족 행위 처벌법을 제정하였다.','(나) 제헌 국회가 농지 개혁법을 제정하여 3정보 상한을 정하였다.','(다) 유엔 총회가 대한민국을 한반도의 유일한 합법 정부로 승인하였다.'],
+  o:['(가) - (나) - (다)','(가) - (다) - (나)','(나) - (가) - (다)','(나) - (다) - (가)','(다) - (가) - (나)'], fix:1, a:2,
+  n:['','정답 · 1948.9 → 1948.12 → 1949.6','','',''] },
+{ p:4, q:'(가) 기구에 대한 설명으로 옳은 것만을 <보기>에서 고른 것은?', box:'제헌 국회는 반민족 행위 처벌법에 따라 [ (가) ]을/를 설치하였다. [ (가) ]은/는 1949년 1월부터 이광수, 최남선, 최린 등을 체포하여 조사하였다.',
+  bogi:['ㄱ. 일부 경찰에게 사무실을 습격당하였다.','ㄴ. 이승만 정부의 적극적인 지원으로 활동 기간이 늘어났다.','ㄷ. 공소 시효가 단축되면서 활동을 마치게 되었다.','ㄹ. 미군정이 친일파 청산을 위해 설치하였다.'],
+  o:['ㄱ, ㄴ','ㄱ, ㄷ','ㄴ, ㄷ','ㄴ, ㄹ','ㄷ, ㄹ'], fix:1, a:2,
+  n:['ㄴ ✗ 이승만 정부는 반공 우선, 비협조','정답 · 반민 특위(1949.6 습격, 공소 시효 1950.9 → 1949.8)','','ㄹ ✗ 제헌 국회가 설치',''] },
+{ p:4, q:'(가), (나)에 대한 설명으로 옳은 것은?', bx:['(가) 3정보를 넘는 농지는 정부가 사들여 농민에게 나누어 주고, 농민은 5년 동안 수확량의 30%씩 갚는다.','(나) 5정보 이상을 가진 지주의 토지를 모두 무상으로 몰수하여 농민에게 무상으로 나누어 준다.'],
+  o:['(가)는 북조선 임시 인민 위원회가 실시하였다.','(가)에 따라 지주는 지가 증권을 받았다.','(나)는 제헌 국회가 제정한 법에 따라 실시되었다.','(나)는 6·25 전쟁이 끝난 뒤에 실시되었다.','(가), (나) 모두 좌우 합작 7원칙을 바탕으로 하였다.'], a:2,
+  n:['(가)는 남한 농지 개혁법(1949)','정답 · 유상 매입 → 지가 증권','(나)는 북조선 임시 인민 위원회','(나)는 1946년','관계없음'] },
+{ p:3.6, q:'다음 선언이 발표된 이후의 사실로 옳은 것은?', box:'이 방위선은 알류샨 열도에서 일본을 거쳐 오키나와로 이어진다. …… 기타 태평양 지역의 군사적 안전에 대해서는 누구도 보장할 수 없다.', src:'미국 국무 장관의 연설, 1950. 1.',
+  o:['북한군이 38도선을 넘어 남침하였다.','대한민국 정부가 수립되었다.','농지 개혁법이 제정되었다.','반민족 행위 특별 조사 위원회가 조직되었다.','5·10 총선거가 실시되었다.'], a:1,
+  n:['정답 · 6·25 전쟁 1950.6','1948.8','1949.6','1948.10','1948.5'] },
+{ p:4.4, q:'다음 상황이 나타난 시기로 옳은 것은?', box:'중국군의 공세로 국군과 유엔군이 후퇴하는 가운데, 함경남도 흥남 부두에서 군인과 피란민 10만여 명이 배를 타고 남쪽으로 철수하였다.',
+  tl:['북한군 남침 (1950.6)','인천 상륙 작전 (1950.9)','중국군 참전 (1950.10)','1·4 후퇴 (1951.1)','정전 회담 시작 (1951.7)','정전 협정 (1953.7)'], o:['(가)','(나)','(다)','(라)','(마)'], fix:1, a:3,
+  n:['','','정답 · 흥남 철수 1950.12','',''] },
+{ p:4.1, q:'밑줄 친 \'회담\'이 진행되던 중에 있었던 사실로 옳은 것은?', box:'1951년 7월에 시작된 정전 <u>회담</u>은 군사 분계선 설정, 포로 송환 문제 등으로 2년 가까이 이어졌다.',
+  o:['이승만 정부가 반공 포로를 석방하였다.','유엔군이 인천 상륙 작전을 펼쳤다.','미국이 애치슨 선언을 발표하였다.','한미 상호 방위 조약이 체결되었다.','유엔 안전 보장 이사회가 유엔군 파병을 결의하였다.'], a:1,
+  n:['정답 · 1953.6','1950.9 → 회담 전','1950.1 → 전쟁 전','1953.10 → 정전 협정 뒤','1950.6 → 회담 전'] },
+{ p:4, q:'다음 개헌에 대한 설명으로 옳은 것은?', box:'재적 의원 203명의 3분의 2는 135.333…명이므로 사사오입하면 135명이다. 따라서 찬성 135표로 개헌안은 가결되었다.', src:'정부의 발표, 1954',
+  o:['초대 대통령에 한해 중임 제한을 없앴다.','대통령 직선제와 양원제를 주요 내용으로 하였다.','부산 정치 파동 속에서 통과되었다.','통일 주체 국민 회의에서 대통령을 뽑게 하였다.','대통령의 3회 연임을 허용하였다.'], a:1,
+  n:['정답 · 사사오입 개헌(1954)','발췌 개헌(1952)','발췌 개헌(1952)','유신 헌법(1972)','3선 개헌(1969)'] },
+{ p:4.4, q:'(가)~(라)를 일어난 순서대로 옳게 나열한 것은?', bx:['(가) 조봉암과 진보당 간부들이 간첩 혐의로 체포되었다.','(나) 임시 수도 부산에서 대통령 직선제 개헌안이 통과되었다.','(다) 이기붕을 부통령으로 당선시키기 위해 부정 선거가 저질러졌다.','(라) 반올림 논리로 초대 대통령의 중임 제한을 없앴다.'],
+  o:['(가) - (나) - (라) - (다)','(나) - (가) - (라) - (다)','(나) - (라) - (가) - (다)','(라) - (나) - (가) - (다)','(라) - (나) - (다) - (가)'], fix:1, a:3,
+  n:['','','정답 · 발췌 개헌 1952 → 사사오입 1954 → 진보당 1958 → 3·15 1960','',''] },
+{ p:3.9, q:'다음 선언문이 발표된 민주 운동의 결과로 옳은 것은?', box:'마산, 서울, 기타 각지의 학생 데모는 주권을 빼앗긴 국민의 울분을 대신하여 궐기한 순정한 정의감의 발로이다. …… 3·15 선거는 불법 선거이다. 공명선거에 의하여 정부통령 선거를 다시 실시하라.', src:'대학교수단 시국 선언문',
+  o:['이승만이 대통령직에서 물러났다.','5년 단임의 대통령 직선제 개헌이 이루어졌다.','유신 체제가 무너졌다.','신군부가 국가 보위 비상 대책 위원회를 설치하였다.','국가 재건 최고 회의가 권력을 장악하였다.'], a:1,
+  n:['정답 · 4·19 혁명(1960)','6월 민주 항쟁(1987)','10·26 사태(1979)','5·18 이후(1980)','5·16 군사 정변(1961)'] },
+{ p:4.1, q:'밑줄 친 \'정부\'에 대한 설명으로 옳은 것만을 <보기>에서 고른 것은?', box:'4·19 혁명 이후 실시된 총선거에서 민주당이 압승하였다. 국회는 윤보선을 대통령으로, 장면을 국무총리로 선출하여 새 <u>정부</u>가 출범하였다.',
+  bogi:['ㄱ. 내각 책임제와 양원제 국회를 바탕으로 하였다.','ㄴ. 국가 재건 최고 회의를 설치하였다.','ㄷ. 경제 개발 5개년 계획을 세웠지만 시행하지 못하였다.','ㄹ. 일본과 한일 기본 조약을 체결하였다.'],
+  o:['ㄱ, ㄴ','ㄱ, ㄷ','ㄴ, ㄷ','ㄴ, ㄹ','ㄷ, ㄹ'], fix:1, a:2,
+  n:['ㄴ ✗ 5·16 군사 정변 세력','정답 · 장면 내각, 5·16으로 무너짐','','ㄹ ✗ 박정희 정부(1965)',''] },
+{ p:4, q:'다음 조약의 체결 과정에 대한 설명으로 옳은 것은?', box:'제2조 1910년 8월 22일 및 그 이전에 대한 제국과 대일본 제국 간에 체결된 모든 조약 및 협정이 이미 무효임을 확인한다.',
+  o:['김종필·오히라 비밀 회담의 합의를 바탕으로 추진되었다.','국민의 지지 속에서 반대 시위 없이 체결되었다.','식민 지배에 대한 사과와 배상 문제가 모두 해결되었다.','이승만 정부가 체결하였다.','닉슨 독트린이 발표된 이후 체결되었다.'], a:1,
+  n:['정답 · 1962 메모 → 1965 한일 기본 조약','6·3 시위(1964) 등 반대 시위','사과·배상 문제가 남음','박정희 정부','닉슨 독트린은 1969'] },
+{ p:4, q:'다음 헌법이 시행되던 시기에 있었던 사실로 옳은 것은?', box:'· 대통령은 통일 주체 국민 회의에서 토론 없이 무기명 투표로 선거한다.<br>· 대통령은 국가의 안전 보장 또는 공공의 안녕질서가 중대한 위협을 받을 우려가 있을 때 긴급 조치를 할 수 있다.<br>· 대통령은 국회를 해산할 수 있다.',
+  o:['YH 무역 사건이 일어났다.','북한 특수 부대가 청와대를 습격하려 한 1·21 사태가 일어났다.','7·4 남북 공동 성명이 발표되었다.','브라운 각서가 체결되었다.','6·3 시위가 일어났다.'], a:1,
+  n:['정답 · 유신 헌법(1972.12~1980) 시기, YH 1979','1968 → 유신 이전','1972.7 → 유신 헌법(12월)보다 먼저! 함정','1966','1964'] },
+{ p:4, q:'다음 선언이 비판한 체제에서 일어난 사실로 옳지 않은 것은?', box:'국가 안보라는 구실 아래 신앙과 양심의 자유는 날로 위축되어 가고 언론의 자유, 학원의 자주성은 박탈당하고 있다. …… 이 나라는 1인 독재 아래 신음하고 있다.', src:'3·1 민주 구국 선언, 1976',
+  o:['긴급 조치로 유신 반대 운동을 탄압하였다.','민청학련 사건으로 많은 학생이 구속되었다.','인혁당 재건위 사건으로 8명이 사형되었다.','김대중 납치 사건이 일어났다.','박종철 고문치사 사건이 일어났다.'], a:5,
+  n:['옳음','옳음 · 1974','옳음 · 1974(2007 재심 무죄)','옳음 · 1973','정답(옳지 않음) · 1987 전두환 정부'] },
+{ p:4.4, q:'다음 글이 발표된 민주화 운동에 대한 설명으로 옳은 것만을 <보기>에서 고른 것은?', box:'우리는 왜 총을 들 수밖에 없었는가? 그 대답은 너무나 간단합니다. 너무나 무자비한 만행을 더 이상 보고 있을 수만 없어서 너도나도 총을 들고 나섰던 것입니다.', src:'광주 시민 궐기문, 1980. 5. 25.',
+  bogi:['ㄱ. 신군부가 비상계엄을 전국으로 확대한 것이 배경이 되었다.','ㄴ. 시민들이 시민군을 조직하여 계엄군에 맞섰다.','ㄷ. 정부가 대통령 직선제 개헌을 받아들이는 결과를 낳았다.','ㄹ. 이승만이 대통령직에서 물러나는 계기가 되었다.'],
+  o:['ㄱ, ㄴ','ㄱ, ㄷ','ㄴ, ㄷ','ㄴ, ㄹ','ㄷ, ㄹ'], fix:1, a:1,
+  n:['정답 · 5·18 민주화 운동','ㄷ ✗ 6월 민주 항쟁(1987)','','ㄹ ✗ 4·19 혁명(1960)',''] },
+{ p:4.2, q:'밑줄 친 \'투쟁\'에 대한 설명으로 옳지 않은 것은?', box:'국가의 미래요 소망인 꽃다운 젊은이를 야만적인 고문으로 죽여 놓고 …… 국민적 여망인 개헌을 일방적으로 파기한 4·13 폭거를 철회시키기 위한 범국민적 <u>투쟁</u>을 시작한다.', src:'6·10 국민 대회 선언문, 1987',
+  o:['박종철 고문치사 사건이 은폐·조작된 사실이 알려졌다.','전두환 정부가 4·13 호헌 조치를 발표하였다.','\'호헌 철폐, 독재 타도\'를 외치며 시위가 이어졌다.','노태우가 6·29 민주화 선언을 발표하였다.','결과로 대통령 임기 7년의 간선제 헌법이 만들어졌다.'], a:5,
+  n:['옳음 · 배경','옳음 · 배경','옳음','옳음 · 결과','정답(옳지 않음) · 결과는 5년 단임 대통령 직선제'] },
+{ p:4.1, q:'(가)~(다) 시기의 경제에 대한 설명으로 옳은 것은?', bx:['(가) 미국에서 들여온 밀·원당·면화를 가공하는 삼백 산업이 발달하였다.','(나) 노동 집약적 경공업을 중심으로 수출 주도형 정책을 펼쳤다.','(다) 철강, 조선, 전자, 석유 화학 등 중화학 공업을 육성하였다.'],
+  o:['(가) 시기에 경부 고속 도로가 개통되었다.','(나) 시기에 베트남 파병으로 수출과 외화 수입이 늘었다.','(다) 시기에 저유가·저금리·저달러의 3저 호황을 맞았다.','(가) 시기에 포항 제철이 설립되었다.','(나) 시기에 수출 100억 달러를 달성하였다.'], a:2,
+  n:['1970 → (나) 시기 말','정답 · 1960년대','1980년대 중반','1968 → (나) 시기','1977 → (다) 시기'] },
+{ p:4, q:'다음 편지를 쓴 인물이 분신한 이후 1970년대에 있었던 사실로 옳은 것은?', box:'저희는 근로 기준법의 혜택을 조금도 못 받으며 …… 하루 15시간의 작업은 너무 과중합니다. …… 저희들의 요구는 인간으로서 최소한의 요구입니다.', src:'평화 시장 재단사의 편지',
+  o:['동일 방직 여성 노동자들이 노동조합을 지키려 투쟁하였다.','전 국민 의료 보험이 실시되었다.','대학 수학 능력 시험 제도가 도입되었다.','낙동강 페놀 유출 사건이 일어났다.','정부가 과외를 전면 금지하였다.'], a:1,
+  n:['정답 · 전태일(1970) 이후, 동일 방직 1977~1978','1989','1993','1991','1980'] }
+];
+
+/* 📝 실전 모의고사: 학교 시험지 형식(25문항·100점·50분) · 한국사 공부 3시간 이상이면 봉투가 열려요 */
+const EXAM_NEED = 0;   // 잠금 없음 (누구나 바로 풀 수 있어요)
+let histLastAct = 0; ['pointerdown', 'keydown'].forEach(t => document.addEventListener(t, () => { histLastAct = Date.now(); }, { passive:true }));
+function histSecGet(){ return num(store.get('class8-histsec', 0), 0, 1e8, 0); }
+setInterval(() => { if(!me || document.visibilityState !== 'visible') return; const active = Date.now() - histLastAct < 120000;
+  if((room === 'hist' && active) || (me.mode === 'sit' && me.subject === '한국사')) store.set('class8-histsec', histSecGet() + 1); }, 1000);
+let exam = null;
+const EXAM_NUM = ['①','②','③','④','⑤'];
+function examOpen(){ const sec = histSecGet(), ok = sec >= EXAM_NEED || amOwner, best = histSt.examBest, el = $('#examOv'); el.hidden = false; el.className = 'cover';
+  const pct = Math.min(100, sec/EXAM_NEED*100), left = Math.max(0, EXAM_NEED - sec);
+  el.innerHTML = '<div class="ex-cover"><button type="button" class="ex-x" id="exX" aria-label="닫기">✕</button>'
+    + '<div class="ex-env' + (ok ? '' : ' locked') + '" id="exEnv"><div class="ex-flap"></div><div class="ex-paper-peek"><b>한국사2</b><span>기말고사 대비</span></div>'
+    + '<div class="ex-front"><div class="ex-lbl"><small>2026학년도 2학기 · 1학년</small><b>한국사2 실전 모의고사</b><span>Ⅱ. 대한민국의 발전 · 선택형 25문항 · 100점 · 50분</span><i>8반 3D 교실 출제</i></div>'
+    + '</div><div class="ex-seal">' + (ok ? '開封<br>가능' : '🔒') + '</div><div class="ex-stamp">대외비</div></div>'
+    + (ok ? '<button type="button" class="ex-btn" id="exGo">✉ 봉투 열고 시험 시작</button>'
+      : '<div class="ex-lock"><b>🔒 한국사를 3시간 공부하면 봉투가 열려요</b><div class="ex-bar"><i style="width:' + pct + '%"></i></div><span>지금까지 ' + fmtTime(sec) + ' · ' + fmtTime(left) + ' 남았어요</span><p>한국사 탐구실에서 카드·퀴즈·지도를 공부하거나, 교실 책상에서 과목을 <b>한국사</b>로 골라 앉아 있으면 시간이 쌓여요.</p></div>')
+    + (best != null ? '<p class="ex-note">최고 점수 ' + best + '점</p>' : '') + '</div>';
+  $('#exX').onclick = examClose; if($('#exGo')) $('#exGo').onclick = () => { $('#exEnv').classList.add('open'); setTimeout(examStart, 1100); }; }
+function examClose(){ const el = $('#examOv'); el.hidden = true; el.innerHTML = ''; if(exam && exam.timer) clearInterval(exam.timer); exam = null; if(room === 'hist') histHome(); }
+function examStart(only){ const base = only ? only : EXAM_Q.map((_, i) => i);
+  const qs = base.map(i => { const q = EXAM_Q[i]; const idx = [0, 1, 2, 3, 4]; if(!q.fix) idx.sort(() => Math.random() - 0.5); return { i, q, idx, pick:-1 }; });
+  exam = { qs, t0:Date.now(), lim:(only ? Math.max(5, qs.length*2) : 50)*60, done:false, only:!!only };
+  const el = $('#examOv'); el.className = 'paper';
+  const qHtml = (x, k) => { const q = x.q; let h = '<div class="ex-q" id="exq' + k + '"><p class="ex-qt"><b>' + (k + 1) + '.</b> ' + q.q + ' <span class="ex-pt">[' + q.p + '점]</span></p>';
+    if(q.box) h += '<div class="ex-box">' + q.box + (q.src ? '<div class="ex-src">- ' + q.src + ' -</div>' : '') + '</div>';
+    if(q.bx) h += '<div class="ex-box">' + q.bx.map(s => '<p>' + s + '</p>').join('') + '</div>';
+    if(q.tl) h += '<div class="ex-tl"><div class="ex-tl-row">' + ['(가)','(나)','(다)','(라)','(마)'].map(s => '<span>' + s + '</span>').join('') + '</div><div class="ex-tl-line">' + q.tl.map(s => '<i><em>' + s + '</em></i>').join('') + '</div></div>';
+    if(q.bogi) h += '<div class="ex-bogi"><div class="ex-bogi-t">&lt;보 기&gt;</div>' + q.bogi.map(s => '<p>' + s + '</p>').join('') + '</div>';
+    h += '<div class="ex-opts' + (q.fix && q.o[0].length < 12 ? ' grid' : '') + '">' + x.idx.map((oi, j) => '<button type="button" data-q="' + k + '" data-j="' + j + '"><span class="ex-n">' + EXAM_NUM[j] + '</span> ' + q.o[oi] + '<em class="ex-note2"></em></button>').join('') + '</div></div>'; return h; };
+  el.innerHTML = '<div class="ex-top"><button type="button" class="ex-x2" id="exQuit">✕ 그만</button><b id="exTime">50:00</b><span id="exCnt">0 / ' + qs.length + '</span><button type="button" class="ex-sub" id="exSub">제출</button></div>'
+    + '<div class="ex-sheet"><div class="ex-head"><div class="ex-hl"><b>2026학년도 2학기 기말고사 대비</b><span>1학년 8반 · 이름: ' + escHtml(me ? me.name : '') + '</span><span>' + (only ? '틀린 문제 다시 풀기 · ' + qs.length + '문항' : '실전 모의고사 · 50분') + '</span></div><div class="ex-hr">한국사2</div><div class="ex-score" id="exScore"></div></div>'
+    + '<div class="ex-guide">* 각 문항에 배점이 표시되어 있습니다.<br>** 선택형 ' + qs.length + '문제, 서답형 0문제입니다.</div>'
+    + '<div class="ex-cols">' + qs.map(qHtml).join('') + '</div>'
+    + '<div class="ex-foot"><span>2026학년도 1학년</span><span>8반 3D 교실 · 한국사 탐구실</span></div><button type="button" class="ex-btn" id="exSub2">답안 제출하기</button></div>';
+  el.scrollTop = 0;
+  el.querySelectorAll('.ex-opts button').forEach(b => b.onclick = () => { if(exam.done) return; const k = +b.dataset.q, x = exam.qs[k]; x.pick = +b.dataset.j;
+    b.parentNode.querySelectorAll('button').forEach(c => c.classList.toggle('on', c === b)); $('#exCnt').textContent = exam.qs.filter(y => y.pick >= 0).length + ' / ' + exam.qs.length; });
+  const sub = () => { const left = exam.qs.filter(y => y.pick < 0).length; if(left && !exam.confirm){ exam.confirm = 1; toast('아직 ' + left + '문제를 안 풀었어요 · 한 번 더 누르면 제출돼요'); setTimeout(() => { if(exam) exam.confirm = 0; }, 3000); return; } examGrade(); };
+  $('#exSub').onclick = sub; $('#exSub2').onclick = sub; $('#exQuit').onclick = examClose;
+  exam.timer = setInterval(() => { if(!exam || exam.done) return; const r = Math.max(0, exam.lim - (Date.now() - exam.t0)/1000); $('#exTime').textContent = String(Math.floor(r/60)).padStart(2, '0') + ':' + String(Math.floor(r % 60)).padStart(2, '0'); $('#exTime').classList.toggle('warn', r < 300); if(r <= 0){ toast('⏰ 시간 끝! 자동으로 제출했어요'); examGrade(); } }, 500); }
+function examGrade(){ if(!exam || exam.done) return; exam.done = true; clearInterval(exam.timer); let sc = 0, tot = 0; const wrong = [];
+  exam.qs.forEach((x, k) => { const q = x.q, ans = x.idx.indexOf(q.a - 1), ok = x.pick === ans; tot += q.p; if(ok) sc += q.p; else wrong.push(x.i);
+    const box = $('#exq' + k); box.classList.add(ok ? 'ok' : 'bad'); box.insertAdjacentHTML('afterbegin', '<i class="ex-mark">' + (ok ? '' : '') + '</i>');
+    box.querySelectorAll('.ex-opts button').forEach((b, j) => { const oi = x.idx[j]; if(j === ans) b.classList.add('ans'); if(j === x.pick && !ok) b.classList.add('wr'); const nt = q.n[oi]; if(!q.fix && nt && (j === ans || j === x.pick || !ok)) b.querySelector('.ex-note2').textContent = nt; b.disabled = true; });
+    if(q.fix){ const ex = q.n.filter(Boolean); if(ex.length) box.insertAdjacentHTML('beforeend', '<div class="ex-exp">📌 ' + ex.map(escHtml).join('<br>📌 ') + '</div>'); } });
+  sc = Math.round(sc*10)/10; const full = !exam.only; if(full){ histSt.examBest = Math.max(histSt.examBest || 0, sc); histSt.examWrong = wrong; histSt.examLast = sc; histSave(); }
+  $('#exScore').innerHTML = '<b>' + sc + '</b><small>/' + Math.round(tot*10)/10 + '</small>'; $('#exScore').classList.add('show');
+  $('#exSub').textContent = '닫기'; $('#exSub').onclick = examClose; $('#exCnt').textContent = (exam.qs.length - wrong.length) + '개 맞음';
+  const foot = $('#exSub2'); foot.insertAdjacentHTML('beforebegin', '<div class="ex-res"><b>' + sc + '점</b> · ' + exam.qs.length + '문제 중 ' + (exam.qs.length - wrong.length) + '개 맞았어요' + (full && histSt.examBest === sc ? ' · 🏆 최고 기록!' : '') + '<br><small>초록 동그라미 = 정답 · 빨간 줄 = 내가 고른 오답 · 선지마다 연도와 해설이 붙어 있어요</small></div>');
+  foot.textContent = wrong.length ? '❌ 틀린 ' + wrong.length + '문제만 다시 풀기' : '🎉 만점! 닫기'; foot.onclick = () => { if(wrong.length) examStart(wrong); else examClose(); };
+  $('#examOv').scrollTop = 0; toast(sc >= 100 ? '💯 만점이에요!' : '📝 채점 완료 · ' + sc + '점'); }
 
 $('#engExit').addEventListener('click', exitRoom);
 $('#engHomeBtn').addEventListener('click', () => { if(room === 'hist'){ if(histView) histSetView(''); histHome(); } else engHome(); });
