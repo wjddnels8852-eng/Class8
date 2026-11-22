@@ -68,6 +68,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline
 .gmrow{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.06);border-radius:14px;padding:10px 12px}.gmrow .gi{font-size:24px}.gmrow .gt{flex:1;display:flex;flex-direction:column;gap:2px}.gmrow .gt b{font-size:15px}.gmrow .gt span{font-size:12.5px;color:var(--muted)}
 .gmsubs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.gmsubs .tool{min-height:44px;font-size:14px}
 body.demo #btnRank svg,body.demo [data-pose],body.demo .scroller[aria-label="포즈"]{display:none!important}
+.hallcard{display:flex;align-items:center;gap:14px;width:100%;padding:14px 16px;border-radius:16px;border:0;cursor:pointer;text-align:left;color:#fff;background:linear-gradient(135deg,var(--hc),rgba(20,24,48,.9));box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.18)}.hallcard i{font-style:normal;font-size:34px}.hallcard span{flex:1;display:flex;flex-direction:column;gap:2px}.hallcard b{font-size:17px}.hallcard small{font-size:12.5px;opacity:.85}.hallcard em{font-style:normal;font-size:26px;opacity:.7}
 .goalchip{flex-direction:column;align-items:stretch;gap:5px;font-size:12px;padding:7px 13px}
 .goalchip .gbar{display:block;height:5px;border-radius:3px;background:rgba(255,255,255,.15);overflow:hidden}
 .goalchip .gbar b{display:block;height:100%;width:0;background:linear-gradient(90deg,#6EE7A8,#FFE27A);transition:width .6s}
@@ -318,7 +319,13 @@ textarea.inp{padding:10px 12px;min-height:84px;resize:vertical}
 .ex-top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;padding:10px max(12px,env(safe-area-inset-left));padding-top:calc(10px + env(safe-area-inset-top));background:rgba(30,24,18,.94);color:#fff;font-family:"Noto Sans KR",sans-serif}
 .ex-top b{font:800 20px ui-monospace,Menlo,monospace;letter-spacing:1px}.ex-top b.warn{color:#FF7A6A}.ex-top span{flex:1;font-size:13px;color:#D8CBB4}
 .ex-top button{border:0;border-radius:10px;padding:9px 14px;font:800 14px "Noto Sans KR",sans-serif}.ex-x2{background:rgba(255,255,255,.12);color:#fff}.ex-sub{background:#FFD66B;color:#2A1A00}
-.ex-sheet *,.ex-sheet{box-sizing:border-box}.ex-sheet{width:min(980px,calc(100% - 16px));margin:14px auto 0;background:#FBFAF6;color:#111;padding:22px 18px 26px;box-shadow:0 10px 40px rgba(0,0,0,.45);font-family:"Nanum Myeongjo","Batang",serif;background-image:linear-gradient(rgba(0,0,0,.015) 1px,transparent 1px);background-size:100% 3px}
+.ex-sheet *,.ex-sheet{box-sizing:border-box}.ex-sheet{position:relative}
+.ex-sheet canvas.ex-ink{position:absolute;left:0;top:0;pointer-events:none;z-index:3}
+.ex-inkbar{position:fixed;left:50%;bottom:calc(12px + env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;gap:4px;padding:6px;border-radius:18px;background:rgba(28,22,16,.93);box-shadow:0 6px 20px rgba(0,0,0,.4);z-index:8}
+.ex-inkbar button{width:42px;height:42px;border-radius:12px;border:0;background:transparent;color:#F4EBDB;font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.ex-inkbar button i{width:20px;height:20px;border-radius:50%;box-shadow:0 0 0 2px rgba(255,255,255,.5)}
+.ex-inkbar button.on{background:rgba(255,255,255,.16);box-shadow:inset 0 0 0 2px #FFD66B}
+#examOv.paper{padding-bottom:90px}.ex-sheet{width:min(980px,calc(100% - 16px));margin:14px auto 0;background:#FBFAF6;color:#111;padding:22px 18px 26px;box-shadow:0 10px 40px rgba(0,0,0,.45);font-family:"Nanum Myeongjo","Batang",serif;background-image:linear-gradient(rgba(0,0,0,.015) 1px,transparent 1px);background-size:100% 3px}
 .ex-head{position:relative;display:flex;border:2px solid #111;margin-bottom:12px}
 .ex-hl{flex:1;display:flex;flex-direction:column;gap:3px;padding:10px 12px;font-size:13.5px}.ex-hl b{font-size:16px}
 .ex-hr{width:38%;display:flex;align-items:center;justify-content:center;font:800 26px "Nanum Myeongjo",serif;border-left:2px solid #111;background:linear-gradient(90deg,#fff,#E6E6E6)}
@@ -670,15 +677,10 @@ body.demo [data-skill],body.demo [data-fly],body.demo #isleFight{display:none!im
     </div>
   </div>
   <div id="lobbyUI" hidden>
-    <button type="button" class="btn" data-go="sea">🌊 심해</button>
-    <button type="button" class="btn" data-go="space">🚀 우주</button>
-    <button type="button" class="btn" data-go="nino">🌏 엘니뇨</button>
-    <button type="button" class="btn" data-go="geo">📐 기하</button>
-    <button type="button" class="btn" data-go="isle">☁ 공중섬</button>
-    <button type="button" class="btn" data-go="quiz">🔐 수학 탈출</button>
-    <button type="button" class="btn" data-go="cinema">🎬 영화관</button>
-    <button type="button" class="btn" data-go="eng">🔤 영어</button>
-    <button type="button" class="btn" data-go="hist">🏯 한국사</button>
+    <button type="button" class="btn" data-go="h_sci">🔬 과학관</button>
+    <button type="button" class="btn" data-go="h_lang">📚 언어·사회관</button>
+    <button type="button" class="btn" data-go="h_math">🔐 수학관</button>
+    <button type="button" class="btn" data-go="h_rest">🎬 휴게관</button>
     <button type="button" class="btn warm" id="lobbyBack">⬅ 교실</button>
   </div>
   <div id="dockUI" hidden>
@@ -783,7 +785,7 @@ body.demo [data-skill],body.demo [data-fly],body.demo #isleFight{display:none!im
     </div>
     </div>
     <button class="btn primary" type="submit" id="enterBtn" hidden>교실 입장</button>
-    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 109</p>
+    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 111</p>
   </form>
 </div>
 
@@ -961,6 +963,12 @@ body.demo [data-skill],body.demo [data-fly],body.demo #isleFight{display:none!im
   </div>
 </div>
 
+<div class="board-ed" id="hallSheet" hidden>
+  <div class="ed-card" role="dialog" aria-label="방 고르기" style="max-width:440px">
+    <div class="ed-head"><h2 id="hallTitle">관</h2><button class="tool" id="hallClose">닫기</button></div>
+    <div id="hallBody" style="display:flex;flex-direction:column;gap:10px"></div>
+  </div>
+</div>
 <div class="board-ed" id="gmSheet" hidden>
   <div class="ed-card" role="dialog" aria-label="공부 모임" style="max-width:460px">
     <div class="ed-head"><h2>📚 공부 모임</h2><button class="tool" id="gmClose">닫기</button></div>
@@ -3311,7 +3319,7 @@ function doorGlow(door, col){ const add = (geo, m, x, y, z) => { const o = new T
 [[seaDoor, '#4AA8FF'], [ninoDoor, '#5AD0FF'], [geoDoor, '#5AE0C0'], [isleDoor, '#9FD8FF'], [quizDoor, '#FF7AB8'], [exitDoor, '#6EE7A8'], [cinemaDoor, '#FF5A5A'], [engDoor, '#B8F27A']].forEach(([d, c]) => doorGlow(d, c));
 const lobbyTargets = [seaDoor, ninoDoor, geoDoor, isleDoor, quizDoor, exitDoor, cinemaDoor, engDoor, lobbyFloor];
 // 교실 왼쪽 벽: 체험관 문 하나
-const hubDoor = makeDoor(leftWall, 0, 'hub', '체험관', '🚪 체험관 · 8개의 방', '#5B3FA8', '#2A2F5A', '#0B0F2A');
+const hubDoor = makeDoor(leftWall, 0, 'hub', '체험관', '🚪 체험관 · 교과별 탐구관', '#5B3FA8', '#2A2F5A', '#0B0F2A');
 tapTargets.push(hubDoor);
 const hubCv = document.createElement('canvas'); hubCv.width = hubCv.height = 128; const hubTex = new THREE.CanvasTexture(hubCv);
 hubDoor.userData.win.material = new THREE.MeshBasicMaterial({ map:hubTex });
@@ -3329,10 +3337,10 @@ let demoMode = DEMO_FORCE ? store.get('class8-demo2', true) !== false : (/[?&]de
 const HIDE_ALWAYS = ['sea', 'geo'];   // 🧹 로비 정리: 안 쓰는 방은 항상 숨겨요 (코드·데이터는 그대로)
 function demoHidden(k){ return HIDE_ALWAYS.indexOf(k) >= 0 || (demoMode && DEMO_HIDE.indexOf(k) >= 0); }
 function applyDemo(){
-  [seaDoor, geoDoor, isleDoor, cinemaDoor, engDoor].forEach(d => { d.visible = !demoHidden(d.userData.door); });
   if(doorFx.sea){ doorFx.sea.puddle.visible = doorFx.sea.stream.visible = false; }
   doorFx.ripples.forEach(r => { r.m.visible = false; }); doorFx.fish.forEach(f => { f.g.visible = false; }); (doorFx.shapes || []).forEach(s => { s.m.visible = false; });
   if(doorFx.geoGlow) doorFx.geoGlow.visible = false;
+  try { doorFx.planet.g.visible = false; doorFx.sparks.forEach(o => o.m.visible = false); doorFx.clouds.forEach(o => o.m.visible = false); } catch(e){}
   document.querySelectorAll('#lobbyUI [data-go]').forEach(b => { b.hidden = demoHidden(b.dataset.go); });
   $('#demoTxt').textContent = demoMode ? '🎓 시연 모드 ON' : '🎓 시연 모드 OFF'; $('#btnDemo').classList.toggle('on', demoMode);
   $('#btnPet').hidden = demoMode || PETS_OFF; document.body.classList.toggle('demo', demoMode); try { isles.forEach(I => { if(I.wild) I.g.visible = !demoMode && !PETS_OFF; }); } catch(e){}
@@ -3351,7 +3359,7 @@ function enterLobby(from){
   if(me.flying) setFly(false);
   me.path = []; me.goSeat = null; me.manual = false; me.mode = 'idle'; me.kvx = me.kvz = 0; me.jumpY = 0;
   room = 'lobby'; lobbyScene.add(me.group); me.group.visible = true; hideHint(); lobbyGo = null;
-  ['#calSheet', '#qSheet', '#surveySheet', '#rankSheet', '#boardEd', '#lockSheet', '#gmSheet'].forEach(s => { const e = $(s); if(e) e.hidden = true; });
+  ['#calSheet', '#qSheet', '#surveySheet', '#rankSheet', '#boardEd', '#lockSheet', '#gmSheet', '#hallSheet'].forEach(s => { const e = $(s); if(e) e.hidden = true; });
   $('#walkUI').hidden = true; $('#walkUI').style.display = 'none'; $('#sitUI').style.display = 'none';
   $('#panel').hidden = false; $('#joy').hidden = false; $('#lobbyUI').hidden = false;
   const fromClass = from === 'class';
@@ -3360,6 +3368,7 @@ function enterLobby(from){
   if(from === 'quiz'){ me.pos.set((LX0 + LX1)/2, 0, -LZ + 2.4); me.ry = me.targetRy = 0; }
   if(from === 'cinema'){ me.pos.set(LX1 - 2.4, 0, -4.2); me.ry = me.targetRy = -Math.PI/2; }
   if(from === 'eng'){ me.pos.set(LX1 - 2.4, 0, 4.2); me.ry = me.targetRy = -Math.PI/2; }
+  if(HALL_OF[from]){ const P = HALL_POS[HALL_OF[from]]; me.pos.set(P[0], 0, P[1]); me.ry = me.targetRy = P[2]; }
   Object.assign(camLim, CLASS_LIM); cam.yaw = Math.PI/2; cam.pitch = 0.5; cam.dist = 7.5; cam.t.set(me.pos.x, 1, me.pos.z);
   lastSent = ''; pushPresence();
   if(fromClass) toast('체험관이에요! 가고 싶은 방의 문으로 걸어가요');
@@ -3381,12 +3390,11 @@ function lobbyTick(dt){
   lobbyBack.visible = camera.position.z > -LZ + 0.2; lobbyFront.visible = camera.position.z < LZ - 0.2;
   // 문 앞에 서면 "들어가기" 버튼
   let near = '';
-  if(me.pos.x < LX0 + 2.2) Object.keys(DOOR_Z).forEach(k => { if(Math.abs(me.pos.z - DOOR_Z[k]) < 1 && !demoHidden(k)) near = k; });
+  if(me.pos.x < LX0 + 2.2 && Math.abs(me.pos.z + 2.6) < 1) near = 'h_sci';
+  if(me.pos.x < LX0 + 2.2 && Math.abs(me.pos.z - 2.6) < 1) near = 'h_lang';
   if(me.pos.x > LX1 - 2.2 && Math.abs(me.pos.z) < 1) near = 'class';
-  if(me.pos.x > LX1 - 2.2 && Math.abs(me.pos.z + 4.2) < 1 && !demoHidden('cinema')) near = 'cinema';
-  if(me.pos.x > LX1 - 2.2 && Math.abs(me.pos.z - 4.2) < 1) near = 'eng';
-  if(me.pos.z > LZ - 2.2 && Math.abs(me.pos.x - (LX0 + LX1)/2) < 1 && !demoHidden('isle')) near = 'isle';
-  if(me.pos.z < -LZ + 2.2 && Math.abs(me.pos.x - (LX0 + LX1)/2) < 1) near = 'quiz';
+  if(me.pos.z > LZ - 2.2 && Math.abs(me.pos.x - (LX0 + LX1)/2) < 1) near = 'h_rest';
+  if(me.pos.z < -LZ + 2.2 && Math.abs(me.pos.x - (LX0 + LX1)/2) < 1) near = 'h_math';
   if(near !== lobbyNear){ lobbyNear = near; roomBtnAct = null; const b = $('#roomBtn'); b.hidden = !near; if(near) b.textContent = near === 'class' ? '⬅ 교실로 돌아가기' : '🚪 ' + DOOR_NAME[near] + ' 들어가기'; }
 }
 let roomBtnAct = null;
@@ -3397,6 +3405,7 @@ $('#btnHub').addEventListener('click', () => openDoor('hub'));
 
 function openDoor(k){
   if(!me || demoHidden(k)) return;
+  if(typeof HALLS !== 'undefined' && HALLS[k]){ hallOpen(k); return; }
   if(k === 'hub'){ enterLobby('class'); return; }
   if(k === 'class'){ exitRoom(); return; }
   if(k === 'geo'){   // 기하 탐구실은 지하라서 계단을 내려가요
@@ -3421,7 +3430,7 @@ function enterRoom(k){
   if(me.flying) setFly(false);
   me.path = []; me.goSeat = null; me.manual = false; me.mode = 'idle'; me.kvx = me.kvz = 0;
   room = k; me.group.visible = false; hideHint(); $('#lobbyUI').hidden = true; $('#roomBtn').hidden = true; lobbyNear = ''; roomBtnAct = null;
-  ['#calSheet', '#qSheet', '#surveySheet', '#rankSheet', '#boardEd', '#lockSheet', '#gmSheet'].forEach(s => { const e = $(s); if(e) e.hidden = true; });
+  ['#calSheet', '#qSheet', '#surveySheet', '#rankSheet', '#boardEd', '#lockSheet', '#gmSheet', '#hallSheet'].forEach(s => { const e = $(s); if(e) e.hidden = true; });
   $('#walkUI').hidden = true; $('#walkUI').style.display = 'none'; $('#sitUI').style.display = 'none';
   if(k === 'sea'){
     if(!seaScene) buildSea();
@@ -4283,6 +4292,26 @@ function ninoTick(dt){
 /* ===== 우주 발사장: 로켓 타고 10초 → 우주 (무중력) ===== */
 const spaceDoor = makeDoor(lobbyWall, 4.2, 'space', '우주 발사장', '우주 발사장 · 누구나', '#5B3FA8', '#2A2F5A', '#0B0F2A');
 lobbyTargets.push(spaceDoor, histDoor); doorGlow(spaceDoor, '#B79CFF'); doorGlow(histDoor, '#FFB870');
+/* 🏛 체험관 정리: 방 문 대신 '관' 문 4개. 문을 열면 그 관의 방을 골라요 */
+const HALLS = { h_sci:{ n:'과학관', e:'🔬', rooms:['space', 'nino'] }, h_lang:{ n:'언어·사회관', e:'📚', rooms:['eng', 'hist'] }, h_math:{ n:'수학관', e:'🔐', rooms:['quiz'] }, h_rest:{ n:'휴게관', e:'🎬', rooms:['cinema', 'isle'] } };
+const ROOM_CARD = { space:['🚀', '우주 발사장', '로켓 타고 행성 탐험', '#5B3FA8'], nino:['🌏', '엘니뇨 탐구실', '바다와 바람으로 보는 엘니뇨', '#2B6CB0'], eng:['🔤', '영어 탐구실', '매일 단어 · 오답 단어장', '#2F7D4F'], hist:['🏯', '한국사 탐구실', '카드 · 사료 · 3D 지도 · 모의고사', '#8A4A2A'], quiz:['🔐', '수학 탈출방', '3문제 풀고 탈출', '#8A3A5A'], cinema:['🎬', '영화관', '예고편 · 4DX · 스크린X', '#B3242F'], isle:['☁', '공중섬', '내 섬 꾸미기', '#3D8FE0'] };
+const HALL_OF = { space:'h_sci', nino:'h_sci', eng:'h_lang', hist:'h_lang', quiz:'h_math', cinema:'h_rest', isle:'h_rest' };
+[seaDoor, geoDoor, ninoDoor, spaceDoor, histDoor, engDoor, cinemaDoor, isleDoor, quizDoor].forEach(d => { d.visible = false; const i = lobbyTargets.indexOf(d); if(i >= 0) lobbyTargets.splice(i, 1); });
+try { doorFx.planet.g.visible = false; doorFx.sparks.forEach(o => o.m.visible = false); doorFx.clouds.forEach(o => o.m.visible = false); } catch(e){}
+const hallDoors = {
+  h_sci:makeDoor(lobbyWall, 2.6, 'h_sci', '과학관', '🔬 과학관 · 우주 · 엘니뇨', '#2B6CB0', '#1F3A5E', '#9FD8FF'),
+  h_lang:makeDoor(lobbyWall, -2.6, 'h_lang', '언어·사회관', '📚 언어·사회관 · 영어 · 한국사', '#2F7D4F', '#3A2E1E', '#FFE2A8'),
+  h_math:makeDoor(lobbyBack, 0, 'h_math', '수학관', '🔐 수학관 · 수학 탈출방', '#8A3A5A', '#4A3A5A', '#FFC2DC'),
+  h_rest:makeDoor(lobbyFront, 0, 'h_rest', '휴게관', '🎬 휴게관 · 영화관 · 공중섬', '#B3242F', '#3A1A20', '#FFD38A') };
+const HALL_POS = { h_sci:[LX0 + 2.4, -2.6, Math.PI/2], h_lang:[LX0 + 2.4, 2.6, Math.PI/2], h_math:[(LX0 + LX1)/2, -LZ + 2.4, 0], h_rest:[(LX0 + LX1)/2, LZ - 2.4, Math.PI] };
+Object.keys(hallDoors).forEach(k => { lobbyTargets.push(hallDoors[k]); doorGlow(hallDoors[k], { h_sci:'#8FCBFF', h_lang:'#9FE8B8', h_math:'#FF9EC4', h_rest:'#FFB870' }[k]); DOOR_NAME[k] = HALLS[k].n; });
+function hallRooms(k){ return HALLS[k].rooms.filter(r => !demoHidden(r)); }
+function hallOpen(k){ const rs = hallRooms(k); if(!rs.length) return; if(rs.length === 1){ openDoor(rs[0]); return; } const H = HALLS[k];
+  $('#hallTitle').textContent = H.e + ' ' + H.n;
+  $('#hallBody').innerHTML = rs.map(r => { const c = ROOM_CARD[r]; return '<button type="button" class="hallcard" data-room="' + r + '" style="--hc:' + c[3] + '"><i>' + c[0] + '</i><span><b>' + c[1] + '</b><small>' + c[2] + '</small></span><em>›</em></button>'; }).join('');
+  $('#hallBody').querySelectorAll('[data-room]').forEach(b => b.onclick = () => { $('#hallSheet').hidden = true; openDoor(b.dataset.room); });
+  $('#hallSheet').hidden = false; }
+$('#hallClose').addEventListener('click', () => { $('#hallSheet').hidden = true; });
 
 /* ===== 📐 기하 탐구실 (지하): 교실 구석 구멍으로 내려가요 ===== */
 const HOLE = { x:-8.6, z:5.9 };
@@ -7760,6 +7789,49 @@ function histSecGet(){ return num(store.get('class8-histsec', 0), 0, 1e8, 0); }
 setInterval(() => { if(!me || document.visibilityState !== 'visible') return; const active = Date.now() - histLastAct < 120000;
   if((room === 'hist' && active) || (me.mode === 'sit' && me.subject === '한국사')) store.set('class8-histsec', histSecGet() + 1); }, 1000);
 let exam = null;
+/* ✏️ 시험지 필기: 애플펜슬은 쓰기, 손가락은 스크롤·선택 (손가락 쓰기는 버튼으로 켜요) */
+const INK = { on:false, strokes:[], cur:null, tool:'pen', col:'#1A1A1A', finger:false, cv:null, x:null, sc:1, ro:null };
+const INK_COL = { pen:'#1A1A1A', red:'#D0021B', blue:'#1A3FA8' };
+function inkSetup(){ const sh = $('#examOv .ex-sheet'); if(!sh) return; INK.strokes = []; INK.cur = null;
+  const cv = document.createElement('canvas'); cv.className = 'ex-ink'; sh.appendChild(cv); INK.cv = cv; INK.x = cv.getContext('2d');
+  const bar = document.createElement('div'); bar.className = 'ex-inkbar'; bar.innerHTML = '<button type="button" data-t="pen" class="on" aria-label="검정 펜"><i style="background:#1A1A1A"></i></button><button type="button" data-t="red" aria-label="빨간 펜"><i style="background:#D0021B"></i></button><button type="button" data-t="blue" aria-label="파란 펜"><i style="background:#1A3FA8"></i></button><button type="button" data-t="hl" aria-label="형광펜"><i style="background:#FFE34D"></i></button><button type="button" data-t="er" aria-label="지우개">⌫</button><button type="button" id="inkUndo" aria-label="되돌리기">↩</button><button type="button" id="inkFinger" aria-label="손가락으로 쓰기">☝</button>';
+  $('#examOv').appendChild(bar);
+  bar.querySelectorAll('[data-t]').forEach(b => b.onclick = () => { INK.tool = b.dataset.t; bar.querySelectorAll('[data-t]').forEach(c => c.classList.toggle('on', c === b)); });
+  $('#inkUndo').onclick = () => { INK.strokes.pop(); inkRedraw(); };
+  $('#inkFinger').onclick = () => { INK.finger = !INK.finger; $('#inkFinger').classList.toggle('on', INK.finger); toast(INK.finger ? '☝ 손가락으로도 써요 · 스크롤은 위쪽 막대를 끌거나 다시 꺼요' : '✏️ 펜슬로만 써요 · 손가락은 스크롤'); };
+  INK.ro = new ResizeObserver(() => inkFit()); INK.ro.observe(sh); inkFit();
+  const ov = $('#examOv'), draws = e => e.pointerType === 'pen' || (INK.finger && (e.pointerType === 'touch' || e.pointerType === 'mouse'));
+  const pt = e => { const r = sh.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top, e.pointerType === 'pen' ? (e.pressure || 0.5) : 0.5]; };
+  INK.down = e => { if(!draws(e) || !sh.contains(e.target) || e.target.closest('.ex-inkbar')) return; e.preventDefault(); const p = pt(e);
+    if(INK.tool === 'er'){ INK.erasing = true; inkErase(p); return; }
+    const q = document.elementFromPoint(e.clientX, e.clientY), an = q && q.closest('.ex-q'), base = inkAnchor(an);
+    INK.cur = { a:an ? an.id : '', bx:base[0], by:base[1], t:INK.tool, p:[[p[0] - base[0], p[1] - base[1], p[2]]], t0:Date.now(), cx:e.clientX, cy:e.clientY, id:e.pointerId }; };
+  INK.move = e => { if(INK.erasing && draws(e)){ e.preventDefault(); inkErase(pt(e)); return; } const c = INK.cur; if(!c || e.pointerId !== c.id) return; e.preventDefault();
+    let evs = e.getCoalescedEvents ? e.getCoalescedEvents() : []; if(!evs || !evs.length) evs = [e]; evs.forEach(v => { const p = pt(v); c.p.push([p[0] - c.bx, p[1] - c.by, p[2]]); }); inkSeg(c); };
+  INK.up = e => { INK.erasing = false; const c = INK.cur; if(!c || e.pointerId !== c.id) return; INK.cur = null;
+    const moved = Math.hypot(e.clientX - c.cx, e.clientY - c.cy);
+    if(moved < 6 && Date.now() - c.t0 < 350){ inkRedraw(); const el = document.elementFromPoint(e.clientX, e.clientY), b = el && el.closest('button'); if(b) b.click(); return; }
+    INK.strokes.push(c); inkRedraw(); };
+  ov.addEventListener('pointerdown', INK.down); ov.addEventListener('pointermove', INK.move); ov.addEventListener('pointerup', INK.up); ov.addEventListener('pointercancel', INK.up);
+  INK.ts = e => { if(!$('#examOv .ex-sheet') || !sh.contains(e.target) || e.target.closest('.ex-inkbar')) return; const t = e.touches[0]; if(t && (t.touchType === 'stylus' || INK.finger)) e.preventDefault(); };
+  ov.addEventListener('touchstart', INK.ts, { passive:false }); ov.addEventListener('touchmove', INK.ts, { passive:false });
+  INK.on = true; }
+function inkTeardown(){ if(!INK.on) return; const ov = $('#examOv'); ov.removeEventListener('pointerdown', INK.down); ov.removeEventListener('pointermove', INK.move); ov.removeEventListener('pointerup', INK.up); ov.removeEventListener('pointercancel', INK.up);
+  ov.removeEventListener('touchstart', INK.ts); ov.removeEventListener('touchmove', INK.ts); if(INK.ro) INK.ro.disconnect(); const b = ov.querySelector('.ex-inkbar'); if(b) b.remove(); INK.on = false; INK.cv = null; }
+function inkAnchor(el){ if(!el) return [0, 0]; const sh = $('#examOv .ex-sheet'), a = el.getBoundingClientRect(), s = sh.getBoundingClientRect(); return [a.left - s.left, a.top - s.top]; }
+function inkFit(){ const sh = $('#examOv .ex-sheet'), cv = INK.cv; if(!sh || !cv) return; const w = sh.offsetWidth, h = sh.offsetHeight; let sc = Math.min(window.devicePixelRatio || 1, 2); while(w*h*sc*sc > 16e6 && sc > 0.6) sc -= 0.1;
+  if(cv.width === Math.round(w*sc) && cv.height === Math.round(h*sc)) { inkRedraw(); return; } cv.width = Math.round(w*sc); cv.height = Math.round(h*sc); cv.style.width = w + 'px'; cv.style.height = h + 'px'; INK.sc = sc; inkRedraw(); }
+function inkStyle(x, t){ x.lineCap = x.lineJoin = 'round'; x.globalAlpha = t === 'hl' ? 0.32 : 1; x.strokeStyle = t === 'hl' ? '#FFD400' : (INK_COL[t] || '#1A1A1A'); }
+function inkW(t, pr){ return t === 'hl' ? 16 : 1.1 + pr*2.4; }
+function inkPath(x, s, from){ const b = s.a ? inkAnchor(document.getElementById(s.a)) : [s.bx, s.by], P = s.p; inkStyle(x, s.t);
+  if(s.t === 'hl'){ x.lineWidth = 16; x.beginPath(); P.forEach((p, i) => i ? x.lineTo(b[0] + p[0], b[1] + p[1]) : x.moveTo(b[0] + p[0], b[1] + p[1])); x.stroke(); return; }
+  for(let i = Math.max(1, from || 1); i < P.length; i++){ x.lineWidth = inkW(s.t, (P[i][2] + P[i - 1][2])/2); x.beginPath(); x.moveTo(b[0] + P[i - 1][0], b[1] + P[i - 1][1]); x.lineTo(b[0] + P[i][0], b[1] + P[i][1]); x.stroke(); }
+  if(P.length === 1){ x.fillStyle = x.strokeStyle; x.beginPath(); x.arc(b[0] + P[0][0], b[1] + P[0][1], inkW(s.t, P[0][2])/2, 0, 7); x.fill(); } }
+function inkRedraw(){ const x = INK.x, cv = INK.cv; if(!x) return; x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, cv.width, cv.height); x.setTransform(INK.sc, 0, 0, INK.sc, 0, 0);
+  INK.strokes.filter(s => s.t === 'hl').forEach(s => inkPath(x, s)); INK.strokes.filter(s => s.t !== 'hl').forEach(s => inkPath(x, s)); x.globalAlpha = 1; }
+function inkSeg(c){ const x = INK.x; if(!x) return; x.setTransform(INK.sc, 0, 0, INK.sc, 0, 0); if(c.t === 'hl'){ inkRedraw(); inkPath(x, c); x.globalAlpha = 1; return; } inkPath(x, c, c.p.length - 1); x.globalAlpha = 1; }
+function inkErase(p){ const before = INK.strokes.length; INK.strokes = INK.strokes.filter(s => { const b = s.a ? inkAnchor(document.getElementById(s.a)) : [s.bx, s.by]; return !s.p.some(q => Math.hypot(b[0] + q[0] - p[0], b[1] + q[1] - p[1]) < 14); }); if(INK.strokes.length !== before) inkRedraw(); }
+
 const EXAM_NUM = ['①','②','③','④','⑤'];
 function examOpen(){ const sec = histSecGet(), ok = sec >= EXAM_NEED || amOwner, best = histSt.examBest, el = $('#examOv'); el.hidden = false; el.className = 'cover';
   const pct = Math.min(100, sec/EXAM_NEED*100), left = Math.max(0, EXAM_NEED - sec);
@@ -7771,7 +7843,7 @@ function examOpen(){ const sec = histSecGet(), ok = sec >= EXAM_NEED || amOwner,
       : '<div class="ex-lock"><b>🔒 한국사를 3시간 공부하면 봉투가 열려요</b><div class="ex-bar"><i style="width:' + pct + '%"></i></div><span>지금까지 ' + fmtTime(sec) + ' · ' + fmtTime(left) + ' 남았어요</span><p>한국사 탐구실에서 카드·퀴즈·지도를 공부하거나, 교실 책상에서 과목을 <b>한국사</b>로 골라 앉아 있으면 시간이 쌓여요.</p></div>')
     + (best != null ? '<p class="ex-note">최고 점수 ' + best + '점</p>' : '') + '</div>';
   $('#exX').onclick = examClose; if($('#exGo')) $('#exGo').onclick = () => { $('#exEnv').classList.add('open'); setTimeout(examStart, 1100); }; }
-function examClose(){ const el = $('#examOv'); el.hidden = true; el.innerHTML = ''; if(exam && exam.timer) clearInterval(exam.timer); exam = null; if(room === 'hist') histHome(); }
+function examClose(){ inkTeardown(); const el = $('#examOv'); el.hidden = true; el.innerHTML = ''; if(exam && exam.timer) clearInterval(exam.timer); exam = null; if(room === 'hist') histHome(); }
 function examStart(only){ const base = only ? only : EXAM_Q.map((_, i) => i);
   const qs = base.map(i => { const q = EXAM_Q[i]; const idx = [0, 1, 2, 3, 4]; if(!q.fix) idx.sort(() => Math.random() - 0.5); return { i, q, idx, pick:-1 }; });
   exam = { qs, t0:Date.now(), lim:(only ? Math.max(5, qs.length*2) : 50)*60, done:false, only:!!only };
@@ -7787,7 +7859,7 @@ function examStart(only){ const base = only ? only : EXAM_Q.map((_, i) => i);
     + '<div class="ex-guide">* 각 문항에 배점이 표시되어 있습니다.<br>** 선택형 ' + qs.length + '문제, 서답형 0문제입니다.</div>'
     + '<div class="ex-cols">' + qs.map(qHtml).join('') + '</div>'
     + '<div class="ex-foot"><span>2026학년도 1학년</span><span>8반 3D 교실 · 한국사 탐구실</span></div><button type="button" class="ex-btn" id="exSub2">답안 제출하기</button></div>';
-  el.scrollTop = 0;
+  el.scrollTop = 0; inkTeardown(); inkSetup(); if(!histSt.inkTip){ histSt.inkTip = 1; histSave(); toast('✏️ 애플펜슬로 시험지에 바로 필기할 수 있어요 · 손가락은 스크롤'); }
   el.querySelectorAll('.ex-opts button').forEach(b => b.onclick = () => { if(exam.done) return; const k = +b.dataset.q, x = exam.qs[k]; x.pick = +b.dataset.j;
     b.parentNode.querySelectorAll('button').forEach(c => c.classList.toggle('on', c === b)); $('#exCnt').textContent = exam.qs.filter(y => y.pick >= 0).length + ' / ' + exam.qs.length; });
   const sub = () => { const left = exam.qs.filter(y => y.pick < 0).length; if(left && !exam.confirm){ exam.confirm = 1; toast('아직 ' + left + '문제를 안 풀었어요 · 한 번 더 누르면 제출돼요'); setTimeout(() => { if(exam) exam.confirm = 0; }, 3000); return; } examGrade(); };
