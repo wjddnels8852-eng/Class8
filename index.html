@@ -109,9 +109,14 @@ body.inwar #btnView,body.inwar #btnAR,body.inwar #btnLook,body.inwar #btnFull,bo
 .wp-how{font-size:12px!important;color:#BDB6A0!important}.wp-cnt{font-size:12.5px!important;color:#FFE27A!important;margin:0 0 4px!important}
 #warHud{position:absolute;right:max(14px,env(safe-area-inset-right));bottom:calc(16px + env(safe-area-inset-bottom));display:grid;grid-template-columns:auto auto;grid-template-rows:auto auto;gap:10px;align-items:end;justify-items:end}
 .wh-stat{grid-column:1/3;display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:14px;background:rgba(20,22,16,.78)}.wh-hp{position:relative;width:130px;height:18px;border-radius:9px;background:rgba(255,255,255,.15);overflow:hidden}.wh-hp u{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#6EE7A8,#C8F08A);transition:width .2s}.wh-hp span{position:relative;font-size:11.5px;font-weight:800;padding-left:8px;line-height:18px}#warAmmo{font-size:13px;font-weight:800;white-space:nowrap}
+#warHud{display:flex!important;flex-direction:column;align-items:flex-end;gap:8px}#warHud[hidden]{display:none!important}
+.wh-throw{display:flex;gap:8px}.wh-throw button{position:relative;width:50px;height:50px;border-radius:50%;border:0;background:rgba(20,22,16,.82);font-size:22px;cursor:pointer}.wh-throw button:disabled{opacity:.35}.wh-throw i{position:absolute;right:-2px;bottom:-2px;min-width:18px;height:18px;border-radius:9px;background:#FFE27A;color:#2A1A00;font:800 11px/18px "Noto Sans KR",sans-serif;font-style:normal}
+.wh-main{display:flex;align-items:flex-end;gap:10px}.wh-side{display:flex;flex-direction:column;gap:8px;align-items:stretch}#warWpn,#warScp{border:0;border-radius:14px;background:rgba(20,22,16,.82);color:#fff;font:800 13px "Noto Sans KR",sans-serif;padding:10px 12px;cursor:pointer;white-space:nowrap}#warScp.on{background:#FFE27A;color:#2A1A00}
+#warScopeOv{position:absolute;inset:0;pointer-events:none!important;background:radial-gradient(circle at center,transparent 0,transparent 32vmin,rgba(0,0,0,.92) 33vmin)}#warScopeOv i{position:absolute;left:50%;top:50%;width:64vmin;height:64vmin;transform:translate(-50%,-50%);background:linear-gradient(#000,#000) center/1.5px 100% no-repeat,linear-gradient(#000,#000) center/100% 1.5px no-repeat;border-radius:50%}
+#warBlind{position:absolute;inset:0;pointer-events:none!important;background:#FFFFFF;opacity:0}
 #warQz,#warRl{border:0;border-radius:16px;background:rgba(20,22,16,.8);color:#fff;font:800 14px "Noto Sans KR",sans-serif;padding:12px 14px;cursor:pointer}#warQz.cd{opacity:.55}#warRl{grid-column:2;grid-row:2;align-self:start;justify-self:start;display:none}
-#warFire{grid-column:2;grid-row:2;width:96px;height:96px;border-radius:50%;border:0;background:radial-gradient(circle at 35% 30%,#FF8A5A,#D0301E);color:#fff;font-size:34px;line-height:1;box-shadow:0 6px 20px rgba(0,0,0,.45),inset 0 0 0 4px rgba(255,255,255,.25);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none}#warFire small{font-size:12px;font-weight:800}#warFire:active{transform:scale(.94)}
-#warQz{grid-column:1;grid-row:2}
+#warFire{width:96px;height:96px;border-radius:50%;border:0;background:radial-gradient(circle at 35% 30%,#FF8A5A,#D0301E);color:#fff;font-size:34px;line-height:1;box-shadow:0 6px 20px rgba(0,0,0,.45),inset 0 0 0 4px rgba(255,255,255,.25);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none}#warFire small{font-size:12px;font-weight:800}#warFire:active{transform:scale(.94)}
+
 #warQuiz{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(10,10,8,.6)}.wq-card{width:min(420px,100%);display:flex;flex-direction:column;gap:8px;padding:18px;border-radius:20px;background:#2A2A1E;box-shadow:0 20px 50px rgba(0,0,0,.5)}.wq-card small{color:#E8D9A8;font-weight:800}.wq-card b{font-size:16px;line-height:1.5;word-break:keep-all}.wq-card button{border:0;border-radius:12px;padding:11px 12px;background:rgba(255,255,255,.1);color:#fff;font:600 14px "Noto Sans KR",sans-serif;text-align:left;cursor:pointer}.wq-card .wq-x{background:transparent;color:#BDB6A0;text-align:center}
 @media (max-width:760px){#exhUI{left:10px;right:10px;width:auto;top:auto;height:46vh}}
 .exh-sub{font-size:12.5px;font-weight:800;color:#9AA3C8;margin-top:4px}
@@ -864,7 +869,7 @@ body.demo [data-skill],body.demo [data-fly],body.demo #isleFight{display:none!im
     </div>
     </div>
     <button class="btn primary" type="submit" id="enterBtn" hidden>교실 입장</button>
-    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 115</p>
+    <p style="text-align:center;font-size:11px;opacity:.5;margin:4px 0 0">버전 116</p>
   </form>
 </div>
 
@@ -1051,10 +1056,12 @@ body.demo [data-skill],body.demo [data-fly],body.demo #isleFight{display:none!im
   <div id="warPick"><div class="wp-card"><small>⚔ 6·25 전선 체험</small><h2>1950년 8월, 낙동강 방어선</h2>
     <p>북한군의 기습 남침 뒤 밀려 내려온 국군과 유엔군은 낙동강을 따라 마지막 방어선을 쳤어요. 이곳을 지켜 낸 덕분에 9월 인천 상륙 작전으로 전세를 뒤집을 수 있었어요.</p>
     <div class="wp-teams"><button type="button" data-team="un" class="un"><i>🔵</i><b>국군·유엔군</b><small>남쪽에서 방어선을 지켜요</small></button><button type="button" data-team="kp" class="kp"><i>🔴</i><b>북한군·중국군</b><small>북쪽에서 강을 건너요</small></button></div>
-    <p class="wp-how">조이스틱으로 이동 · 🔥 버튼을 누르고 있으면 가까운 적을 자동 조준해서 쏴요 · 4발 맞으면 탈락 후 3초 뒤 재투입 · 📦 보급 퀴즈를 맞히면 탄약과 체력 보충 · 먼저 15명 탈락시킨 팀이 승리</p>
+    <p class="wp-how">조이스틱으로 이동 · <b>화면을 누르거나 끌면 그쪽으로 레이저 조준</b>(PC는 마우스) · 🔥 발사(조준 안 하면 자동 조준) · 🔫/🎯 무기 바꾸기 · 🎯 저격총은 🔭 배율로 한 발 탈락 · 💣 수류탄 🔥 화염병 ✨ 섬광탄은 조준한 곳에 던져요 · 소총 4발 맞으면 탈락 후 3초 뒤 재투입 · 📦 보급 퀴즈를 맞히면 탄약과 체력 보충 · 먼저 15명 탈락시킨 팀이 승리</p>
     <p class="wp-cnt" id="warCnt">접속한 친구를 확인하는 중…</p><p class="wp-cnt" id="warNet"></p></div></div>
   <div id="warHud" hidden><div class="wh-stat"><div class="wh-hp"><u id="warHp"></u><span id="warHpT">❤ 100</span></div><span id="warAmmo">🔫 12 / 12</span></div>
-    <button type="button" id="warQz">📦 보급</button><button type="button" id="warRl">🔄</button><button type="button" id="warFire">🔥<small>발사</small></button></div>
+    <div class="wh-throw"><button type="button" id="warTg" aria-label="수류탄"></button><button type="button" id="warTm" aria-label="화염병"></button><button type="button" id="warTf" aria-label="섬광탄"></button></div>
+    <div class="wh-main"><div class="wh-side"><button type="button" id="warWpn">🔫 소총</button><button type="button" id="warScp" hidden>🔭 배율</button><button type="button" id="warQz">📦 보급</button></div><button type="button" id="warRl">🔄</button><button type="button" id="warFire">🔥<small>발사</small></button></div></div>
+  <div id="warScopeOv" hidden><i></i></div><div id="warBlind"></div>
   <div id="warQuiz" hidden></div>
 </div>
 <section id="exhUI" hidden aria-label="시험장"><header class="db-head" style="background:linear-gradient(90deg,rgba(58,74,122,.5),rgba(138,74,42,.4))"><b>📝 시험장</b><button type="button" class="db-exit" id="exhExit">⬅ 나가기</button></header><div class="db-body" id="exhBody"></div></section>
@@ -6122,9 +6129,57 @@ const MOVIE2 = (() => {
   function focusLines(cx, cy, n, inner, col, a, t){
     rs(Math.floor(t*12)); x.save(); x.globalAlpha = a; x.fillStyle = col;
     for(let i=0;i<n;i++){ const ang = R()*Math.PI*2, w = R()*0.012 + 0.003, r0 = inner*(0.8 + R()*0.6), r1 = 1600;
+      x.beginPath(); x.moveTo(cx + Math.cos(ang)*r0, cy + Math.sin(ang)*r0); x.lineTo(cx + Math.cos(ang - w)*r1, cy + Math.sin(ang - w)*r1); x.lineTo(cx + Math.cos(ang + w)*r1, cy + Math.sin(ang + w)*r1); x.fill(); }
+    x.restore();
+  }
+  function speedLines(dir, n, col, a, t){ rs(Math.floor(t*20)); x.save(); x.translate(W/2, H/2); x.rotate(dir); x.globalAlpha = a; x.fillStyle = col;
+    for(let i=0;i<n;i++){ const y = (R() - 0.5)*H*1.6, l = 200 + R()*600, x1 = (R() - 0.5)*W*1.6; x.fillRect(x1, y, l, R()*3 + 1); } x.restore(); }
+  function particles(seed, n, t, cx, cy, spread, col, up, size){ rs(seed); x.save(); for(let i=0;i<n;i++){ const ph = R(), sp = 0.4 + R(), px = cx + (R() - 0.5)*spread, life = (t*sp*0.5 + ph) % 1, py = cy - life*up;
+      x.globalAlpha = Math.sin(life*Math.PI); x.fillStyle = col; const r = (size || 3)*(0.5 + R()); x.beginPath(); x.arc(px + Math.sin(t*2 + i)*12, py, r, 0, Math.PI*2); x.fill(); } x.restore(); }
+  function glowText(txt, cx, cy, size, fill, stroke, glow, rot, sc, font){
+    x.save(); x.translate(cx, cy); x.rotate(rot || 0); x.scale(sc || 1, sc || 1); x.font = '900 ' + size + 'px ' + (font || FONT); x.textAlign = 'center'; x.textBaseline = 'middle';
+    if(glow){ x.shadowColor = glow; x.shadowBlur = size*0.5; } x.lineJoin = 'round'; x.lineWidth = size*0.16; x.strokeStyle = stroke || '#000'; x.strokeText(txt, 0, 0);
+    x.shadowBlur = 0; x.fillStyle = fill; x.fillText(txt, 0, 0); x.restore();
+  }
+  function lightning(x1, y1, x2, y2, seed, col, w){ rs(seed); x.save(); x.strokeStyle = col; x.lineWidth = w; x.shadowColor = col; x.shadowBlur = 18; x.beginPath(); x.moveTo(x1, y1);
+    for(let i=1;i<=10;i++){ const u = i/10; x.lineTo(lerp(x1, x2, u) + (R() - 0.5)*60*(1 - Math.abs(u - 0.5)), lerp(y1, y2, u)); } x.stroke(); x.lineWidth = w*0.35; x.strokeStyle = '#FFF'; x.stroke(); x.restore(); }
+  function bloom(cx, cy, r, col, a){ x.save(); x.globalCompositeOperation = 'lighter'; x.globalAlpha = a; x.fillStyle = rgrad(cx, cy, 0, r, [[0, col], [1, 'rgba(0,0,0,0)']]); x.fillRect(cx - r, cy - r, r*2, r*2); x.restore(); }
+  // ───── 하늘섬 (그림자·풀·바위결) ─────
+  function island(cx, cy, s, pal, opt){
+    opt = opt || {}; pal = pal || {}; const top = pal.top || '#6FC65A', side = pal.side || '#8A6A4A', dark = pal.dark || '#5A4232', tree = 'tree' in pal ? pal.tree : '#3E9A3A';
+    x.save(); x.translate(cx, cy); x.scale(s, s);
+    x.fillStyle = lgrad(-60, 0, 60, 0, [[0, side], [0.6, side], [1, dark]]); x.beginPath(); x.moveTo(-64, 0); x.quadraticCurveTo(-48, 34, -18, 78); x.lineTo(-4, 112); x.lineTo(8, 84); x.quadraticCurveTo(44, 36, 64, 0); x.closePath(); x.fill();
+    x.strokeStyle = 'rgba(0,0,0,.18)'; x.lineWidth = 2; for(let i=0;i<5;i++){ x.beginPath(); x.moveTo(-40 + i*18, 8 + i*3); x.lineTo(-30 + i*12, 40 + i*8); x.stroke(); }
+    x.fillStyle = top; x.beginPath(); x.ellipse(0, 0, 66, 14, 0, 0, Math.PI*2); x.fill();
+    x.fillStyle = 'rgba(255,255,255,.22)'; x.beginPath(); x.ellipse(-12, -4, 44, 6, 0, 0, Math.PI*2); x.fill();
+    x.fillStyle = top; for(let i=0;i<7;i++){ x.beginPath(); x.moveTo(-60 + i*20, 6); x.lineTo(-56 + i*20, 22 + (i % 2)*8); x.lineTo(-50 + i*20, 6); x.fill(); }
+    if(tree){ [[-34, -8, 15], [-14, -14, 19], [22, -10, 16], [40, -6, 11]].forEach(([tx, ty, r]) => { x.fillStyle = '#5A3A22'; x.fillRect(tx - 2, ty, 4, 10); x.fillStyle = tree; x.beginPath(); x.arc(tx, ty - r*0.6, r, 0, Math.PI*2); x.fill(); x.fillStyle = 'rgba(255,255,255,.18)'; x.beginPath(); x.arc(tx - r*0.3, ty - r, r*0.5, 0, Math.PI*2); x.fill(); }); }
+    if(opt.school){ x.fillStyle = '#F4EEDF'; x.fillRect(-30, -42, 60, 34); x.fillStyle = '#C8333F'; x.beginPath(); x.moveTo(-36, -42); x.lineTo(0, -60); x.lineTo(36, -42); x.fill(); x.fillStyle = '#7EC4FF'; for(let i=0;i<4;i++) for(let j=0;j<2;j++) x.fillRect(-24 + i*13, -36 + j*13, 8, 8); x.fillStyle = '#FFF'; x.beginPath(); x.arc(0, -50, 5, 0, Math.PI*2); x.fill(); }
+    if(opt.lights){ x.fillStyle = '#FFE27A'; for(let w=0;w<4;w++) x.fillRect(-26 + w*15, -8, 3, 3); }
+    x.restore();
+  }
+
+  // ───── 얼음 효과 도구 ─────
+  const ICE = '#BFE8FF';
+  function snow(seed, n, t, wind, a, big){ rs(seed); x.save(); x.fillStyle = '#FFFFFF';
+    for(let i=0;i<n;i++){ const sp = 50 + R()*130, sz = (big ? 2.2 : 1)*(0.8 + R()*2.4), ox = R()*W, oy = R()*H, ph = R()*6;
+      const px = ((ox + t*sp*wind) % (W + 60) + W + 60) % (W + 60) - 30, py = ((oy + t*sp) % (H + 40) + H + 40) % (H + 40) - 20;
+      x.globalAlpha = a*(0.35 + R()*0.65); x.beginPath(); x.arc(px + Math.sin(t*1.6 + ph)*8, py, sz, 0, Math.PI*2); x.fill(); } x.restore(); }
+  const frostTex = () => cached('frost', W, H, () => {
+    x.fillStyle = rgrad(W/2, H/2, H*0.3, W*0.68, [[0, 'rgba(200,235,255,0)'], [0.65, 'rgba(200,235,255,.28)'], [1, 'rgba(235,248,255,.92)']]); x.fillRect(0, 0, W, H);
+    rs(31); x.strokeStyle = 'rgba(255,255,255,.5)'; x.lineWidth = 1.2;
+    const branch = (px, py, ang, len, dep) => { if(dep > 3 || len < 5) return; const ex = px + Math.cos(ang)*len, ey = py + Math.sin(ang)*len; x.beginPath(); x.moveTo(px, py); x.lineTo(ex, ey); x.stroke();
+      for(let k=1;k<=3;k++){ const bx = lerp(px, ex, k/4), by = lerp(py, ey, k/4); branch(bx, by, ang + 0.95, len*0.34, dep + 1); branch(bx, by, ang - 0.95, len*0.34, dep + 1); } };
+    for(let i=0;i<64;i++){ const sd2 = i % 4; const px = sd2 === 0 ? R()*W : sd2 === 1 ? W : sd2 === 2 ? R()*W : 0, py = sd2 === 0 ? 0 : sd2 === 1 ? R()*H : sd2 === 2 ? H : R()*H;
+      branch(px, py, Math.atan2(H/2 - py, W/2 - px) + (R() - 0.5)*1.2, 50 + R()*110, 0); } });
+  function frost(a){ if(a <= 0) return; x.save(); x.globalAlpha = Math.min(1, a); x.drawImage(frostTex(), 0, 0); x.restore(); }
+  function tint(col, a, mode){ if(a <= 0) return; x.save(); x.globalCompositeOperation = mode || 'overlay'; x.globalAlpha = a; x.fillStyle = col; x.fillRect(0, 0, W, H); x.restore(); }
+  function flake(cx, cy, r, rot, a, k){ x.save(); x.translate(cx, cy); x.rotate(rot); x.globalAlpha = a; x.strokeStyle = '#E4F8FF'; x.lineCap = 'round'; x.shadowColor = '#7FD8FF'; x.shadowBlur = r*0.12; x.lineWidth = Math.max(1.5, r*0.035);
+    for(let i=0;i<6;i++){ x.save(); x.rotate(i*Math.PI/3); const L = r*k; x.beginPath(); x.moveTo(0, 0); x.lineTo(L, 0);
+      for(let j=1;j<=3;j++){ const bx = L*j/4, bl = r*0.3*(1 - j/5)*k; x.moveTo(bx, 0); x.lineTo(bx + bl*0.7, -bl); x.moveTo(bx, 0); x.lineTo(bx + bl*0.7, bl); } x.stroke(); x.restore(); } x.restore(); }
 </script>
 <script>
-(function(){ var v = '115', show = function(m){ var d = document.createElement('div'); d.style.cssText = 'position:fixed;inset:0;z-index:99;display:flex;align-items:center;justify-content:center;background:#0F1426;color:#fff;font:700 16px sans-serif;text-align:center;padding:24px;line-height:1.7'; d.innerHTML = m; document.body.appendChild(d); };
+(function(){ var v = '116', show = function(m){ var d = document.createElement('div'); d.style.cssText = 'position:fixed;inset:0;z-index:99;display:flex;align-items:center;justify-content:center;background:#0F1426;color:#fff;font:700 16px sans-serif;text-align:center;padding:24px;line-height:1.7'; d.innerHTML = m; document.body.appendChild(d); };
   fetch('code2.js?v=' + v + '&t=' + Date.now(), { cache:'no-store' }).then(function(r){ if(!r.ok) throw new Error(r.status); return r.text(); }).then(function(t){
     if(t.indexOf('/*END-OF-CODE2*/') < 0){ show('code2.js 파일이 끝까지 안 붙여넣어졌어요.<br>코드 2를 다시 복사해서 붙여넣어 주세요.'); return; }
     var s = document.createElement('script'); s.textContent = document.getElementById('code1').textContent + t + '\n//# sourceURL=class8-app.js'; document.body.appendChild(s);
